@@ -26,7 +26,9 @@ const allowedOrigins = [
 
 // Add your production domain when you deploy
 if (process.env.NODE_ENV === 'production') {
-  // Automatically allow your production domain
+  // Automatically allow your Vercel deployment
+  allowedOrigins.push('https://destination-dholera.vercel.app');
+  // Add custom domains if you have them
   allowedOrigins.push('https://destinationdholera.com');
   allowedOrigins.push('https://www.destinationdholera.com');
 }
