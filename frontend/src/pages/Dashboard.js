@@ -111,15 +111,6 @@ const Dashboard = () => {
       padding: '2rem 1rem'
     }}>
       <div className="container">
-      <div className="flex-between mb-3">
-        <h1 style={{ marginBottom: 0 }}>Dashboard</h1>
-        {isAdmin && (
-          <Link to="/add-deal" className="btn btn-secondary">
-            + Add New Deal
-          </Link>
-        )}
-      </div>
-
       {error && <div className="alert alert-error">{error}</div>}
 
       <div className="card" style={{ 
@@ -162,7 +153,7 @@ const Dashboard = () => {
                 <tr>
                   <th>Village Name</th>
                   <th>Survey No.</th>
-                  <th>Total Sq. Yard</th>
+                  <th>Total Area</th>
                   <th>Total Amount</th>
                   <th>Payment Deadline</th>
                   <th>Actions</th>
@@ -225,6 +216,14 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+
+      {isAdmin && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem' }}>
+          <Link to="/add-deal" className="btn btn-secondary">
+            + Add New Deal
+          </Link>
+        </div>
+      )}
       </div>
     </div>
   );

@@ -169,13 +169,13 @@ const DealDetails = () => {
     let yPos = 55;
     
     const dealInfo = [
-      ['Village Name:', deal.villageName],
-      ['Survey Number:', deal.surveyNumber],
-      ['Price per Sq. Yard:', formatPDFCurrency(deal.pricePerSqYard)],
-      ['Total Sq. Yard:', formatNumber(deal.totalSqYard)],
-      ['Total Amount:', formatPDFCurrency(deal.totalAmount)],
-      ['Banakhat Amount (25%):', formatPDFCurrency(deal.banakhatAmount || deal.totalAmount * 0.25)],
-      ['Deadline Period:', formatDeadlinePeriod(deal.deadlineStartDate, deal.deadlineEndDate)]
+      ['Village Name', deal.villageName],
+      ['Survey No.', deal.surveyNumber],
+      ['Unit Price', formatPDFCurrency(deal.pricePerSqYard)],
+      ['Total Area', formatNumber(deal.totalSqYard)],
+      ['Total Amount', formatPDFCurrency(deal.totalAmount)],
+      ['Banakhat Amount (25%)', formatPDFCurrency(deal.banakhatAmount || deal.totalAmount * 0.25)],
+      ['Deadline', formatDeadlinePeriod(deal.deadlineStartDate, deal.deadlineEndDate)]
     ];
     
     dealInfo.forEach(([label, value]) => {
@@ -292,35 +292,35 @@ const DealDetails = () => {
         <h2 className="card-header">Deal Information</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
           <div>
-            <strong>Village Name:</strong>
+            <strong>Village Name</strong>
             <p>{deal.villageName}</p>
           </div>
           <div>
-            <strong>Survey Number:</strong>
+            <strong>Survey No.</strong>
             <p>{deal.surveyNumber}</p>
           </div>
           <div>
-            <strong>Price per Sq. Yard:</strong>
+            <strong>Unit Price</strong>
             <p>{formatCurrency(deal.pricePerSqYard)}</p>
           </div>
           <div>
-            <strong>Total Sq. Yard:</strong>
+            <strong>Total Area</strong>
             <p>{deal.totalSqYard.toLocaleString('en-IN')}</p>
           </div>
           <div>
-            <strong>Total Amount:</strong>
-            <p style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--primary-color)' }}>
+            <strong>Total Amount</strong>
+            <p style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--primary-color)' }}>
               {formatCurrency(deal.totalAmount)}
             </p>
           </div>
           <div>
-            <strong>Banakhat Amount (25%):</strong>
+            <strong>Banakhat Amount (25%)</strong>
             <p style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--secondary-color)' }}>
               {formatCurrency(deal.banakhatAmount || deal.totalAmount * 0.25)}
             </p>
           </div>
           <div>
-            <strong>Deadline Period:</strong>
+            <strong>Deadline</strong>
             <p>{formatDeadlinePeriod(deal.deadlineStartDate, deal.deadlineEndDate)}</p>
           </div>
         </div>
@@ -332,14 +332,6 @@ const DealDetails = () => {
           <h2 className="card-header" style={{ marginBottom: 0, border: 'none', padding: 0 }}>
             Payment Summary
           </h2>
-          {isAdmin && (
-            <button
-              onClick={() => setShowPaymentForm(!showPaymentForm)}
-              className="btn btn-secondary btn-sm"
-            >
-              {showPaymentForm ? 'Cancel' : '+ Add Payment'}
-            </button>
-          )}
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
@@ -374,7 +366,7 @@ const DealDetails = () => {
             <h3 className="mb-3">Add Payment Record</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
               <div className="form-group">
-                <label className="form-label">Date</label>
+                <label className="form-label">Date <span style={{ color: '#ef4444' }}>*</span></label>
                 <input
                   type="date"
                   className="form-input"
@@ -384,7 +376,7 @@ const DealDetails = () => {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">Mode of Payment</label>
+                <label className="form-label">Mode of Payment <span style={{ color: '#ef4444' }}>*</span></label>
                 <select
                   className="form-select"
                   value={paymentForm.modeOfPayment}
@@ -401,7 +393,7 @@ const DealDetails = () => {
                 </select>
               </div>
               <div className="form-group">
-                <label className="form-label">Amount (₹)</label>
+                <label className="form-label">Amount (₹) <span style={{ color: '#ef4444' }}>*</span></label>
                 <input
                   type="number"
                   className="form-input"
@@ -517,8 +509,16 @@ const DealDetails = () => {
         )}
       </div>
 
-      {/* Export PDF Button */}
-      <div className="export-btn-container" style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem', marginBottom: '2rem' }}>
+      {/* Action Buttons */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem', marginBottom: '2rem' }}>
+        {isAdmin && (
+          <button
+            onClick={() => setShowPaymentForm(!showPaymentForm)}
+            className="btn btn-secondary"
+          >
+            {showPaymentForm ? 'Cancel' : '+ Add Payment'}
+          </button>
+        )}
         <button onClick={generatePDF} className="btn btn-primary">
           📄 Export PDF
         </button>

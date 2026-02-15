@@ -81,10 +81,6 @@ const Login = () => {
               {loading ? 'Loading...' : 'Login'}
             </button>
           </form>
-
-        <div className="text-center mt-3">
-          <p>Don't have an account? <Link to="/register" style={{ color: 'var(--primary-color)' }}>Register</Link></p>
-        </div>
         </div>
       </div>
     </div>

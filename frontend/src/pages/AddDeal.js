@@ -100,7 +100,7 @@ const AddDeal = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Survey Number <span style={{ color: '#ef4444' }}>*</span></label>
+              <label className="form-label">Survey No. <span style={{ color: '#ef4444' }}>*</span></label>
               <input
                 type="text"
                 className="form-input"
@@ -113,12 +113,12 @@ const AddDeal = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Price per Sq. Yard (₹) <span style={{ color: '#ef4444' }}>*</span></label>
+              <label className="form-label">Unit Price (₹) <span style={{ color: '#ef4444' }}>*</span></label>
               <input
                 type="number"
                 className="form-input"
                 name="pricePerSqYard"
-                placeholder="Enter price per sq. yard"
+                placeholder="Enter unit price"
                 value={formData.pricePerSqYard}
                 onChange={handleChange}
                 min="0"
@@ -128,12 +128,12 @@ const AddDeal = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Total Sq. Yard <span style={{ color: '#ef4444' }}>*</span></label>
+              <label className="form-label">Total Area <span style={{ color: '#ef4444' }}>*</span></label>
               <input
                 type="number"
                 className="form-input"
                 name="totalSqYard"
-                placeholder="Enter total sq. yard"
+                placeholder="Enter total area"
                 value={formData.totalSqYard}
                 onChange={handleChange}
                 min="0"
