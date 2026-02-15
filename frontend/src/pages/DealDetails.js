@@ -97,6 +97,19 @@ const DealDetails = () => {
     });
   };
 
+  const formatDeadlinePeriod = (startDate, endDate) => {
+    if (!startDate || !endDate) {
+      return 'N/A';
+    }
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    // Check if dates are valid (not epoch date 01 Jan 1970)
+    if (start.getFullYear() === 1970 && end.getFullYear() === 1970) {
+      return 'N/A';
+    }
+    return `${formatDate(startDate)} - ${formatDate(endDate)}`;
+  };
+
   const generatePDF = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
@@ -162,7 +175,7 @@ const DealDetails = () => {
       ['Total Sq. Yard:', formatNumber(deal.totalSqYard)],
       ['Total Amount:', formatPDFCurrency(deal.totalAmount)],
       ['Banakhat Amount (25%):', formatPDFCurrency(deal.banakhatAmount || deal.totalAmount * 0.25)],
-      ['Deadline Period:', `${formatDate(deal.deadlineStartDate)} - ${formatDate(deal.deadlineEndDate)}`]
+      ['Deadline Period:', formatDeadlinePeriod(deal.deadlineStartDate, deal.deadlineEndDate)]
     ];
     
     dealInfo.forEach(([label, value]) => {
@@ -308,7 +321,7 @@ const DealDetails = () => {
           </div>
           <div>
             <strong>Deadline Period:</strong>
-            <p>{formatDate(deal.deadlineStartDate)} - {formatDate(deal.deadlineEndDate)}</p>
+            <p>{formatDeadlinePeriod(deal.deadlineStartDate, deal.deadlineEndDate)}</p>
           </div>
         </div>
       </div>

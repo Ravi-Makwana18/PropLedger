@@ -53,7 +53,7 @@ const Login = () => {
 
         <form onSubmit={handleLogin}>
             <div className="form-group">
-              <label className="form-label">Mobile Number</label>
+              <label className="form-label">Mobile Number <span style={{ color: '#ef4444' }}>*</span></label>
               <input
                 type="tel"
                 className="form-input"
@@ -66,7 +66,7 @@ const Login = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Password</label>
+              <label className="form-label">Password <span style={{ color: '#ef4444' }}>*</span></label>
               <input
                 type="password"
                 className="form-input"

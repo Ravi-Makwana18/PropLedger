@@ -31,11 +31,11 @@ const dealSchema = new mongoose.Schema({
   },
   deadlineStartDate: {
     type: Date,
-    required: [true, 'Please provide deadline start date']
+    required: false
   },
   deadlineEndDate: {
     type: Date,
-    required: [true, 'Please provide deadline end date']
+    required: false
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

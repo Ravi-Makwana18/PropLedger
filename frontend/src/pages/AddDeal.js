@@ -87,7 +87,7 @@ const AddDeal = () => {
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
             <div className="form-group">
-              <label className="form-label">Village Name *</label>
+              <label className="form-label">Village Name <span style={{ color: '#ef4444' }}>*</span></label>
               <input
                 type="text"
                 className="form-input"
@@ -100,7 +100,7 @@ const AddDeal = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Survey Number *</label>
+              <label className="form-label">Survey Number <span style={{ color: '#ef4444' }}>*</span></label>
               <input
                 type="text"
                 className="form-input"
@@ -113,7 +113,7 @@ const AddDeal = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Price per Sq. Yard (₹) *</label>
+              <label className="form-label">Price per Sq. Yard (₹) <span style={{ color: '#ef4444' }}>*</span></label>
               <input
                 type="number"
                 className="form-input"
@@ -128,7 +128,7 @@ const AddDeal = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Total Sq. Yard *</label>
+              <label className="form-label">Total Sq. Yard <span style={{ color: '#ef4444' }}>*</span></label>
               <input
                 type="number"
                 className="form-input"
@@ -143,26 +143,24 @@ const AddDeal = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Deadline Start Date *</label>
+              <label className="form-label">Deadline Start Date</label>
               <input
                 type="date"
                 className="form-input"
                 name="deadlineStartDate"
                 value={formData.deadlineStartDate}
                 onChange={handleChange}
-                required
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label">Deadline End Date *</label>
+              <label className="form-label">Deadline End Date</label>
               <input
                 type="date"
                 className="form-input"
                 name="deadlineEndDate"
                 value={formData.deadlineEndDate}
                 onChange={handleChange}
-                required
               />
             </div>
           </div>
