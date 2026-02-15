@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
+import bgLogo from '../assets/logo.png';
 
 const AddDeal = () => {
   const navigate = useNavigate();
@@ -59,12 +60,26 @@ const AddDeal = () => {
   const banakhatAmount = totalAmount * 0.25;
 
   return (
-    <div className="container" style={{ maxWidth: '800px', marginTop: '2rem' }}>
-      <button onClick={() => navigate(-1)} className="btn btn-outline mb-3">
-        ← Back
-      </button>
+    <div style={{
+      minHeight: 'calc(100vh - 60px)',
+      backgroundImage: `url(${bgLogo})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundColor: '#f0f9ff',
+      backgroundBlendMode: 'lighten',
+      padding: '2rem 1rem'
+    }}>
+      <div className="container" style={{ maxWidth: '800px' }}>
+        <button onClick={() => navigate(-1)} className="btn btn-outline mb-3">
+          ← Back
+        </button>
 
-      <div className="card">
+        <div className="card" style={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+        }}>
         <h2 className="card-header">Add New Deal</h2>
 
         {error && <div className="alert alert-error">{error}</div>}
@@ -186,6 +201,7 @@ const AddDeal = () => {
             </button>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );

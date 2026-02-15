@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import bgLogo from '../assets/logo.png';
 
 const Dashboard = () => {
   const { isAdmin } = useAuth();
@@ -74,16 +75,42 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="container" style={{ marginTop: '3rem' }}>
-        <div className="flex-center">
-          <div className="spinner"></div>
+      <div style={{
+        minHeight: 'calc(100vh - 60px)',
+        backgroundImage: `url(${bgLogo})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#f0f9ff',
+        backgroundBlendMode: 'lighten',
+        padding: '3rem 1rem'
+      }}>
+        <div className="container">
+          <div className="flex-center" style={{ flexDirection: 'column', gap: '1rem' }}>
+            <div className="spinner"></div>
+            <p style={{ color: 'var(--text-secondary)', textAlign: 'center', backgroundColor: 'rgba(255, 255, 255, 0.9)', padding: '1rem', borderRadius: '0.5rem' }}>
+              Loading your deals...
+              <br />
+              <small style={{ fontSize: '0.875rem' }}>First load may take 30-60 seconds as server wakes up</small>
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container" style={{ marginTop: '2rem' }}>
+    <div style={{
+      minHeight: 'calc(100vh - 60px)',
+      backgroundImage: `url(${bgLogo})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundColor: '#f0f9ff',
+      backgroundBlendMode: 'lighten',
+      padding: '2rem 1rem'
+    }}>
+      <div className="container">
       <div className="flex-between mb-3">
         <h1 style={{ marginBottom: 0 }}>Dashboard</h1>
         {isAdmin && (
@@ -95,7 +122,11 @@ const Dashboard = () => {
 
       {error && <div className="alert alert-error">{error}</div>}
 
-      <div className="card">
+      <div className="card" style={{ 
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+      }}>
         <div className="flex-between mb-3">
           <h2 className="card-header" style={{ marginBottom: 0, border: 'none', padding: 0 }}>
             All Deals
@@ -193,6 +224,7 @@ const Dashboard = () => {
             </table>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

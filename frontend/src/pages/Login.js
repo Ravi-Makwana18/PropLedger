@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import bgLogo from '../assets/logo.png';
 
 const Login = () => {
   const [mobileNumber, setMobileNumber] = useState('');
@@ -27,8 +28,25 @@ const Login = () => {
   };
 
   return (
-    <div className="container" style={{ maxWidth: '500px', marginTop: '3rem' }}>
-      <div className="card">
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundImage: `url(${bgLogo})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundColor: '#f0f9ff',
+      backgroundBlendMode: 'lighten',
+      padding: '2rem 1rem'
+    }}>
+      <div className="container" style={{ maxWidth: '500px' }}>
+        <div className="card" style={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+        }}>
         <h2 className="card-header text-center">Login</h2>
         
         {error && <div className="alert alert-error">{error}</div>}
@@ -66,6 +84,7 @@ const Login = () => {
 
         <div className="text-center mt-3">
           <p>Don't have an account? <Link to="/register" style={{ color: 'var(--primary-color)' }}>Register</Link></p>
+        </div>
         </div>
       </div>
     </div>
