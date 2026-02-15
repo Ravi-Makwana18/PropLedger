@@ -42,6 +42,20 @@ const Dashboard = () => {
     }
   };
 
+  const handleDelete = async (dealId, villageName) => {
+    if (!window.confirm(`Are you sure you want to delete the deal for ${villageName}? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      await API.delete(`/deals/${dealId}`);
+      setDeals(deals.filter(deal => deal._id !== dealId));
+      alert('Deal deleted successfully');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete deal');
+    }
+  };
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -132,9 +146,46 @@ const Dashboard = () => {
                     <td>{formatCurrency(deal.totalAmount)}</td>
                     <td>{deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : formatDate(deal.paymentDeadlineMonth)}</td>
                     <td>
-                      <Link to={`/deals/${deal._id}`} className="btn btn-sm btn-primary">
-                        View Details
-                      </Link>
+                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        <Link to={`/deals/${deal._id}`} className="btn btn-sm btn-primary">
+                          View Details
+                        </Link>
+                        {isAdmin && (
+                          <button
+                            onClick={() => handleDelete(deal._id, deal.villageName)}
+                            className="btn btn-sm"
+                            style={{
+                              background: '#ef4444',
+                              color: 'white',
+                              padding: '0.5rem',
+                              border: 'none',
+                              cursor: 'pointer',
+                              borderRadius: '0.375rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}
+                            title="Delete Deal"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                              <line x1="10" y1="11" x2="10" y2="17"></line>
+                              <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
