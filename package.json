@@ -7,7 +7,9 @@
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
     "client": "npm start --prefix frontend",
-    "dev:all": "concurrently \"npm run dev\" \"npm run client\""
+    "dev:all": "concurrently \"npm run dev\" \"npm run client\"",
+    "build": "cd frontend && npm install && npm run build",
+    "vercel-build": "cd frontend && npm install && npm run build"
   },
   "keywords": [
     "land",
