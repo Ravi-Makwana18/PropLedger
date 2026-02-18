@@ -21,6 +21,14 @@ const DealDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [editingPaymentId, setEditingPaymentId] = useState(null);
+  const [editPaymentForm, setEditPaymentForm] = useState({
+    date: '',
+    modeOfPayment: '',
+    amount: '',
+    remarks: ''
+  });
+  const [draggedIndex, setDraggedIndex] = useState(null);
 
   useEffect(() => {
     fetchDealDetails();
@@ -79,6 +87,82 @@ const DealDetails = () => {
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete payment');
     }
+  };
+
+  const handleEditPayment = (payment) => {
+    setEditingPaymentId(payment._id);
+    setEditPaymentForm({
+      date: new Date(payment.date).toISOString().split('T')[0],
+      modeOfPayment: payment.modeOfPayment,
+      amount: payment.amount,
+      remarks: payment.remarks || ''
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPaymentId(null);
+    setEditPaymentForm({
+      date: '',
+      modeOfPayment: '',
+      amount: '',
+      remarks: ''
+    });
+  };
+
+  const handleEditFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditPaymentForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSaveEdit = async (paymentId) => {
+    setError('');
+    setSuccess('');
+
+    try {
+      await API.put(`/payments/${paymentId}`, {
+        ...editPaymentForm,
+        amount: parseFloat(editPaymentForm.amount)
+      });
+      setSuccess('Payment updated successfully');
+      setEditingPaymentId(null);
+      setEditPaymentForm({
+        date: '',
+        modeOfPayment: '',
+        amount: '',
+        remarks: ''
+      });
+      fetchDealDetails();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update payment');
+    }
+  };
+
+  const handleDragStart = (e, index) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e, dropIndex) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === dropIndex) return;
+
+    const updatedPayments = [...dealData.payments];
+    const [draggedItem] = updatedPayments.splice(draggedIndex, 1);
+    updatedPayments.splice(dropIndex, 0, draggedItem);
+
+    setDealData({
+      ...dealData,
+      payments: updatedPayments
+    });
+    setDraggedIndex(null);
   };
 
   const formatCurrency = (amount) => {
@@ -441,59 +525,194 @@ const DealDetails = () => {
                 </tr>
               </thead>
               <tbody>
-                {payments.map((payment) => (
-                  <tr key={payment._id}>
-                    <td>{formatDate(payment.date)}</td>
-                    <td>
-                      <span style={{
-                        padding: '0.25rem 0.75rem',
-                        borderRadius: '0.25rem',
-                        background: 'var(--primary-color)',
-                        color: 'white',
-                        fontSize: '0.875rem',
-                        fontWeight: '500'
-                      }}>
-                        {payment.modeOfPayment}
-                      </span>
-                    </td>
-                    <td style={{ fontWeight: 'bold' }}>{formatCurrency(payment.amount)}</td>
-                    <td>{payment.remarks || '-'}</td>
-                    {isAdmin && (
-                      <td>
-                        <button
-                          onClick={() => handleDeletePayment(payment._id, payment.date)}
-                          className="btn btn-sm"
-                          style={{
-                            background: '#ef4444',
-                            color: 'white',
-                            padding: '0.5rem',
-                            border: 'none',
-                            cursor: 'pointer',
-                            borderRadius: '0.375rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}
-                          title="Delete Payment"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
+                {payments.map((payment, index) => (
+                  <tr 
+                    key={payment._id}
+                    draggable={isAdmin && editingPaymentId !== payment._id}
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, index)}
+                    style={{
+                      cursor: isAdmin && editingPaymentId !== payment._id ? 'move' : 'default',
+                      opacity: draggedIndex === index ? 0.5 : 1
+                    }}
+                  >
+                    {editingPaymentId === payment._id ? (
+                      <>
+                        <td>
+                          <input
+                            type="date"
+                            name="date"
+                            value={editPaymentForm.date}
+                            onChange={handleEditFormChange}
+                            className="form-input"
+                            style={{ width: '100%', padding: '0.375rem 0.5rem', fontSize: '0.875rem' }}
+                          />
+                        </td>
+                        <td>
+                          <select
+                            name="modeOfPayment"
+                            value={editPaymentForm.modeOfPayment}
+                            onChange={handleEditFormChange}
+                            className="form-select"
+                            style={{ width: '100%', padding: '0.375rem 0.5rem', fontSize: '0.875rem' }}
                           >
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            <line x1="10" y1="11" x2="10" y2="17"></line>
-                            <line x1="14" y1="11" x2="14" y2="17"></line>
-                          </svg>
-                        </button>
-                      </td>
+                            <option value="NEFT">NEFT</option>
+                            <option value="RTGS">RTGS</option>
+                            <option value="CASH">CASH</option>
+                            <option value="CHEQUE">CHEQUE</option>
+                            <option value="UPI">UPI</option>
+                            <option value="NA">NA</option>
+                            <option value="OTHER">OTHER</option>
+                          </select>
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            name="amount"
+                            value={editPaymentForm.amount}
+                            onChange={handleEditFormChange}
+                            className="form-input"
+                            style={{ width: '100%', padding: '0.375rem 0.5rem', fontSize: '0.875rem' }}
+                            min="0"
+                            step="0.01"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            name="remarks"
+                            value={editPaymentForm.remarks}
+                            onChange={handleEditFormChange}
+                            className="form-input"
+                            style={{ width: '100%', padding: '0.375rem 0.5rem', fontSize: '0.875rem' }}
+                          />
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                            <button
+                              onClick={() => handleSaveEdit(payment._id)}
+                              className="btn btn-sm"
+                              style={{
+                                background: '#10b981',
+                                color: 'white',
+                                padding: '0.5rem 0.75rem',
+                                border: 'none',
+                                cursor: 'pointer',
+                                borderRadius: '0.375rem',
+                                fontSize: '0.875rem'
+                              }}
+                              title="Save"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={handleCancelEdit}
+                              className="btn btn-sm"
+                              style={{
+                                background: '#6b7280',
+                                color: 'white',
+                                padding: '0.5rem 0.75rem',
+                                border: 'none',
+                                cursor: 'pointer',
+                                borderRadius: '0.375rem',
+                                fontSize: '0.875rem'
+                              }}
+                              title="Cancel"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td>{formatDate(payment.date)}</td>
+                        <td>
+                          <span style={{
+                            padding: '0.25rem 0.75rem',
+                            borderRadius: '0.25rem',
+                            background: 'var(--primary-color)',
+                            color: 'white',
+                            fontSize: '0.875rem',
+                            fontWeight: '500'
+                          }}>
+                            {payment.modeOfPayment}
+                          </span>
+                        </td>
+                        <td style={{ fontWeight: 'bold' }}>{formatCurrency(payment.amount)}</td>
+                        <td>{payment.remarks || '-'}</td>
+                        {isAdmin && (
+                          <td>
+                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                              <button
+                                onClick={() => handleEditPayment(payment)}
+                                className="btn btn-sm"
+                                style={{
+                                  background: '#3b82f6',
+                                  color: 'white',
+                                  padding: '0.5rem',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  borderRadius: '0.375rem',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}
+                                title="Edit Payment"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => handleDeletePayment(payment._id, payment.date)}
+                                className="btn btn-sm"
+                                style={{
+                                  background: '#ef4444',
+                                  color: 'white',
+                                  padding: '0.5rem',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  borderRadius: '0.375rem',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}
+                                title="Delete Payment"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <polyline points="3 6 5 6 21 6"></polyline>
+                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                        )}
+                      </>
                     )}
                   </tr>
                 ))}
