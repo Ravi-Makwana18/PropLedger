@@ -111,7 +111,6 @@ const Dashboard = () => {
         villageName: '',
         surveyNumber: '',
         pricePerSqYard: '',
-        pricePerSqYard: '',
         totalSqYard: '',
         totalAmount: '',
         paymentDeadlineMonth: ''
