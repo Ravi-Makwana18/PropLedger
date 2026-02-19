@@ -14,6 +14,7 @@ const Dashboard = () => {
   const [editFormData, setEditFormData] = useState({
     villageName: '',
     surveyNumber: '',
+    pricePerSqYard: '',
     totalSqYard: '',
     totalAmount: '',
     paymentDeadlineMonth: ''
@@ -70,6 +71,7 @@ const Dashboard = () => {
     setEditFormData({
       villageName: deal.villageName,
       surveyNumber: deal.surveyNumber,
+      pricePerSqYard: deal.pricePerSqYard,
       totalSqYard: deal.totalSqYard,
       totalAmount: deal.totalAmount,
       paymentDeadlineMonth: deal.deadlineEndDate || deal.paymentDeadlineMonth
@@ -89,10 +91,15 @@ const Dashboard = () => {
 
   const handleEditFormChange = (e) => {
     const { name, value } = e.target;
-    setEditFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setEditFormData(prev => {
+      const updated = { ...prev, [name]: value };
+      if (name === 'pricePerSqYard' || name === 'totalSqYard') {
+        const price = parseFloat(name === 'pricePerSqYard' ? value : prev.pricePerSqYard) || 0;
+        const area = parseFloat(name === 'totalSqYard' ? value : prev.totalSqYard) || 0;
+        updated.totalAmount = price * area;
+      }
+      return updated;
+    });
   };
 
   const handleSaveEdit = async (dealId) => {
@@ -103,6 +110,8 @@ const Dashboard = () => {
       setEditFormData({
         villageName: '',
         surveyNumber: '',
+        pricePerSqYard: '',
+        pricePerSqYard: '',
         totalSqYard: '',
         totalAmount: '',
         paymentDeadlineMonth: ''
@@ -209,6 +218,7 @@ const Dashboard = () => {
                 <tr>
                   <th>Village Name</th>
                   <th>Survey No.</th>
+                  <th>Unit Price</th>
                   <th>Total Area</th>
                   <th>Total Amount</th>
                   <th>Payment Deadline</th>
@@ -235,6 +245,16 @@ const Dashboard = () => {
                             type="text"
                             name="surveyNumber"
                             value={editFormData.surveyNumber}
+                            onChange={handleEditFormChange}
+                            className="form-input"
+                            style={{ width: '100%', padding: '0.375rem 0.5rem', fontSize: '0.875rem' }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            name="pricePerSqYard"
+                            value={editFormData.pricePerSqYard}
                             onChange={handleEditFormChange}
                             className="form-input"
                             style={{ width: '100%', padding: '0.375rem 0.5rem', fontSize: '0.875rem' }}
@@ -311,6 +331,7 @@ const Dashboard = () => {
                       <>
                         <td>{deal.villageName}</td>
                         <td>{deal.surveyNumber}</td>
+                        <td>{deal.pricePerSqYard ? formatCurrency(deal.pricePerSqYard) : 'N/A'}</td>
                         <td>{deal.totalSqYard.toLocaleString('en-IN')}</td>
                         <td>{formatCurrency(deal.totalAmount)}</td>
                         <td>{deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : formatDate(deal.paymentDeadlineMonth)}</td>
