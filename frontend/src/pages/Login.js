@@ -47,13 +47,13 @@ const Login = () => {
           backdropFilter: 'blur(10px)',
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
         }}>
-        <h2 className="card-header text-center">Login</h2>
+        <h2 className="card-header text-center">Admin Portal</h2>
         
         {error && <div className="alert alert-error">{error}</div>}
 
         <form onSubmit={handleLogin}>
             <div className="form-group">
-              <label className="form-label">Mobile Number <span style={{ color: '#ef4444' }}>*</span></label>
+              <label className="form-label">Mobile No. <span style={{ color: '#ef4444' }}>*</span></label>
               <input
                 type="tel"
                 className="form-input"
@@ -81,6 +81,16 @@ const Login = () => {
               {loading ? 'Loading...' : 'Login'}
             </button>
           </form>
+
+          <p style={{
+            textAlign: 'center',
+            marginTop: '1rem',
+            fontSize: '0.75rem',
+            color: '#6b7280',
+            letterSpacing: '0.02em'
+          }}>
+            This portal is restricted to authorized administrators only.
+          </p>
         </div>
       </div>
     </div>
