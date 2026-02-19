@@ -1137,3 +1137,388 @@ code {
     height: 12px;
   }
 }
+
+/* ============================================================
+   DASHBOARD – responsive deals layout
+   ============================================================ */
+
+/* Card wrapper */
+.dashboard-card {
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -5px rgba(0,0,0,0.04);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Header */
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.dashboard-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  width: 100%;
+  text-align: left;
+  letter-spacing: 0.01em;
+}
+
+/* Search row */
+.dashboard-search {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Integrated search field */
+.search-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  background: #f9fafb;
+  border: 1.5px solid var(--border-color);
+  border-radius: 0.625rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-field:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  background: #fff;
+}
+
+.search-field-icon {
+  position: absolute;
+  left: 0.875rem;
+  color: var(--text-secondary);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.search-field-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 2.75rem 0 2.625rem;
+  font-size: 0.9375rem;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.search-field-input::placeholder {
+  color: #a1a1aa;
+}
+
+.search-field-clear {
+  position: absolute;
+  right: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: #e4e7ec;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  padding: 0;
+}
+
+.search-field-clear:hover {
+  background: #d1d5db;
+  color: #374151;
+}
+
+/* Search submit button */
+.search-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 46px;
+  padding: 0 1.25rem;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 0.625rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  transition: box-shadow 0.2s ease, transform 0.15s ease, background 0.2s ease;
+}
+
+.search-submit-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+  transform: translateY(-1px);
+}
+
+.search-submit-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.3);
+}
+
+/* ── Desktop / Tablet Table ──────────────────────────── */
+.deals-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-color);
+}
+
+.deals-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  min-width: 720px;
+}
+
+.deals-table thead tr {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.deals-table th {
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.03em;
+  padding: 0.875rem 1rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.deals-table td {
+  padding: 0.8125rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+  color: var(--text-primary);
+}
+
+.deals-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.deals-table tbody tr:hover {
+  background-color: #f8faff;
+}
+
+/* Number / currency cells – never wrap */
+.td-num {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.deals-table th:nth-child(2),
+.deals-table th:nth-child(3),
+.deals-table th:nth-child(4),
+.deals-table th:nth-child(5),
+.deals-table th:nth-child(6) {
+  text-align: right;
+}
+
+.td-name {
+  font-weight: 500;
+  min-width: 130px;
+}
+
+.td-amount {
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+/* Inline edit inputs */
+.edit-input {
+  width: 100%;
+  min-width: 90px;
+  padding: 0.375rem 0.5rem !important;
+  font-size: 0.875rem !important;
+  height: 36px;
+}
+
+.edit-input--readonly {
+  background: #f3f4f6;
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  border-color: var(--border-color) !important;
+}
+
+/* Action buttons */
+.action-group {
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  height: 34px;
+  padding: 0 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.action-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.action-btn:active { transform: translateY(0); }
+
+.action-btn--view   { background: #2563eb; color: white; }
+.action-btn--save   { background: #10b981; color: white; }
+.action-btn--cancel { background: #6b7280; color: white; }
+.action-btn--edit   { background: #3b82f6; color: white; width: 34px; padding: 0; }
+.action-btn--delete { background: #ef4444; color: white; width: 34px; padding: 0; }
+
+/* ── Mobile Card View ────────────────────────────────── */
+.deals-cards {
+  display: none; /* shown only on mobile via media query */
+}
+
+.deal-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 0.875rem;
+  padding: 1rem 1.125rem;
+  margin-bottom: 0.875rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.deal-card-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.625rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.deal-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem 1rem;
+  margin-bottom: 0.875rem;
+}
+
+.deal-card-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.deal-card-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.deal-card-value {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.deal-card-amount {
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+.deal-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.deal-card-actions .action-btn--view {
+  flex: 1;
+  justify-content: center;
+}
+
+/* Edit mode card */
+.deal-card--editing {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1), 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.deal-card-edit-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── Responsive breakpoints ──────────────────────────── */
+@media (max-width: 767px) {
+  .deals-table-wrap { display: none; }
+  .deals-cards      { display: block; }
+
+  .dashboard-card {
+    padding: 1rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.2rem;
+  }
+
+  .dashboard-search {
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+
+  .search-submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .deals-table {
+    font-size: 0.875rem;
+  }
+
+  .deals-table th,
+  .deals-table td {
+    padding: 0.6875rem 0.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-card {
+    padding: 2rem;
+  }
+
+  .dashboard-search {
+    flex-wrap: nowrap;
+  }
+}
+
