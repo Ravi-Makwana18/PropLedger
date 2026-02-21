@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS middleware - Allow production domains
 app.use(cors({
-  origin: "https://destination-dholera.vercel.app", // <-- Replace with your actual Vercel frontend URL if different
+  origin: "https://destination-dholera.vercel.app", // <-- No trailing slash for proper CORS
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
