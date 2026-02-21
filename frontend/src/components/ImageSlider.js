@@ -43,8 +43,7 @@ const ImageSlider = () => {
     if (!isPaused) {
       const interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);
-      }, 4000); // Change slide every 4 seconds
-
+      }, 3000); // Change slide every 3 seconds
       return () => clearInterval(interval);
     }
   }, [isPaused, slides.length]);
@@ -62,79 +61,81 @@ const ImageSlider = () => {
   };
 
   return (
-    <div className="image-slider-container">
+    <section className="hero-slider-section">
       <div 
         className="image-slider"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
+        {/* Slides Container with overlay */}
+        <div className="slider-wrapper">
+          {slides.map((slide, index) => (
+            <div
+              key={index}
+              className={`slider-slide ${index === currentSlide ? 'active' : ''}`}
+              style={{
+                backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.25)), url(${slide.url})`,
+              }}
+            />
+          ))}
+        </div>
+        {/* Overlayed hero content */}
+        <div className="hero-slider-overlay">
+          <h1 className="hero-slider-title">Welcome to Destination Dholera</h1>
+          <div className="hero-slider-subtitle">Land, Plots, N.A. File Processing & Property Solutions</div>
+        </div>
         {/* Navigation Arrows */}
-      <button 
-        className="slider-arrow slider-arrow-left" 
-        onClick={goToPrevious}
-        aria-label="Previous slide"
-      >
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          width="24" 
-          height="24" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="3" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
+        <button 
+          className="slider-arrow slider-arrow-left" 
+          onClick={goToPrevious}
+          aria-label="Previous slide"
         >
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
-
-      <button 
-        className="slider-arrow slider-arrow-right" 
-        onClick={goToNext}
-        aria-label="Next slide"
-      >
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          width="24" 
-          height="24" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="3" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="3" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button 
+          className="slider-arrow slider-arrow-right" 
+          onClick={goToNext}
+          aria-label="Next slide"
         >
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </button>
-
-      {/* Slides Container */}
-      <div className="slider-wrapper">
-        {slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`slider-slide ${index === currentSlide ? 'active' : ''}`}
-            style={{
-              backgroundImage: `url(${slide.url})`,
-            }}
-          />
-        ))}
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="3" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+        {/* Dots Navigation */}
+        <div className="slider-dots">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              className={`slider-dot ${index === currentSlide ? 'active' : ''}`}
+              onClick={() => goToSlide(index)}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
       </div>
-
-      {/* Dots Navigation */}
-      <div className="slider-dots">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            className={`slider-dot ${index === currentSlide ? 'active' : ''}`}
-            onClick={() => goToSlide(index)}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
-      </div>
-    </div>
+    </section>
   );
 };
 

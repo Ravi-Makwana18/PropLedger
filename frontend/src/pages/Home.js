@@ -5,14 +5,16 @@ import logo from '../assets/logo.png';
 const Home = () => {
   return (
     <div>
-      {/* Welcome Section */}
+      {/* Image Slider Section (now at top) */}
+      <ImageSlider />
+      {/* Welcome Section (now below slider) */}
       <div className="hero-section" style={{
-        minHeight: '500px',
+        minHeight: '520px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        padding: '4rem 1rem',
+        padding: '0 1rem 3rem 1rem',
         backgroundColor: '#f8f9fa',
         overflow: 'hidden'
       }}>
@@ -41,33 +43,28 @@ const Home = () => {
             }}
           />
         </div>
-        
         {/* Content */}
-        <div className="container" style={{ maxWidth: '800px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
-          <h1 style={{
-            fontSize: '3rem',
-            fontWeight: '700',
-            color: '#1f2937',
-            marginBottom: '1.5rem',
-            fontFamily: '"Bricolage Grotesque", sans-serif',
-            textShadow: '0 2px 4px rgba(0,0,0,0.05)'
-          }}>
-            Welcome to Destination Dholera
-          </h1>
+        <div className="container" style={{ maxWidth: '820px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+          
+          <hr style={{
+            border: 'none',
+            borderTop: '1.5px solid #e5e7eb',
+            margin: '1.2rem auto 1.2rem auto',
+            width: '60%'
+          }} />
           <p style={{
-            fontSize: '1.25rem',
-            color: '#4b5563',
+            fontSize: '1.22rem',
+            color: '#374151',
             marginBottom: '0',
-            lineHeight: '1.6',
-            fontWeight: '500'
+            lineHeight: '1.7',
+            fontWeight: '500',
+            fontFamily: 'Inter, sans-serif'
           }}>
-            Your trusted partner in real estate investments and property management.
+            Your trusted partner for land buying, selling, N.A. file processing, and complete property solutions in Dholera SIR.<br />
+            We deliver transparent guidance, verified properties, legal expertise, and secure investment opportunities.
           </p>
         </div>
       </div>
-
-      {/* Image Slider Section */}
-      <ImageSlider />
     </div>
   );
 };

@@ -24,7 +24,7 @@ const Navbar = () => {
     <nav className="navbar" style={{ position: 'relative' }}>
       <div className="navbar-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Link to={user ? "/dashboard" : "/"} className="navbar-brand" style={{ fontSize: '1.75rem', fontWeight: '700', fontFamily: '"Bricolage Grotesque", sans-serif', color: 'white' }}>
+          <Link to={user ? "" : "/"} className="navbar-brand" style={{ fontSize: '1.75rem', fontWeight: '700', fontFamily: '"Bricolage Grotesque", sans-serif', color: 'white' }}>
             Destination Dholera
           </Link>
         </div>

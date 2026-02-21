@@ -18,7 +18,7 @@ const Footer = () => {
           
           {/* Social Media Icons */}
           <div className="footer-social" style={{ marginTop: '2rem' }}>
-            <div style={{ fontWeight: 700, fontSize: '1.15rem', marginBottom: '0.5rem' }}>Follow us on</div>
+            <div style={{ fontWeight: 700, fontSize: '1.15rem', marginBottom: '0.5rem'}}>Follow us on</div>
             <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'flex-start', alignItems: 'center' }}>
               <a href="https://www.instagram.com/destination_dholera_3614?igsh=bGc0cmM5a3V1ODR3" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram" style={{ fontSize: 32, color: '#bdbdbd' }}>
                 <FaInstagram />
@@ -35,7 +35,7 @@ const Footer = () => {
 
         {/* Contact Info Section */}
         <div className="footer-section">
-          <h3 className="footer-heading">Contact Us</h3>
+          <h3 className="footer-heading" style={{ fontWeight: 700, fontSize: '1.15rem', marginBottom: '0.5rem' }}>Contact Us</h3>
           <ul className="footer-contact">
             <li className="footer-contact-item">
               <svg 
