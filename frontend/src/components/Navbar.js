@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { FaBars, FaHome, FaTimes } from 'react-icons/fa';
+import { FaBars, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import '../nav-btn.css';
 
@@ -14,13 +14,7 @@ const Navbar = () => {
   // .nav-btn, .nav-btn--logout, .nav-btn--primary in CSS
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 900;
 
-  // Helper for hover effect
-  const handleMouseEnter = (e, color) => {
-    e.currentTarget.style.backgroundColor = color;
-  };
-  const handleMouseLeave = (e, color) => {
-    e.currentTarget.style.backgroundColor = color;
-  };
+  //
   const handleLogout = () => {
     logout();
     setMenuOpen(false);

@@ -17,16 +17,19 @@ const Footer = () => {
           </p>
           
           {/* Social Media Icons */}
-          <div className="footer-social">
-            <a href="https://www.instagram.com/destination_dholera_3614?igsh=bGc0cmM5a3V1ODR3" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram">
-              <FaInstagram />
-            </a>
-            <a href="https://wa.me/919714772250" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="WhatsApp">
-              <FaWhatsapp />
-            </a>
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook">
-              <FaFacebookF />
-            </a>
+          <div className="footer-social" style={{ marginTop: '2rem' }}>
+            <div style={{ fontWeight: 700, fontSize: '1.15rem', marginBottom: '0.5rem' }}>Follow us on</div>
+            <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'flex-start', alignItems: 'center' }}>
+              <a href="https://www.instagram.com/destination_dholera_3614?igsh=bGc0cmM5a3V1ODR3" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram" style={{ fontSize: 32, color: '#bdbdbd' }}>
+                <FaInstagram />
+              </a>
+              <a href="https://wa.me/919714772250" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="WhatsApp" style={{ fontSize: 32, color: '#bdbdbd' }}>
+                <FaWhatsapp />
+              </a>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook" style={{ fontSize: 32, color: '#bdbdbd' }}>
+                <FaFacebookF />
+              </a>
+            </div>
           </div>
         </div>
 
