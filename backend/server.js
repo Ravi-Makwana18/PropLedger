@@ -21,7 +21,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS middleware - Allow production domains
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? 'https://destination-dholera.vercel.app' : 'http://localhost:3000',
+  origin: (req, callback) => {
+    if (process.env.NODE_ENV === 'production') {
+      callback(null, 'https://destination-dholera.vercel.app');
+    } else {
+      callback(null, 'http://localhost:3000');
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
