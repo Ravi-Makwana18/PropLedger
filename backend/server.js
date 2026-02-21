@@ -20,37 +20,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // CORS middleware - Allow production domains
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:5001',
-  process.env.FRONTEND_URL || 'http://localhost:3000'
-];
-
-// Add your production domain when you deploy
-if (process.env.NODE_ENV === 'production') {
-  // Automatically allow your Vercel deployment
-  allowedOrigins.push('https://destination-dholera.vercel.app');
-  // Add custom domains if you have them
-  allowedOrigins.push('https://destinationdholera.com');
-  allowedOrigins.push('https://www.destinationdholera.com');
-}
-
 app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.log('Blocked origin:', origin);
-      callback(null, true); // For now, allow all. Change to false in production if needed.
-    }
-  },
+  origin: process.env.NODE_ENV === 'production' ? 'https://destination-dholera.vercel.app' : 'http://localhost:3000',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Debugging: log incoming cookies for API requests
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    console.log('Incoming cookies:', req.cookies);
+  }
+  next();
+});
 
 // Routes
 // Disable cache for auth endpoints

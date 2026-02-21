@@ -64,8 +64,8 @@ const register = async (req, res) => {
     // Set secure cookie
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: true,
+      sameSite: 'None',
       maxAge: 60 * 60 * 1000 // 1 hour
     });
     res.status(201).json({

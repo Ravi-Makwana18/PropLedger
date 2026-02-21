@@ -25,14 +25,6 @@ const API = axios.create({
   }
 });
 
-// Add token to requests
-API.interceptors.request.use((config) => {
-  const userInfo = localStorage.getItem('userInfo');
-  if (userInfo) {
-    const { token } = JSON.parse(userInfo);
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// No Authorization header needed; rely on secure cookie for authentication
 
 export default API;
