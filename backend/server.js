@@ -23,7 +23,10 @@ app.use(express.urlencoded({ extended: true }));
 // backend/server.js (place BEFORE any routes)
 
 app.use(cors({
-  origin: "https://destination-dholera.vercel.app",
+  origin: [
+    "https://destination-dholera.vercel.app",
+    "http://localhost:3000"
+  ],
   credentials: true
 }));
 
@@ -69,6 +72,8 @@ app.get('/', (req, res) => {
   });
 });
 
+// Trust proxy for correct cookie handling behind Vercel/Render proxies
+app.set("trust proxy", 1);
 // Error handler
 app.use(errorHandler);
 
