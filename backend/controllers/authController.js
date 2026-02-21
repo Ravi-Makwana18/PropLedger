@@ -1,3 +1,41 @@
+// @desc    Logout user
+// @route   POST /api/auth/logout
+// @access  Private
+const logout = async (req, res) => {
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+    res.status(200).json({ message: 'Logged out successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+// @desc    Verify JWT token
+// @route   GET /api/auth/verify
+// @access  Private
+const verifyToken = async (req, res) => {
+  try {
+    // req.user is set by auth middleware if token is valid
+    if (!req.user) {
+      return res.status(401).json({ message: 'Invalid or expired token' });
+    }
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+    res.json({
+      _id: user._id,
+      name: user.name,
+      mobileNumber: user.mobileNumber,
+      role: user.role
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 const { sendOTP } = require('../utils/smsService');
@@ -8,14 +46,11 @@ const { sendOTP } = require('../utils/smsService');
 const register = async (req, res) => {
   try {
     const { mobileNumber, password, name } = req.body;
-
     // Check if user exists
     const userExists = await User.findOne({ mobileNumber });
-
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
-
     // Create user
     const user = await User.create({
       mobileNumber,
@@ -24,16 +59,24 @@ const register = async (req, res) => {
       role: 'user',
       isVerified: true
     });
-
+    // Generate JWT
+    const token = generateToken(user._id);
+    // Set secure cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000 // 1 hour
+    });
     res.status(201).json({
       _id: user._id,
       name: user.name,
       mobileNumber: user.mobileNumber,
-      role: user.role,
-      token: generateToken(user._id)
+      role: user.role
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Register error:', error);
+    res.status(500).json({ message: error.message, stack: error.stack });
   }
 };
 
@@ -43,30 +86,34 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { mobileNumber, password } = req.body;
-
     // Check for user
     const user = await User.findOne({ mobileNumber }).select('+password');
-
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
     // Check password
     const isMatch = await user.matchPassword(password);
-
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
+    // Generate JWT
+    const token = generateToken(user._id);
+    // Set secure cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000 // 1 hour
+    });
     res.json({
       _id: user._id,
       name: user.name,
       mobileNumber: user.mobileNumber,
-      role: user.role,
-      token: generateToken(user._id)
+      role: user.role
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Login error:', error);
+    res.status(500).json({ message: error.message, stack: error.stack });
   }
 };
 
@@ -122,12 +169,20 @@ const verifyOTP = async (req, res) => {
     user.otpExpiry = undefined;
     await user.save();
 
+    // Generate JWT
+    const token = generateToken(user._id);
+    // Set secure cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000 // 1 hour
+    });
     res.json({
       _id: user._id,
       name: user.name,
       mobileNumber: user.mobileNumber,
-      role: user.role,
-      token: generateToken(user._id)
+      role: user.role
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -151,5 +206,7 @@ module.exports = {
   login,
   sendOTPController,
   verifyOTP,
-  getProfile
+  getProfile,
+  verifyToken,
+  logout
 };

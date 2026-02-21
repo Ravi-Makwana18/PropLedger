@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
@@ -12,6 +13,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 connectDB();
 
 const app = express();
+app.use(cookieParser());
 
 // Body parser middleware
 app.use(express.json());
@@ -51,7 +53,11 @@ app.use(cors({
 }));
 
 // Routes
-app.use('/api/auth', require('./routes/authRoutes'));
+// Disable cache for auth endpoints
+app.use('/api/auth', (req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+}, require('./routes/authRoutes'));
 app.use('/api/deals', require('./routes/dealRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
 app.use('/api/enquiry', require('./routes/enquiryRoutes'));

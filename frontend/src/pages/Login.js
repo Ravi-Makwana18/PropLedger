@@ -58,8 +58,10 @@ const Login = () => {
 
         <form onSubmit={handleLogin}>
             <div className="form-group">
-              <label className="form-label">Mobile No. <span style={{ color: '#ef4444' }}>*</span></label>
+              <label className="form-label" htmlFor="mobileNumber">Mobile No. <span style={{ color: '#ef4444' }}>*</span></label>
               <input
+                id="mobileNumber"
+                name="mobileNumber"
                 type="tel"
                 className="form-input"
                 placeholder="Enter 10-digit mobile number"
@@ -67,18 +69,22 @@ const Login = () => {
                 onChange={(e) => setMobileNumber(e.target.value)}
                 pattern="[0-9]{10}"
                 required
+                autoComplete="tel"
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label">Password <span style={{ color: '#ef4444' }}>*</span></label>
+              <label className="form-label" htmlFor="password">Password <span style={{ color: '#ef4444' }}>*</span></label>
               <input
+                id="password"
+                name="password"
                 type="password"
                 className="form-input"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="current-password"
               />
             </div>
 

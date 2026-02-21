@@ -16,18 +16,23 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      setUser(JSON.parse(userInfo));
-    }
-    setLoading(false);
+    // On mount, verify token with backend
+    const verifyAuth = async () => {
+      setLoading(true);
+      try {
+        const { data } = await API.get('/auth/verify', { withCredentials: true });
+        setUser(data);
+      } catch {
+        setUser(null);
+      }
+      setLoading(false);
+    };
+    verifyAuth();
   }, []);
 
   const login = async (mobileNumber, password) => {
     try {
-      const { data } = await API.post('/auth/login', { mobileNumber, password });
-      localStorage.setItem('userInfo', JSON.stringify(data));
+      const { data } = await API.post('/auth/login', { mobileNumber, password }, { withCredentials: true });
       setUser(data);
       return { success: true };
     } catch (error) {
@@ -37,8 +42,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (mobileNumber, password, name) => {
     try {
-      const { data } = await API.post('/auth/register', { mobileNumber, password, name });
-      localStorage.setItem('userInfo', JSON.stringify(data));
+      const { data } = await API.post('/auth/register', { mobileNumber, password, name }, { withCredentials: true });
       setUser(data);
       return { success: true };
     } catch (error) {
@@ -47,10 +51,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    // Clear all authentication data from localStorage (includes token)
-    localStorage.removeItem('userInfo');
-    // Clear authentication state
-    setUser(null);
+    // Clear cookie on backend
+    API.post('/auth/logout', {}, { withCredentials: true }).finally(() => {
+      setUser(null);
+    });
   };
 
   const value = {
