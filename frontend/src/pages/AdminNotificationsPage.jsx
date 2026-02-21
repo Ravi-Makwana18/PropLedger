@@ -5,19 +5,15 @@ import './AdminNotificationsPage.css';
 const AdminNotificationsPage = () => {
   const navigate = useNavigate();
   const [enquiries, setEnquiries] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     fetch('/api/enquiry/all')
       .then(res => res.json())
       .then(data => {
         setEnquiries(data.enquiries || []);
-        setLoading(false);
       })
       .catch(() => {
-        setError('Failed to load enquiries.');
-        setLoading(false);
+        // Optionally handle error here if needed
       });
   }, []);
 
@@ -26,7 +22,7 @@ const AdminNotificationsPage = () => {
       await fetch(`/api/enquiry/${id}/read`, { method: 'PATCH' });
       setEnquiries(enquiries => enquiries.map(e => e._id === id ? { ...e, isRead: true } : e));
     } catch {
-      setError('Failed to mark as read.');
+      // Optionally handle error here if needed
     }
   };
 
