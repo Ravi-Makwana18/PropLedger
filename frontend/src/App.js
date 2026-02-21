@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import DealDetails from './pages/DealDetails';
 import AddDeal from './pages/AddDeal';
+import AdminNotificationsPage from './pages/AdminNotificationsPage';
 
 function AppContent() {
   const location = useLocation();
@@ -29,6 +30,14 @@ function AppContent() {
           element={
             <PrivateRoute>
               <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/notifications"
+          element={
+            <PrivateRoute adminOnly={true}>
+              <AdminNotificationsPage />
             </PrivateRoute>
           }
         />

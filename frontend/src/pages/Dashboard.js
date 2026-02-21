@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import bgLogo from '../assets/logo.png';
+import NotificationBell from '../components/NotificationBell';
 
 const Dashboard = () => {
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [deals, setDeals] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
@@ -19,6 +20,18 @@ const Dashboard = () => {
     totalAmount: '',
     paymentDeadlineMonth: ''
   });
+  // Sorting state
+  const [sortOpen, setSortOpen] = useState(false);
+  const [sortOption, setSortOption] = useState('latest');
+  const sortOptions = [
+    { value: 'latest', label: 'Latest Added' },
+    { value: 'village', label: 'Village Name (A-Z)' },
+    { value: 'unitPriceAsc', label: 'Unit Price (Low-High)' },
+    { value: 'unitPriceDesc', label: 'Unit Price (High-Low)' },
+    { value: 'totalAmountAsc', label: 'Total Amount (Low-High)' },
+    { value: 'totalAmountDesc', label: 'Total Amount (High-Low)' },
+    { value: 'deadline', label: 'Payment Deadline (Nearest First)' },
+  ];
 
   useEffect(() => {
     fetchDeals();
@@ -138,22 +151,75 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div style={pageBg}>
+      <div style={{ ...pageBg, position: 'relative' }}>
+        {/* Notification Bell top-right corner */}
+        <div style={{ position: 'absolute', top: '1.5rem', right: '2rem', zIndex: 10 }}>
+          <NotificationBell user={user} />
+        </div>
         <div className="container">
           <div className="flex-center" style={{ flexDirection: 'column', gap: '1rem', paddingTop: '4rem' }}>
             <div className="spinner"></div>
-            <p style={{ color: 'var(--text-secondary)', textAlign: 'center', backgroundColor: 'rgba(255,255,255,0.9)', padding: '1rem 1.5rem', borderRadius: '0.75rem' }}>
-              Loading your deals…<br />
-              <small style={{ fontSize: '0.8rem' }}>First load may take 30–60 seconds as server wakes up</small>
-            </p>
+            <div style={{ fontWeight: 600, fontSize: '1.1rem', color: '#2563eb' }}>Loading dashboard...</div>
           </div>
         </div>
       </div>
     );
   }
 
+  // Filter and sort deals for rendering
+  const getFilteredDeals = () => {
+    if (!searchTerm.trim()) return deals;
+    return deals.filter(deal =>
+      deal.villageName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      deal.surveyNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
+  const getSortedDeals = (filteredDeals) => {
+    let sorted = [...filteredDeals];
+    switch (sortOption) {
+      case 'village':
+        sorted.sort((a, b) => a.villageName.localeCompare(b.villageName));
+        break;
+      case 'unitPriceAsc':
+        sorted.sort((a, b) => (a.pricePerSqYard || 0) - (b.pricePerSqYard || 0));
+        break;
+      case 'unitPriceDesc':
+        sorted.sort((a, b) => (b.pricePerSqYard || 0) - (a.pricePerSqYard || 0));
+        break;
+      case 'totalAmountAsc':
+        sorted.sort((a, b) => (a.totalAmount || 0) - (b.totalAmount || 0));
+        break;
+      case 'totalAmountDesc':
+        sorted.sort((a, b) => (b.totalAmount || 0) - (a.totalAmount || 0));
+        break;
+      case 'deadline':
+        sorted.sort((a, b) => {
+          const da = new Date(a.deadlineEndDate || a.paymentDeadlineMonth || 0);
+          const db = new Date(b.deadlineEndDate || b.paymentDeadlineMonth || 0);
+          return da - db;
+        });
+        break;
+      case 'latest':
+      default:
+        sorted.sort((a, b) => {
+          if (a.createdAt && b.createdAt) return new Date(b.createdAt) - new Date(a.createdAt);
+          return b._id.localeCompare(a._id);
+        });
+        break;
+    }
+    return sorted;
+  };
+
+  const filteredDeals = getFilteredDeals();
+  const sortedDeals = getSortedDeals(filteredDeals);
+
   return (
-    <div style={pageBg}>
+    <div style={{ ...pageBg, position: 'relative' }}>
+      {/* Notification Bell top-right corner */}
+      <div style={{ position: 'absolute', top: '1.5rem', right: '2rem', zIndex: 10 }}>
+        <NotificationBell user={user} />
+      </div>
       <div className="container">
         {error && <div className="alert alert-error">{error}</div>}
 
@@ -200,14 +266,60 @@ const Dashboard = () => {
               </svg>
               <span>Search</span>
             </button>
+            {/* Sort Button */}
+            <div className="sort-dropdown-wrap">
+              <button
+                className={`sort-btn${sortOpen ? ' sort-btn--active' : ''}`}
+                onClick={() => setSortOpen((v) => !v)}
+                aria-haspopup="listbox"
+                aria-expanded={sortOpen}
+                type="button"
+              >
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{ marginRight: 6 }}>
+                  <path d="M3 6h18M6 12h12M9 18h6" />
+                </svg>
+                <span style={{ fontWeight: 500, fontSize: '0.97em' }}>{sortOptions.find(o => o.value === sortOption)?.label || 'Sort'}</span>
+                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{ marginLeft: 4, transition: 'transform 0.2s', transform: sortOpen ? 'rotate(180deg)' : 'none' }}>
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              {sortOpen && (
+                <ul className="sort-dropdown" tabIndex={-1} role="listbox">
+                  {sortOptions.map(opt => (
+                    <li
+                      key={opt.value}
+                      className={`sort-dropdown-option${sortOption === opt.value ? ' sort-dropdown-option--active' : ''}`}
+                      onClick={() => { setSortOption(opt.value); setSortOpen(false); }}
+                      role="option"
+                      aria-selected={sortOption === opt.value}
+                    >
+                      {opt.label}
+                      {/* Arrow indicator for applicable sorts */}
+                      {['unitPriceAsc','unitPriceDesc','totalAmountAsc','totalAmountDesc','deadline'].includes(opt.value) && sortOption === opt.value && (
+                        <span className="sort-arrow">{opt.value.endsWith('Asc') ? '↑' : opt.value.endsWith('Desc') ? '↓' : '→'}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
           {isAdmin && (
-            <div style={{ margin: '1.5rem 0 1.5rem 0', display: 'flex', justifyContent: 'center' }}>
+            <div className="dashboard-deals-header-row">
+              <div className="dashboard-deals-count-badge">
+                {(() => {
+                  const total = deals.length;
+                  const filtered = sortedDeals.length;
+                  if (!searchTerm) return <span>{total} Total Deals</span>;
+                  if (filtered === total) return <span>{total} Total Deals</span>;
+                  return <span>Showing {filtered} of {total} deals</span>;
+                })()}
+              </div>
               <Link to="/add-deal" className="btn btn-secondary">+ Add New Deal</Link>
             </div>
           )}
 
-          {deals.length === 0 ? (
+          {sortedDeals.length === 0 ? (
             <p className="text-center" style={{ padding: '2rem', color: 'var(--text-secondary)' }}>No deals found</p>
           ) : (
             <>
@@ -226,7 +338,7 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {deals.map((deal) => (
+                    {sortedDeals.map((deal) => (
                       <tr key={deal._id}>
                         {editingId === deal._id ? (
                           <>
@@ -272,7 +384,7 @@ const Dashboard = () => {
 
               {/* ── Mobile Card View ───────────────── */}
               <div className="deals-cards">
-                {deals.map((deal) => (
+                {sortedDeals.map((deal) => (
                   <div key={deal._id} className={`deal-card${editingId === deal._id ? ' deal-card--editing' : ''}`}>
                     {editingId === deal._id ? (
                       /* ── Edit mode ── */

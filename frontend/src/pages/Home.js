@@ -1,24 +1,24 @@
 import React from 'react';
 import ImageSlider from '../components/ImageSlider';
 import logo from '../assets/logo.png';
+import EnquirySection from '../components/EnquirySection';
 
 const Home = () => {
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       {/* Image Slider Section (now at top) */}
       <ImageSlider />
       {/* Welcome Section (now below slider) */}
       <div className="hero-section" style={{
-        minHeight: '520px',
+        minHeight: '65vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        padding: '0 1rem 3rem 1rem',
-        backgroundColor: '#f8f9fa',
+        background: '#f8f9fa', // matches website background
         overflow: 'hidden'
       }}>
-        {/* Background Logo */}
+        {/* Background Logo Watermark */}
         <div style={{
           position: 'absolute',
           top: 0,
@@ -28,8 +28,9 @@ const Home = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          opacity: 0.08,
-          zIndex: 0
+          opacity: 0.06,
+          zIndex: 0,
+          pointerEvents: 'none',
         }}>
           <img 
             src={logo} 
@@ -39,13 +40,12 @@ const Home = () => {
               maxHeight: '90%',
               width: 'auto',
               height: 'auto',
-              objectFit: 'contain'
+              objectFit: 'contain',
             }}
           />
         </div>
         {/* Content */}
         <div className="container" style={{ maxWidth: '820px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
-          
           <hr style={{
             border: 'none',
             borderTop: '1.5px solid #e5e7eb',
@@ -53,7 +53,7 @@ const Home = () => {
             width: '60%'
           }} />
           <p style={{
-            fontSize: '1.22rem',
+            fontSize: '1.45rem', // Increased size for better appearance
             color: '#374151',
             marginBottom: '0',
             lineHeight: '1.7',
@@ -65,8 +65,9 @@ const Home = () => {
           </p>
         </div>
       </div>
+      {/* Enquiry Section */}
+      <EnquirySection />
     </div>
   );
 };
-
 export default Home;

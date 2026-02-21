@@ -1,0 +1,52 @@
+.notification-bell-container {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.notification-bell-icon {
+  font-size: 2.7rem;
+  color: #2c3e50;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.08);
+  padding: 0.6rem;
+  transition: box-shadow 0.2s;
+}
+
+.notification-bell-container:hover .notification-bell-icon {
+  box-shadow: 0 4px 16px rgba(44,62,80,0.16);
+}
+
+.notification-bell-badge {
+  background: #e74c3c;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50%;
+  padding: 0.35rem 0.7rem;
+  margin-left: -0.7rem;
+  margin-top: -1.4rem;
+  box-shadow: 0 2px 8px rgba(231,76,60,0.12);
+  position: absolute;
+}
+
+@media (max-width: 600px) {
+  .notification-bell-container {
+    top: 1rem;
+    right: 1rem;
+  }
+  .notification-bell-icon {
+    font-size: 2rem;
+    padding: 0.3rem;
+  }
+  .notification-bell-badge {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    margin-top: -1rem;
+  }
+}
