@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
     const verifyAuth = async () => {
       setLoading(true);
       try {
-        const { data } = await API.get('/auth/verify', { withCredentials: true });
+        const { data } = await API.get('/api/auth/verify', { withCredentials: true });
         setUser(data);
       } catch {
         setUser(null);
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (mobileNumber, password) => {
     try {
-      const { data } = await API.post('/auth/login', { mobileNumber, password }, { withCredentials: true });
+      const { data } = await API.post('/api/auth/login', { mobileNumber, password }, { withCredentials: true });
       setUser(data);
       return { success: true };
     } catch (error) {
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (mobileNumber, password, name) => {
     try {
-      const { data } = await API.post('/auth/register', { mobileNumber, password, name }, { withCredentials: true });
+      const { data } = await API.post('/api/auth/register', { mobileNumber, password, name }, { withCredentials: true });
       setUser(data);
       return { success: true };
     } catch (error) {
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     // Clear cookie on backend
-    API.post('/auth/logout', {}, { withCredentials: true }).finally(() => {
+    API.post('/api/auth/logout', {}, { withCredentials: true }).finally(() => {
       setUser(null);
     });
   };

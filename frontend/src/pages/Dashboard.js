@@ -39,7 +39,7 @@ const Dashboard = () => {
 
   const fetchDeals = async () => {
     try {
-      const { data } = await API.get('/deals');
+      const { data } = await API.get('/api/deals');
       setDeals(data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch deals');
@@ -52,7 +52,7 @@ const Dashboard = () => {
     if (!searchTerm.trim()) { fetchDeals(); return; }
     setLoading(true);
     try {
-      const { data } = await API.get(`/deals/search?q=${searchTerm}`);
+      const { data } = await API.get(`/api/deals/search?q=${searchTerm}`);
       setDeals(data);
     } catch (err) {
       setError(err.response?.data?.message || 'Search failed');
@@ -64,7 +64,7 @@ const Dashboard = () => {
   const handleDelete = async (dealId, villageName) => {
     if (!window.confirm(`Are you sure you want to delete the deal for ${villageName}? This action cannot be undone.`)) return;
     try {
-      await API.delete(`/deals/${dealId}`);
+      await API.delete(`/api/deals/${dealId}`);
       setDeals(deals.filter(deal => deal._id !== dealId));
       alert('Deal deleted successfully');
     } catch (err) {
@@ -104,7 +104,7 @@ const Dashboard = () => {
 
   const handleSaveEdit = async (dealId) => {
     try {
-      const { data } = await API.put(`/deals/${dealId}`, editFormData);
+      const { data } = await API.put(`/api/deals/${dealId}`, editFormData);
       setDeals(deals.map(deal => deal._id === dealId ? data : deal));
       setEditingId(null);
       setEditFormData({ villageName: '', surveyNumber: '', pricePerSqYard: '', totalSqYard: '', totalAmount: '', paymentDeadlineMonth: '' });

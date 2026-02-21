@@ -20,11 +20,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // CORS middleware - Allow production domains
+// backend/server.js (place BEFORE any routes)
+
 app.use(cors({
-  origin: "https://destination-dholera.vercel.app", // <-- No trailing slash for proper CORS
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: "https://destination-dholera.vercel.app",
+  credentials: true
 }));
 
 // Debugging: log incoming cookies for API requests
