@@ -10,10 +10,10 @@ const Footer = () => {
         <div className="footer-section">
           <div className="footer-brand">
             <img src={logo} alt="Destination Dholera Logo" className="footer-logo" />
-            <span className="footer-brand-text">Destination Dholera</span>
+            <span className="footer-brand-text">Destination Dholera Private Limited</span>
           </div>
           <p className="footer-description">
-            Your trusted partner in real estate investments and property management at Dholera Smart City.
+            Your trusted partner in land/plot buy and sell at Dholera SIR.
           </p>
           
           {/* Social Media Icons */}
