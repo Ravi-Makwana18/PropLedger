@@ -54,6 +54,11 @@ export const AuthProvider = ({ children }) => {
     // Clear cookie on backend
     API.post('/api/auth/logout', {}, { withCredentials: true }).finally(() => {
       setUser(null);
+      // Clear any cached user data
+      if (typeof window !== 'undefined') {
+        localStorage.clear();
+        sessionStorage.clear();
+      }
     });
   };
 
