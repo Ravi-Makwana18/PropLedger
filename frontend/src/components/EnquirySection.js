@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API from '../api/axios';
 
 const initialState = {
   name: '',
@@ -36,12 +37,7 @@ const EnquirySection = () => {
     }
     setLoading(true);
     try {
-      const res = await fetch('/api/enquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
+      const { data } = await API.post('/api/enquiry', form);
       if (data.success) {
         setSuccess('Thank you for your enquiry! We will contact you soon.');
         setForm(initialState);

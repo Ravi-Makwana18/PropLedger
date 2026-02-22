@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API from '../api/axios';
 import './AdminNotificationsPage.css';
 
 const AdminNotificationsPage = () => {
@@ -7,10 +8,9 @@ const AdminNotificationsPage = () => {
   const [enquiries, setEnquiries] = useState([]);
 
   useEffect(() => {
-    fetch('/api/enquiry/all')
-      .then(res => res.json())
-      .then(data => {
-        setEnquiries(data.enquiries || []);
+    API.get('/api/enquiry/all')
+      .then(res => {
+        setEnquiries(res.data.enquiries || []);
       })
       .catch(() => {
         // Optionally handle error here if needed
@@ -19,7 +19,7 @@ const AdminNotificationsPage = () => {
 
   const markAsRead = async (id) => {
     try {
-      await fetch(`/api/enquiry/${id}/read`, { method: 'PATCH' });
+      await API.patch(`/api/enquiry/${id}/read`);
       setEnquiries(enquiries => enquiries.map(e => e._id === id ? { ...e, isRead: true } : e));
     } catch {
       // Optionally handle error here if needed
