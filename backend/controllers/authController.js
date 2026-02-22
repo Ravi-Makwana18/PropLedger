@@ -84,8 +84,8 @@ const register = async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 const login = async (req, res) => {
-    console.log('Login request cookies:', req.cookies);
-    console.log('Register request cookies:', req.cookies);
+  console.log('Login request cookies:', req.cookies);
+  console.log('Register request cookies:', req.cookies);
   try {
     const { mobileNumber, password } = req.body;
     // Check for user
@@ -105,7 +105,7 @@ const login = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: 'None',
-      maxAge: 60 * 60 * 1000 // 1 hour
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 1 hour
     });
     res.json({
       _id: user._id,
