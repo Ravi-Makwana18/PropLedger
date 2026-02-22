@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBell } from 'react-icons/fa';
+import API from '../api/axios';
 import './NotificationBell.css';
 
 const NotificationBell = ({ user }) => {
@@ -9,9 +10,8 @@ const NotificationBell = ({ user }) => {
 
   useEffect(() => {
     if (user?.role === 'admin') {
-      fetch('/api/enquiry/unread-count')
-        .then(res => res.json())
-        .then(data => setUnreadCount(data.count || 0));
+      API.get('/api/enquiry/unread-count')
+        .then(res => setUnreadCount(res.data.count || 0));
     }
   }, [user]);
 
