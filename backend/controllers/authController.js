@@ -101,12 +101,15 @@ const login = async (req, res) => {
     // Generate JWT
     const token = generateToken(user._id);
     // Set secure cookie
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 1 hour
-    });
+    res.cookie("token", token, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  domain: "destination-dholera.onrender.com",
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60 * 1000
+});
+
     res.json({
       _id: user._id,
       name: user.name,
