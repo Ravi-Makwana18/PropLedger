@@ -43,7 +43,7 @@ const AddDeal = () => {
         endType: typeof formData.deadlineEndDate
       });
 
-      const { data } = await API.post('/deals', payload);
+      const { data } = await API.post('/api/deals', payload);
       navigate(`/deals/${data._id}`);
     } catch (err) {
       console.error('Error creating deal:', err.response?.data);

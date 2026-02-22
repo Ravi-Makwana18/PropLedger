@@ -37,7 +37,7 @@ const DealDetails = () => {
 
   const fetchDealDetails = async () => {
     try {
-      const { data } = await API.get(`/deals/${id}`);
+      const { data } = await API.get(`/api/deals/${id}`);
       setDealData(data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch deal details');
@@ -52,7 +52,7 @@ const DealDetails = () => {
     setSuccess('');
 
     try {
-      await API.post('/payments', {
+      await API.post('/api/payments', {
         dealId: id,
         ...paymentForm,
         amount: parseFloat(paymentForm.amount)
@@ -81,7 +81,7 @@ const DealDetails = () => {
     setSuccess('');
 
     try {
-      await API.delete(`/payments/${paymentId}`);
+      await API.delete(`/api/payments/${paymentId}`);
       setSuccess('Payment deleted successfully');
       fetchDealDetails();
     } catch (err) {
@@ -122,7 +122,7 @@ const DealDetails = () => {
     setSuccess('');
 
     try {
-      await API.put(`/payments/${paymentId}`, {
+      await API.put(`/api/payments/${paymentId}`, {
         ...editPaymentForm,
         amount: parseFloat(editPaymentForm.amount)
       });
