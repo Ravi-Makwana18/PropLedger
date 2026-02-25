@@ -26,7 +26,7 @@ const Footer = () => {
               <a href="https://wa.me/919714772250" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="WhatsApp" style={{ fontSize: 32, color: '#bdbdbd' }}>
                 <FaWhatsapp />
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook" style={{ fontSize: 32, color: '#bdbdbd' }}>
+              <a href="https://www.facebook.com/share/17ZLSKyDKn/" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook" style={{ fontSize: 32, color: '#bdbdbd' }}>
                 <FaFacebookF />
               </a>
             </div>
