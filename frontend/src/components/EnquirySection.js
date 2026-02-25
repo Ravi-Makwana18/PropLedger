@@ -77,13 +77,13 @@ const EnquirySection = () => {
           <p className="enquiry-trust" style={{ fontSize: '1.15rem', color: '#2563eb', fontWeight: 500, marginBottom: '1.2rem', maxWidth: 420 }}>Your trusted partner for land, plot, and property solutions in Dholera SIR.</p>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
             <li style={{ display: 'flex', alignItems: 'center', fontSize: '1.08rem', color: '#374151', fontWeight: 600 }}>
-              <span style={{ color: '#2ecc71', fontSize: '1.3rem', marginRight: '0.7rem' }}>✔</span> Verified Land Deals
+              <span style={{ color: '#2ecc71', fontSize: '1.3rem', marginRight: '0.7rem' }}>✅</span>Verified Land Deals
             </li>
             <li style={{ display: 'flex', alignItems: 'center', fontSize: '1.08rem', color: '#374151', fontWeight: 600 }}>
-              <span style={{ color: '#2563eb', fontSize: '1.3rem', marginRight: '0.7rem' }}>✔</span> Legal N.A. File Assistance
+              <span style={{ color: '#2563eb', fontSize: '1.3rem', marginRight: '0.7rem' }}>✅</span>Legal N.A. File Assistance
             </li>
             <li style={{ display: 'flex', alignItems: 'center', fontSize: '1.08rem', color: '#374151', fontWeight: 600 }}>
-              <span style={{ color: '#f59e42', fontSize: '1.3rem', marginRight: '0.7rem' }}>✔</span> Expert Investment Guidance
+              <span style={{ color: '#f59e42', fontSize: '1.3rem', marginRight: '0.7rem' }}>✅</span>Expert Investment Guidance
             </li>
           </ul>
         </div>
