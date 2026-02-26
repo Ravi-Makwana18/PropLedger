@@ -1,5 +1,5 @@
 /* ── Dashboard Deals Header Row ─────────────────────── */
-.dashboard-deals-header-row {
+.dashboard  -deals-header-row {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -24,12 +24,13 @@
     align-items: center;
     gap: 0.75rem;
   }
+}
   .dashboard-deals-count-badge {
     width: auto;
     justify-content: center;
     margin-bottom: 0.5rem;
   }
-}
+
 /* ── Sort Dropdown Styles ───────────────────────────── */
 .sort-dropdown-wrap {
   position: relative;
@@ -50,7 +51,7 @@
   height: 46px;
   box-shadow: 0 2px 8px rgba(37,99,235,0.08);
   cursor: pointer;
-  transition: box-shadow 0.18s, border-color 0.18s, background 0.18s, color 0.18s;
+  transition: box-shadow 0.18s, border-color 0.18s;
   outline: none;
 }
 .sort-btn:hover, .sort-btn:focus, .sort-btn--active {
@@ -87,7 +88,7 @@
   font-size: 1em;
   color: #1e293b;
   cursor: pointer;
-  transition: background 0.16s, color 0.16s;
+  transition:  0.16s, color 0.16s;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -103,7 +104,7 @@
   font-weight: 700;
 }
 @media (max-width: 767px) {
-  .sort-dropdown-wrap {
+  .sort-d  ropdown-wrap {
     width: 100%;
     margin-left: 0;
     margin-top: 0.5rem;
@@ -174,7 +175,7 @@
   border-radius: 0.5rem;
   box-shadow: 0 4px 12px -4px rgba(37,99,235,0.18);
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
+  transition: 0.3s, transform 0.2s;
   margin-top: 0.5rem;
 }
 .enquiry-submit-btn:disabled {
@@ -191,7 +192,7 @@
   margin-bottom: 0.5rem;
 }
 .form-success {
-  color: #10b981;
+  color: #1fbe89;
   font-size: 1rem;
   margin-bottom: 0.5rem;
 }
@@ -695,7 +696,7 @@ code {
 
 /* Footer */
 .footer {
-  background-color: #3e3e63;
+  background-color: #2c2c2f;
   color: white;
   padding: 3rem 0 1rem;
   margin-top: auto;
@@ -1134,12 +1135,6 @@ code {
     0% { opacity: 0; }
     100% { opacity: 1; }
   }
-.footer {
-  background-color: #3e3e63;
-  color: white;
-  margin-top: auto;
-  width: 100%;
-}
 
 .footer-content {
   display: grid;

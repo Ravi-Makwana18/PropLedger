@@ -315,7 +315,9 @@ const Dashboard = () => {
                   return <span>Showing {filtered} of {total} deals</span>;
                 })()}
               </div>
-              <Link to="/add-deal" className="btn btn-secondary">+ Add New Deal</Link>
+              <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '1rem' }}>
+                <Link to="/add-deal" className="btn btn-secondary">+ Add New Deal</Link>
+              </div>
             </div>
           )}
 
