@@ -36,7 +36,9 @@ const createDeal = async (req, res) => {
 // @access  Private
 const getDeals = async (req, res) => {
   try {
-    const deals = await Deal.find().populate('createdBy', 'name mobileNumber');
+    const deals = await Deal.find()
+      .populate('createdBy', 'name mobileNumber')
+      .lean();
     res.json(deals);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -103,17 +105,15 @@ const searchDeals = async (req, res) => {
 // @access  Private/Admin
 const updateDeal = async (req, res) => {
   try {
-    const deal = await Deal.findById(req.params.id);
-
-    if (!deal) {
-      return res.status(404).json({ message: 'Deal not found' });
-    }
-
     const updatedDeal = await Deal.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true, runValidators: true }
+      { new: true, runValidators: true, returnDocument: 'after' }
     );
+
+    if (!updatedDeal) {
+      return res.status(404).json({ message: 'Deal not found' });
+    }
 
     res.json(updatedDeal);
   } catch (error) {
@@ -126,7 +126,7 @@ const updateDeal = async (req, res) => {
 // @access  Private/Admin
 const deleteDeal = async (req, res) => {
   try {
-    const deal = await Deal.findById(req.params.id);
+    const deal = await Deal.findByIdAndDelete(req.params.id);
 
     if (!deal) {
       return res.status(404).json({ message: 'Deal not found' });
@@ -134,8 +134,6 @@ const deleteDeal = async (req, res) => {
 
     // Delete all payments associated with this deal
     await Payment.deleteMany({ dealId: deal._id });
-
-    await deal.deleteOne();
 
     res.json({ message: 'Deal and associated payments deleted' });
   } catch (error) {

@@ -33,14 +33,6 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-// Debugging: log incoming cookies for API requests
-app.use((req, res, next) => {
-  if (req.path.startsWith('/api')) {
-    console.log('Incoming cookies:', req.cookies);
-  }
-  next();
-});
-
 // Routes
 // Disable cache for auth endpoints
 app.use('/api/auth', (req, res, next) => {

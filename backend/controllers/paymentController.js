@@ -8,9 +8,9 @@ const addPayment = async (req, res) => {
   try {
     const { dealId, date, modeOfPayment, amount, remarks } = req.body;
 
-    // Check if deal exists
-    const deal = await Deal.findById(dealId);
-    if (!deal) {
+    // Check if deal exists (lean — no Mongoose overhead)
+    const dealExists = await Deal.exists({ _id: dealId });
+    if (!dealExists) {
       return res.status(404).json({ message: 'Deal not found' });
     }
 
@@ -23,10 +23,10 @@ const addPayment = async (req, res) => {
       createdBy: req.user._id
     });
 
-    const populatedPayment = await Payment.findById(payment._id)
-      .populate('createdBy', 'name');
+    // Populate in-place on the same document (no second DB round trip)
+    await payment.populate('createdBy', 'name');
 
-    res.status(201).json(populatedPayment);
+    res.status(201).json(payment);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -39,10 +39,10 @@ const getPaymentsByDeal = async (req, res) => {
   try {
     const payments = await Payment.find({ dealId: req.params.dealId })
       .sort({ date: -1 })
-      .populate('createdBy', 'name');
+      .populate('createdBy', 'name')
+      .lean();
 
-    // Calculate total paid
-    const totalPaid = payments.reduce((sum, payment) => sum + payment.amount, 0);
+    const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
 
     res.json({ payments, totalPaid });
   } catch (error) {
@@ -71,17 +71,15 @@ const getAllPayments = async (req, res) => {
 // @access  Private/Admin
 const updatePayment = async (req, res) => {
   try {
-    const payment = await Payment.findById(req.params.id);
-
-    if (!payment) {
-      return res.status(404).json({ message: 'Payment not found' });
-    }
-
     const updatedPayment = await Payment.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true, runValidators: true }
+      { new: true, runValidators: true, returnDocument: 'after' }
     ).populate('createdBy', 'name');
+
+    if (!updatedPayment) {
+      return res.status(404).json({ message: 'Payment not found' });
+    }
 
     res.json(updatedPayment);
   } catch (error) {
@@ -94,13 +92,11 @@ const updatePayment = async (req, res) => {
 // @access  Private/Admin
 const deletePayment = async (req, res) => {
   try {
-    const payment = await Payment.findById(req.params.id);
+    const payment = await Payment.findByIdAndDelete(req.params.id);
 
     if (!payment) {
       return res.status(404).json({ message: 'Payment not found' });
     }
-
-    await payment.deleteOne();
 
     res.json({ message: 'Payment deleted' });
   } catch (error) {

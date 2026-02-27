@@ -11,7 +11,7 @@ const Footer = () => {
         <div className="fp-col fp-col--brand">
           <div className="fp-logo-row">
             <img src={logo} alt="Destination Dholera Logo" className="fp-logo" />
-            <span className="fp-brand-name">Destination Dholera</span>
+            <span className="fp-brand-name">Destination Dholera Pvt. Ltd.</span>
           </div>
           <p className="fp-brand-desc">
             Your trusted partner for land and plot buying, selling, N.A. file processing,
@@ -78,7 +78,7 @@ const Footer = () => {
             <div className="fp-office-col">
               <div className="fp-contact-item">
                 <FaPhone className="fp-contact-icon" />
-                <a href="tel:+916353728205" className="fp-contact-link">+91 6353728205</a>
+                <a href="tel:+916353728205" className="fp-contact-link">+91 9898262707</a>
               </div>
               <div className="fp-contact-item fp-contact-item--address">
                 <FaMapMarkerAlt className="fp-contact-icon" />

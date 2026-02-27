@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import bgLogo from '../assets/logo.png';
+import logo from '../assets/logo.png';
 
 const Login = () => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { login, user } = useAuth();
 
-  // Already logged in → go straight to dashboard
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -21,7 +21,6 @@ const Login = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       await login(mobileNumber, password);
       navigate('/dashboard', { replace: true });
@@ -33,74 +32,125 @@ const Login = () => {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundImage: `url(${bgLogo})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      backgroundColor: '#f0f9ff',
-      backgroundBlendMode: 'lighten',
-      padding: '2rem 1rem'
-    }}>
-      <div className="container" style={{ maxWidth: '500px' }}>
-        <div className="card" style={{ 
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-        }}>
-        <h2 className="card-header text-center">Admin Portal</h2>
-        
-        {error && <div className="alert alert-error">{error}</div>}
+    <div className="login-page">
+      {/* ── Left Panel (branding) – hidden on mobile ── */}
+      <div className="login-left-panel">
+        <div className="login-left-content">
+          <Link to="/" className="login-back-home">
+            ← Back to Home
+          </Link>
+          <div className="login-brand-block">
+            <img src={logo} alt="Destination Dholera" className="login-brand-logo" />
+            <h1 className="login-brand-name">Destination Dholera</h1>
+            <p className="login-brand-tagline">
+              A private portal made just for our team to manage company work easily and securely.
+            </p>
+          </div>
+          <div className="login-left-features">
+            <div className="login-feature-item">
+              <span className="login-feature-icon">🔒</span>
+              <span>Secure Admin Access</span>
+            </div>
+            <div className="login-feature-item">
+              <span className="login-feature-icon">📊</span>
+              <span>Manage Deals & Enquiries</span>
+            </div>
+          </div>
+        </div>
+        {/* decorative gradient orbs */}
+        <div className="login-orb login-orb--1" />
+        <div className="login-orb login-orb--2" />
+      </div>
 
-        <form onSubmit={handleLogin}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="mobileNumber">Mobile No. <span style={{ color: '#ef4444' }}>*</span></label>
-              <input
-                id="mobileNumber"
-                name="mobileNumber"
-                type="tel"
-                className="form-input"
-                placeholder="Enter 10-digit mobile number"
-                value={mobileNumber}
-                onChange={(e) => setMobileNumber(e.target.value)}
-                pattern="[0-9]{10}"
-                required
-                autoComplete="tel"
-              />
+      {/* ── Right Panel (form) ── */}
+      <div className="login-right-panel">
+        {/* Mobile-only logo */}
+        <div className="login-mobile-brand">
+          <img src={logo} alt="Destination Dholera" className="login-mobile-logo" />
+          <span className="login-mobile-brand-name">Destination Dholera</span>
+        </div>
+
+        <div className="login-form-card">
+          {/* Header */}
+          <div className="login-form-header">
+            <div className="login-shield-icon">🛡️</div>
+            <h2 className="login-form-title">Admin Portal</h2>
+            <p className="login-form-subtitle">Sign in to manage your dashboard</p>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className="login-error-banner">
+              <span>⚠️</span> {error}
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleLogin} className="login-form" noValidate>
+            <div className="login-field">
+              <label className="login-label" htmlFor="mobileNumber">
+                Mobile Number
+              </label>
+              <div className="login-input-wrap">
+                <span className="login-input-icon">📱</span>
+                <input
+                  id="mobileNumber"
+                  name="mobileNumber"
+                  type="tel"
+                  className="login-input"
+                  placeholder="Enter 10-digit mobile number"
+                  value={mobileNumber}
+                  onChange={(e) => setMobileNumber(e.target.value)}
+                  pattern="[0-9]{10}"
+                  required
+                  autoComplete="tel"
+                />
+              </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="password">Password <span style={{ color: '#ef4444' }}>*</span></label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                className="form-input"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
+            <div className="login-field">
+              <label className="login-label" htmlFor="password">
+                Password
+              </label>
+              <div className="login-input-wrap">
+                <span className="login-input-icon">🔑</span>
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  className="login-input"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className="login-eye-btn"
+                  onClick={() => setShowPassword(v => !v)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? '🙈' : '👁️'}
+                </button>
+              </div>
             </div>
 
-            <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
-              {loading ? 'Loading...' : 'Login'}
+            <button
+              type="submit"
+              className="login-submit-btn"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="login-spinner" />
+              ) : (
+                <>Sign in to Dashboard →</>
+              )}
             </button>
           </form>
 
-          <p style={{
-            textAlign: 'center',
-            marginTop: '1rem',
-            fontSize: '0.75rem',
-            color: '#6b7280',
-            letterSpacing: '0.02em'
-          }}>
-            This portal is restricted to authorized administrators only.
+          <p className="login-restricted-note">
+            🔐 Restricted to authorized administrators only
           </p>
         </div>
       </div>

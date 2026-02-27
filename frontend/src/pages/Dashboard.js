@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [editingId, setEditingId] = useState(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [editFormData, setEditFormData] = useState({
     villageName: '',
     surveyNumber: '',
@@ -59,12 +60,11 @@ const Dashboard = () => {
     }
   };
 
-  const handleDelete = async (dealId, villageName) => {
-    if (!window.confirm(`Are you sure you want to delete the deal for ${villageName}? This action cannot be undone.`)) return;
+  const handleDelete = async (dealId) => {
     try {
       await API.delete(`/api/deals/${dealId}`);
       setDeals(deals.filter(deal => deal._id !== dealId));
-      alert('Deal deleted successfully');
+      setConfirmDeleteId(null);
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to delete deal');
     }
@@ -356,7 +356,14 @@ const Dashboard = () => {
                                 {isAdmin && (
                                   <>
                                     <button onClick={() => handleEdit(deal)} className="action-btn action-btn--edit" title="Edit"><EditIconSvg /></button>
-                                    <button onClick={() => handleDelete(deal._id, deal.villageName)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
+                                    {confirmDeleteId === deal._id ? (
+                                      <>
+                                        <button onClick={() => handleDelete(deal._id)} className="action-btn action-btn--delete" title="Confirm delete" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>Yes</button>
+                                        <button onClick={() => setConfirmDeleteId(null)} className="action-btn action-btn--cancel" title="Cancel" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>No</button>
+                                      </>
+                                    ) : (
+                                      <button onClick={() => setConfirmDeleteId(deal._id)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
+                                    )}
                                   </>
                                 )}
                               </div>
@@ -439,7 +446,14 @@ const Dashboard = () => {
                           {isAdmin && (
                             <>
                               <button onClick={() => handleEdit(deal)} className="action-btn action-btn--edit" title="Edit"><EditIconSvg /></button>
-                              <button onClick={() => handleDelete(deal._id, deal.villageName)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
+                              {confirmDeleteId === deal._id ? (
+                                <>
+                                  <button onClick={() => handleDelete(deal._id)} className="action-btn action-btn--delete" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>Yes</button>
+                                  <button onClick={() => setConfirmDeleteId(null)} className="action-btn action-btn--cancel" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>No</button>
+                                </>
+                              ) : (
+                                <button onClick={() => setConfirmDeleteId(deal._id)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
+                              )}
                             </>
                           )}
                         </div>
