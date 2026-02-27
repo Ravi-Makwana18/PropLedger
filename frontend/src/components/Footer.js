@@ -1,117 +1,111 @@
 import React from 'react';
 import logo from '../assets/logo.png';
-import { FaInstagram, FaWhatsapp, FaFacebookF } from 'react-icons/fa';
+import { FaInstagram, FaWhatsapp, FaFacebookF, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className="footer">
-      <div className="footer-content">
-        {/* Company Info Section */}
-        <div className="footer-section">
-          <div className="footer-brand">
-            <img src={logo} alt="Destination Dholera Logo" className="footer-logo" />
-            <span className="footer-brand-text">Destination Dholera Private Limited</span>
+    <footer className="footer-premium">
+      <div className="footer-premium-inner">
+
+        {/* ── Column 1: Brand + Description + Social ── */}
+        <div className="fp-col fp-col--brand">
+          <div className="fp-logo-row">
+            <img src={logo} alt="Destination Dholera Logo" className="fp-logo" />
+            <span className="fp-brand-name">Destination Dholera</span>
           </div>
-          <p className="footer-description">
-            Your trusted partner in land/plot buy and sell at Dholera SIR.
+          <p className="fp-brand-desc">
+            Your trusted partner for land and plot buying, selling, N.A. file processing,
+            and complete property solutions in Dholera SIR, Gujarat.
           </p>
-          
-          {/* Social Media Icons */}
-          <div className="footer-social" style={{ marginTop: '2rem' }}>
-            <div style={{ fontWeight: 700, fontSize: '1.15rem', marginBottom: '0.5rem'}}>Follow us on</div>
-            <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'flex-start', alignItems: 'center' }}>
-              <a href="https://www.instagram.com/destination_dholera_3614?igsh=bGc0cmM5a3V1ODR3" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram" style={{ fontSize: 32, color: '#bdbdbd' }}>
+          <div className="fp-social-row">
+            <span className="fp-social-label">Follow us</span>
+            <div className="fp-social-icons">
+              <a
+                href="https://www.instagram.com/destination_dholera_3614?igsh=bGc0cmM5a3V1ODR3"
+                target="_blank" rel="noopener noreferrer"
+                className="fp-social-icon fp-social-icon--insta"
+                aria-label="Instagram"
+              >
                 <FaInstagram />
               </a>
-              <a href="https://wa.me/919714772250" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="WhatsApp" style={{ fontSize: 32, color: '#bdbdbd' }}>
+              <a
+                href="https://wa.me/919714772250"
+                target="_blank" rel="noopener noreferrer"
+                className="fp-social-icon fp-social-icon--whatsapp"
+                aria-label="WhatsApp"
+              >
                 <FaWhatsapp />
               </a>
-              <a href="https://www.facebook.com/share/17ZLSKyDKn/" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook" style={{ fontSize: 32, color: '#bdbdbd' }}>
+              <a
+                href="https://www.facebook.com/share/17ZLSKyDKn/"
+                target="_blank" rel="noopener noreferrer"
+                className="fp-social-icon fp-social-icon--fb"
+                aria-label="Facebook"
+              >
                 <FaFacebookF />
               </a>
             </div>
           </div>
         </div>
 
-        {/* Contact Info Section */}
-        <div className="footer-section">
-          <h3 className="footer-heading" style={{ fontWeight: 700, fontSize: '1.15rem', marginBottom: '0.5rem' }}>Contact Us</h3>
-          <ul className="footer-contact">
-            <li className="footer-contact-item">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="16" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-              </svg>
-              <a href="tel:+919714772250" className="footer-link">+91 9714772250</a>
-            </li>
-            <li className="footer-contact-item">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="16" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
-              </svg>
-              <a href="mailto:destination.dholera3614@gmail.com" className="footer-link">destination.dholera3614@gmail.com</a>
-            </li>
-            <li className="footer-contact-item">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="16" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-              <span className="footer-text">Office No. 4, Dharmavir Complex, Dholera Chokdi, New Dholera Road, Dholera, Ahmedabad - 382455</span>
-            </li>
-            <li className="footer-contact-item">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="16" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-              <span className="footer-text">704-A, Infinity Tower, Anand Nagar, Near Ramada Hotel, Ahmedabad - 380015</span>
-            </li>
+        {/* ── Column 2: Contact Information ── */}
+        <div className="fp-col">
+          <h3 className="fp-col-heading">Contact Us</h3>
+
+          {/* Shared Email */}
+          <div className="fp-contact-item" style={{ marginBottom: '1.25rem' }}>
+            <FaEnvelope className="fp-contact-icon" />
+            <a href="mailto:destination.dholera3614@gmail.com" className="fp-contact-link">
+              destination.dholera3614@gmail.com
+            </a>
+          </div>
+
+          {/* Two office sub-columns */}
+          <div className="fp-offices-grid">
+            {/* Office 1 */}
+            <div className="fp-office-col">
+              <div className="fp-contact-item">
+                <FaPhone className="fp-contact-icon" />
+                <a href="tel:+919714772250" className="fp-contact-link">+91 9714772250</a>
+              </div>
+              <div className="fp-contact-item fp-contact-item--address">
+                <FaMapMarkerAlt className="fp-contact-icon" />
+                <span>Office No. 4, Dharmavir Complex, Dholera Chokdi, New Dholera Road, Dholera, Ahmedabad – 382455</span>
+              </div>
+            </div>
+
+            {/* Office 2 */}
+            <div className="fp-office-col">
+              <div className="fp-contact-item">
+                <FaPhone className="fp-contact-icon" />
+                <a href="tel:+916353728205" className="fp-contact-link">+91 6353728205</a>
+              </div>
+              <div className="fp-contact-item fp-contact-item--address">
+                <FaMapMarkerAlt className="fp-contact-icon" />
+                <span>704-A, Infinity Tower, Anand Nagar, Near Ramada Hotel, Ahmedabad – 380015</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Column 3: Quick Links ── */}
+        <div className="fp-col">
+          <h3 className="fp-col-heading">Quick Links</h3>
+          <ul className="fp-links-list">
+            <li><a href="/" className="fp-quick-link">Home</a></li>
+            <li><a href="#contact" className="fp-quick-link">Contact</a></li>
+            <li><a href="/login" className="fp-quick-link">Login</a></li>
+            <li><a href="/dashboard" className="fp-quick-link">Dashboard</a></li>
           </ul>
         </div>
+
       </div>
 
-      {/* Copyright Section */}
-      <div className="footer-bottom">
-        <p className="footer-copyright">
-          &copy; 2026 Destination Dholera Private Limited. All rights reserved.
+      {/* ── Bottom divider + copyright ── */}
+      <div className="fp-bottom">
+        <div className="fp-divider" />
+        <p className="fp-copyright">
+          © 2026 Destination Dholera Private Limited. All rights reserved.
         </p>
       </div>
     </footer>

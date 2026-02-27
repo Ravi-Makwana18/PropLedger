@@ -173,6 +173,7 @@ const EnquirySection = () => {
                 <option>Land Buying</option>
                 <option>Land Selling</option>
                 <option>N.A. File</option>
+                <option>Plot Enquiries</option>
                 <option>General Question</option>
               </select>
             </div>

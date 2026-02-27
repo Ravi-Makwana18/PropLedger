@@ -1,132 +1,112 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
-import '../nav-btn.css';
+import logo from '../assets/logo.png';
 
 const Navbar = () => {
   const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const currentPath = window.location.pathname;
-  // Use CSS classes for button styling for consistency
-  // .nav-btn, .nav-btn--logout, .nav-btn--primary in CSS
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 900;
+  const [scrolled, setScrolled] = useState(false);
 
-  //
+  const currentPath = window.location.pathname;
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleLogout = () => {
     logout();
     setMenuOpen(false);
     navigate('/');
   };
+
   return (
-    <nav className="navbar" style={{ position: 'relative' }}>
-      <div className="navbar-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Link to={user ? "" : "/"} className="navbar-brand" style={{ fontSize: '1.75rem', fontWeight: '700', fontFamily: '"Bricolage Grotesque", sans-serif', color: 'white' }}>
-            Destination Dholera
-          </Link>
+    <nav
+      className={`navbar-premium${scrolled ? ' navbar-premium--scrolled' : ''}`}
+    >
+      <div className="navbar-premium-inner">
+        {/* LEFT – Brand */}
+        <Link to={user ? '#' : '/'} className="navbar-brand-premium">
+          <img src={logo} alt="Destination Dholera" className="navbar-logo" />
+          Destination Dholera
+        </Link>
+
+        {/* CENTER – Nav links (desktop) */}
+        <div className="navbar-links-center">
+          <a href="/" className="navbar-nav-link">Home</a>
+          <a href="#contact" className="navbar-nav-link">Contact</a>
         </div>
-        {isMobile ? (
-          <button
-            className="navbar-burger"
-            style={{ background: 'none', border: 'none', color: 'white', fontSize: 28, cursor: 'pointer', marginLeft: 'auto' }}
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
-          >
-            {menuOpen ? <FaTimes /> : <FaBars />}
-          </button>
-        ) : null}
-        {/* Desktop nav links */}
-        {!isMobile && !loading && (
-          <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
+
+        {/* RIGHT – Auth buttons (desktop) */}
+        <div className="navbar-actions-desktop">
+          {!loading && (
+            <>
+              {user && currentPath !== '/dashboard' && (
+                <Link to="/dashboard" className="nbtn nbtn--primary">
+                  Dashboard
+                </Link>
+              )}
+              {user && currentPath === '/dashboard' && (
+                <Link to="/" className="nbtn nbtn--primary">
+                  Home
+                </Link>
+              )}
+              {user ? (
+                <button onClick={handleLogout} className="nbtn nbtn--logout" title="Logout">
+                  Logout
+                </button>
+              ) : (
+                <Link to="/login" className="nbtn nbtn--primary">
+                  Admin Login
+                </Link>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Hamburger – mobile only */}
+        <button
+          className="navbar-hamburger-btn"
+          onClick={() => setMenuOpen(o => !o)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+        >
+          {menuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+        </button>
+      </div>
+
+      {/* Mobile slide-in drawer */}
+      <div className={`navbar-mobile-drawer${menuOpen ? ' navbar-mobile-drawer--open' : ''}`}>
+        <a href="/" className="drawer-nav-link" onClick={() => setMenuOpen(false)}>Home</a>
+        <a href="#contact" className="drawer-nav-link" onClick={() => setMenuOpen(false)}>Contact</a>
+        <div className="drawer-divider" />
+        {!loading && (
+          <>
             {user && currentPath !== '/dashboard' && (
-              <Link to="/dashboard" className="nav-btn nav-btn--primary dashboard-button">
-                <span>Dashboard</span>
+              <Link to="/dashboard" className="nbtn nbtn--primary drawer-btn" onClick={() => setMenuOpen(false)}>
+                Dashboard
               </Link>
             )}
             {user && currentPath === '/dashboard' && (
-              <Link
-                to="/"
-                className="nav-btn nav-btn--primary home-button"
-              >
-                <span>Home</span>
+              <Link to="/" className="nbtn nbtn--primary drawer-btn" onClick={() => setMenuOpen(false)}>
+                Home
               </Link>
             )}
             {user ? (
-              <button
-                onClick={handleLogout}
-                className="nav-btn nav-btn--logout logout-button"
-                title="Logout"
-              >
-                <span>Logout</span>
+              <button onClick={handleLogout} className="nbtn nbtn--logout drawer-btn">
+                Logout
               </button>
             ) : (
-              <Link to="/login" className="nav-btn nav-btn--primary login-button">
-                <span>Login</span>
+              <Link to="/login" className="nbtn nbtn--primary drawer-btn" onClick={() => setMenuOpen(false)}>
+                Admin Login
               </Link>
             )}
-          </div>
+          </>
         )}
-      {/* Mobile nav menu */}
-      {isMobile && menuOpen && !loading && (
-        <div style={{
-          position: 'absolute',
-          top: '60px',
-          right: 0,
-          background: '#2d2d4d',
-          borderRadius: '0 0 0 12px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-          zIndex: 1000,
-          minWidth: 180,
-          padding: '1rem',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-end',
-        }}>
-          {user && currentPath !== '/dashboard' && (
-            <Link
-              to="/dashboard"
-              className="nav-btn nav-btn--primary dashboard-button"
-              style={{ width: '100%', marginRight: 0, marginBottom: 8 }}
-              onClick={() => setMenuOpen(false)}
-            >
-              <span>Dashboard</span>
-            </Link>
-          )}
-          {user && currentPath === '/dashboard' && (
-            <Link
-              to="/"
-              className="nav-btn nav-btn--primary home-button"
-              style={{ width: '100%', marginRight: 0, marginBottom: 8 }}
-              onClick={() => setMenuOpen(false)}
-            >
-              <span>Home</span>
-            </Link>
-          )}
-          {user ? (
-            <button
-              onClick={handleLogout}
-              className="nav-btn nav-btn--logout logout-button"
-              style={{ width: '100%', marginRight: 0, marginBottom: 8 }}
-              title="Logout"
-            >
-              <span>Logout</span>
-            </button>
-          ) : (
-            <Link
-              to="/login"
-              className="nav-btn nav-btn--primary login-button"
-              style={{ width: '100%', marginRight: 0, marginBottom: 8 }}
-              onClick={() => setMenuOpen(false)}
-            >
-              <span>Login</span>
-            </Link>
-          )}
-        </div>
-      )}
-        </div>
+      </div>
     </nav>
   );
 };
