@@ -16,13 +16,21 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // On mount, verify token with backend
+    // On mount, verify token with backend only if we have a token stored
     const verifyAuth = async () => {
       setLoading(true);
+      const storedToken = localStorage.getItem('token');
+      if (!storedToken) {
+        // No token at all — user is not logged in, skip the API call
+        setLoading(false);
+        return;
+      }
       try {
         const { data } = await API.get('/api/auth/verify', { withCredentials: true });
         setUser(data);
       } catch {
+        // Token is invalid or expired — clear it
+        localStorage.removeItem('token');
         setUser(null);
       }
       setLoading(false);
@@ -33,6 +41,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (mobileNumber, password) => {
     try {
       const { data } = await API.post('/api/auth/login', { mobileNumber, password }, { withCredentials: true });
+      // Save token to localStorage — required for iOS Safari (cross-site cookie ITP blocking)
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
       setUser(data);
       return { success: true };
     } catch (error) {
@@ -43,6 +55,10 @@ export const AuthProvider = ({ children }) => {
   const register = async (mobileNumber, password, name) => {
     try {
       const { data } = await API.post('/api/auth/register', { mobileNumber, password, name }, { withCredentials: true });
+      // Save token to localStorage
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
       setUser(data);
       return { success: true };
     } catch (error) {
@@ -51,14 +67,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    // Clear token from localStorage first (critical for iOS Safari)
+    localStorage.removeItem('token');
     // Clear cookie on backend
     API.post('/api/auth/logout', {}, { withCredentials: true }).finally(() => {
       setUser(null);
-      // Clear any cached user data
-      if (typeof window !== 'undefined') {
-        localStorage.clear();
-        sessionStorage.clear();
-      }
+      sessionStorage.clear();
     });
   };
 

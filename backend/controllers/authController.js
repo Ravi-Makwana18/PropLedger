@@ -62,18 +62,19 @@ const register = async (req, res) => {
     // Generate JWT
     const token = generateToken(user._id);
     // Set secure cookie
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'None',
-        path: '/',
-        maxAge: 15 * 60 * 1000 // 15 minutes
-      });
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+      path: '/',
+      maxAge: 15 * 60 * 1000 // 15 minutes
+    });
     res.status(201).json({
       _id: user._id,
       name: user.name,
       mobileNumber: user.mobileNumber,
-      role: user.role
+      role: user.role,
+      token
     });
   } catch (error) {
     console.error('Register error:', error);
@@ -102,19 +103,20 @@ const login = async (req, res) => {
     // Generate JWT
     const token = generateToken(user._id);
     // Set secure cookie
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        path: "/",
-        maxAge: 15 * 60 * 1000 // 15 minutes
-      });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      path: "/",
+      maxAge: 15 * 60 * 1000 // 15 minutes
+    });
 
     res.json({
       _id: user._id,
       name: user.name,
       mobileNumber: user.mobileNumber,
-      role: user.role
+      role: user.role,
+      token
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -177,18 +179,19 @@ const verifyOTP = async (req, res) => {
     // Generate JWT
     const token = generateToken(user._id);
     // Set secure cookie
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'None',
-        path: '/',
-        maxAge: 15 * 60 * 1000 // 15 minutes
-      });
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+      path: '/',
+      maxAge: 15 * 60 * 1000 // 15 minutes
+    });
     res.json({
       _id: user._id,
       name: user.name,
       mobileNumber: user.mobileNumber,
-      role: user.role
+      role: user.role,
+      token
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -4,7 +4,17 @@ const User = require('../models/User');
 // backend/middleware/auth.js
 
 const protect = async (req, res, next) => {
-  const token = req.cookies.token;
+  let token;
+
+  // 1. Check Authorization header (Bearer token) — works on iOS Safari & all cross-origin clients
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  // 2. Fall back to cookie (for backward compatibility)
+  else if (req.cookies.token) {
+    token = req.cookies.token;
+  }
+
   if (!token) return res.status(401).json({ message: "Not authorized, no token" });
 
   try {

@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
-import bgLogo from '../assets/logo.png';
-import NotificationBell from '../components/NotificationBell';
 
 const Dashboard = () => {
-  const { user, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
   const [deals, setDeals] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
@@ -138,30 +136,13 @@ const Dashboard = () => {
     </svg>
   );
 
-  const pageBg = {
-    minHeight: 'calc(100vh - 60px)',
-    backgroundImage: `url(${bgLogo})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundColor: '#f0f9ff',
-    backgroundBlendMode: 'lighten',
-    padding: '1.5rem 0.75rem'
-  };
+
 
   if (loading) {
     return (
-      <div style={{ ...pageBg, position: 'relative' }}>
-        {/* Notification Bell top-right corner */}
-        <div style={{ position: 'absolute', top: '1.5rem', right: '2rem', zIndex: 10 }}>
-          <NotificationBell user={user} />
-        </div>
-        <div className="container">
-          <div className="flex-center" style={{ flexDirection: 'column', gap: '1rem', paddingTop: '4rem' }}>
-            <div className="spinner"></div>
-            <div style={{ fontWeight: 600, fontSize: '1.1rem', color: '#2563eb' }}>Loading dashboard...</div>
-          </div>
-        </div>
+      <div className="flex-center" style={{ flexDirection: 'column', gap: '1rem', paddingTop: '4rem' }}>
+        <div className="spinner"></div>
+        <div style={{ fontWeight: 600, fontSize: '1.1rem', color: '#2563eb' }}>Loading dashboard...</div>
       </div>
     );
   }
@@ -215,20 +196,11 @@ const Dashboard = () => {
   const sortedDeals = getSortedDeals(filteredDeals);
 
   return (
-    <div style={{ ...pageBg, position: 'relative' }}>
-      {/* Notification Bell top-right corner */}
-      <div style={{ position: 'absolute', top: '1.5rem', right: '2rem', zIndex: 10 }}>
-        <NotificationBell user={user} />
-      </div>
+    <div>
       <div className="container">
         {error && <div className="alert alert-error">{error}</div>}
 
         <div className="dashboard-card">
-          {/* ── Header ─────────────────────────────── */}
-
-          <div className="dashboard-header">
-            <h2 className="dashboard-title">Dashboard</h2>
-          </div>
 
           {/* ── Search Bar ────────────────────────── */}
           <div className="dashboard-search">
@@ -259,12 +231,11 @@ const Dashboard = () => {
                 </button>
               )}
             </div>
-            <button onClick={handleSearch} className="search-submit-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <button onClick={handleSearch} className="search-submit-btn" title="Search" aria-label="Search">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              <span>Search</span>
             </button>
             {/* Sort Button */}
             <div className="sort-dropdown-wrap">
@@ -274,14 +245,24 @@ const Dashboard = () => {
                 aria-haspopup="listbox"
                 aria-expanded={sortOpen}
                 type="button"
+                title={sortOptions.find(o => o.value === sortOption)?.label || 'Sort'}
+                aria-label="Sort"
               >
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{ marginRight: 6 }}>
-                  <path d="M3 6h18M6 12h12M9 18h6" />
+                {/* Professional sort icon: 3 lines decreasing in width */}
+                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="6" y1="12" x2="18" y2="12" />
+                  <line x1="9" y1="18" x2="15" y2="18" />
                 </svg>
-                <span style={{ fontWeight: 500, fontSize: '0.97em' }}>{sortOptions.find(o => o.value === sortOption)?.label || 'Sort'}</span>
-                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{ marginLeft: 4, transition: 'transform 0.2s', transform: sortOpen ? 'rotate(180deg)' : 'none' }}>
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
+                {sortOpen ? (
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24" style={{ marginLeft: 4 }}>
+                    <polyline points="18 15 12 9 6 15" />
+                  </svg>
+                ) : (
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24" style={{ marginLeft: 4 }}>
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                )}
               </button>
               {sortOpen && (
                 <ul className="sort-dropdown" tabIndex={-1} role="listbox">
@@ -295,7 +276,7 @@ const Dashboard = () => {
                     >
                       {opt.label}
                       {/* Arrow indicator for applicable sorts */}
-                      {['unitPriceAsc','unitPriceDesc','totalAmountAsc','totalAmountDesc','deadline'].includes(opt.value) && sortOption === opt.value && (
+                      {['unitPriceAsc', 'unitPriceDesc', 'totalAmountAsc', 'totalAmountDesc', 'deadline'].includes(opt.value) && sortOption === opt.value && (
                         <span className="sort-arrow">{opt.value.endsWith('Asc') ? '↑' : opt.value.endsWith('Desc') ? '↓' : '→'}</span>
                       )}
                     </li>
@@ -305,19 +286,23 @@ const Dashboard = () => {
             </div>
           </div>
           {isAdmin && (
-            <div className="dashboard-deals-header-row">
+            <div className="toolbar-row">
               <div className="dashboard-deals-count-badge">
                 {(() => {
                   const total = deals.length;
                   const filtered = sortedDeals.length;
                   if (!searchTerm) return <span>{total} Total Deals</span>;
                   if (filtered === total) return <span>{total} Total Deals</span>;
-                  return <span>Showing {filtered} of {total} deals</span>;
+                  return <span>Showing {filtered} of {total}</span>;
                 })()}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '1rem' }}>
-                <Link to="/add-deal" className="btn btn-secondary">+ Add New Deal</Link>
-              </div>
+              <Link to="/add-deal" className="btn-add-deal">
+                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Add New Deal
+              </Link>
             </div>
           )}
 
@@ -466,8 +451,6 @@ const Dashboard = () => {
             </>
           )}
         </div>
-
-
       </div>
     </div>
   );

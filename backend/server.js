@@ -25,7 +25,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({
   origin: [
     "https://destination-dholera.vercel.app",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "http://localhost:3001"
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -52,7 +53,7 @@ app.use('/api/enquiry', require('./routes/enquiryRoutes'));
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ 
+  res.json({
     status: 'OK',
     message: 'API is running...',
     timestamp: new Date().toISOString(),
@@ -62,7 +63,7 @@ app.get('/api/health', (req, res) => {
 
 // Root endpoint
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Destination Dholera API',
     version: '1.0.0',
     endpoints: {
