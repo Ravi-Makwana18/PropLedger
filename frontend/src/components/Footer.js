@@ -14,8 +14,8 @@ const Footer = () => {
             <span className="fp-brand-name">Destination Dholera Pvt. Ltd.</span>
           </div>
           <p className="fp-brand-desc">
-            Your trusted partner for land and plot buying, selling, N.A. file processing,
-            and complete property solutions in Dholera SIR, Gujarat.
+            Your trusted Partner for Land / Plot Buying and Selling, N.A. File Processing,
+            and Complete Property Solutions in Dholera SIR, Gujarat.
           </p>
           <div className="fp-social-row">
             <span className="fp-social-label">Follow us</span>

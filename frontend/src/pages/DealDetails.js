@@ -28,7 +28,7 @@ const modeColors = {
   CASH: { bg: '#f0fdf4', color: '#15803d' },
   CHEQUE: { bg: '#fff7ed', color: '#c2410c' },
   UPI: { bg: '#fdf4ff', color: '#9333ea' },
-  NA: { bg: '#f1f5f9', color: '#64748b' },
+  ANGADIA: { bg: '#fef9c3', color: '#92400e' },
   OTHER: { bg: '#f8fafc', color: '#475569' },
 };
 
@@ -390,8 +390,11 @@ const DealDetails = () => {
             <h2 className="dd-section-title">Deal Information</h2>
           </div>
           <div className="dd-info-grid">
-            <InfoPill label="Village Name" value={deal.villageName} />
-            <InfoPill label="Survey No." value={deal.surveyNumber} />
+            <InfoPill label="Deal Type" value={
+              <span className={`deal-type-badge deal-type-badge--${(deal.dealType || 'Buy').toLowerCase()}`}>
+                {deal.dealType || 'Buy'}
+              </span>
+            } />
             <InfoPill label="Unit Price" value={formatCurrency(deal.pricePerSqYard)} />
             <InfoPill label="Total Area" value={`${deal.totalSqYard.toLocaleString('en-IN')} sq.yd`} />
             <InfoPill label="Total Amount" value={formatCurrency(deal.totalAmount)} accent />
@@ -463,7 +466,7 @@ const DealDetails = () => {
                       <option value="CASH">CASH</option>
                       <option value="CHEQUE">CHEQUE</option>
                       <option value="UPI">UPI</option>
-                      <option value="NA">NA</option>
+                      <option value="ANGADIA">ANGADIA</option>
                       <option value="OTHER">OTHER</option>
                     </select>
                   </div>
@@ -568,7 +571,7 @@ const DealDetails = () => {
                             <option value="CASH">CASH</option>
                             <option value="CHEQUE">CHEQUE</option>
                             <option value="UPI">UPI</option>
-                            <option value="NA">NA</option>
+                            <option value="ANGADIA">ANGADIA</option>
                             <option value="OTHER">OTHER</option>
                           </select>
                         </td>
@@ -645,16 +648,14 @@ const DealDetails = () => {
                               {confirmDeletePaymentId === payment._id ? (
                                 <>
                                   <button
-                                    className="dd-icon-btn dd-icon-btn--delete"
+                                    className="dd-icon-btn dd-icon-btn--confirm-yes"
                                     onClick={() => handleDeletePayment(payment._id)}
                                     title="Confirm delete"
-                                    style={{ width: 'auto', padding: '0 0.5rem', fontSize: '0.78rem', fontWeight: 700 }}
                                   >✓ Yes</button>
                                   <button
-                                    className="dd-icon-btn dd-icon-btn--cancel"
+                                    className="dd-icon-btn dd-icon-btn--confirm-no"
                                     onClick={() => setConfirmDeletePaymentId(null)}
                                     title="Cancel"
-                                    style={{ width: 'auto', padding: '0 0.5rem', fontSize: '0.78rem', fontWeight: 700 }}
                                   >✕ No</button>
                                 </>
                               ) : (

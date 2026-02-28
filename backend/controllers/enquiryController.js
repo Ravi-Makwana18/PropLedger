@@ -32,6 +32,28 @@ exports.getUnreadCount = async (req, res) => {
     res.status(500).json({ message: 'Server error.' });
   }
 };
+
+// Delete a single enquiry
+exports.deleteEnquiry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const enquiry = await Enquiry.findByIdAndDelete(id);
+    if (!enquiry) return res.status(404).json({ message: 'Enquiry not found.' });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error.' });
+  }
+};
+
+// Delete all enquiries
+exports.deleteAllEnquiries = async (req, res) => {
+  try {
+    await Enquiry.deleteMany({});
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error.' });
+  }
+};
 const Enquiry = require('../models/Enquiry');
 
 exports.submitEnquiry = async (req, res) => {

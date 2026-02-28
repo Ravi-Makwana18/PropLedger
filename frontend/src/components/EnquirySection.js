@@ -74,10 +74,13 @@ const EnquirySection = () => {
       <div className="enquiry-container" style={{ position: 'relative', zIndex: 1 }}>
         <div className="enquiry-left" style={{ padding: '2.5rem 0', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2rem' }}>
           <h2 className="enquiry-heading" style={{ fontSize: '2.5rem', fontWeight: 800, color: '#1f2937', marginBottom: '1.2rem', letterSpacing: '-1px' }}>Have Questions? Let's Help You.</h2>
-          <p className="enquiry-trust" style={{ fontSize: '1.15rem', color: '#2563eb', fontWeight: 500, marginBottom: '1.2rem', maxWidth: 420 }}>Your trusted partner for land, plot, and property solutions in Dholera SIR.</p>
+          <p className="enquiry-trust" style={{ fontSize: '1.15rem', color: '#104ccbe7', fontWeight: 500, marginBottom: '1.2rem', maxWidth: 420 }}>Your trusted partner for land, plot, and property solutions in Dholera SIR.</p>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
             <li style={{ display: 'flex', alignItems: 'center', fontSize: '1.08rem', color: '#374151', fontWeight: 600 }}>
               <span style={{ color: '#2ecc71', fontSize: '1.3rem', marginRight: '0.7rem' }}>✅</span>Verified Land Deals
+            </li>
+            <li style={{ display: 'flex', alignItems: 'center', fontSize: '1.08rem', color: '#374151', fontWeight: 600 }}>
+              <span style={{ color: '#2ecc71', fontSize: '1.3rem', marginRight: '0.7rem' }}>✅</span>Plot Enquiries
             </li>
             <li style={{ display: 'flex', alignItems: 'center', fontSize: '1.08rem', color: '#374151', fontWeight: 600 }}>
               <span style={{ color: '#2563eb', fontSize: '1.3rem', marginRight: '0.7rem' }}>✅</span>Legal N.A. File Assistance

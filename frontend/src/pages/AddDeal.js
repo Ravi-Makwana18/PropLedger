@@ -25,6 +25,7 @@ const AddDeal = () => {
   const [formData, setFormData] = useState({
     villageName: '',
     surveyNumber: '',
+    dealType: 'Buy',
     pricePerSqYard: '',
     totalSqYard: '',
     deadlineStartDate: '',
@@ -46,6 +47,7 @@ const AddDeal = () => {
       const payload = {
         villageName: formData.villageName,
         surveyNumber: formData.surveyNumber,
+        dealType: formData.dealType,
         pricePerSqYard: parseFloat(formData.pricePerSqYard),
         totalSqYard: parseFloat(formData.totalSqYard),
         deadlineStartDate: formData.deadlineStartDate,
@@ -132,6 +134,27 @@ const AddDeal = () => {
                   onChange={handleChange}
                   required
                 />
+              </Field>
+            </div>
+            {/* Deal Type row — full width below Village/Survey */}
+            <div className="ad-deal-type-row">
+              <Field label="Deal Type" required>
+                <div className="ad-deal-type-select-wrap">
+                  <select
+                    className="ad-input ad-deal-type-select"
+                    name="dealType"
+                    value={formData.dealType}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="Buy">Buy</option>
+                    <option value="Sell">Sell</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <span className={`ad-deal-type-badge ad-deal-type-badge--${formData.dealType.toLowerCase()}`}>
+                    {formData.dealType === 'Buy' ? 'Purchase Deal' : formData.dealType === 'Sell' ? 'Sale Deal' : 'Other Deal'}
+                  </span>
+                </div>
               </Field>
             </div>
           </div>
@@ -238,7 +261,7 @@ const AddDeal = () => {
               {loading ? (
                 <><span className="ad-spinner" /> Creating Deal…</>
               ) : (
-                <>✅ Create Deal</>
+                <>Create Deal</>
               )}
             </button>
           </div>

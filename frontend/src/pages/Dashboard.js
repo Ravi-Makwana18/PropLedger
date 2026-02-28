@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
   const { isAdmin } = useAuth();
+  const location = useLocation();
   const [deals, setDeals] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [dealTypeFilter, setDealTypeFilter] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    const t = params.get('type');
+    return (t === 'Buy' || t === 'Sell' || t === 'Other') ? t : 'All';
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [editingId, setEditingId] = useState(null);
@@ -14,6 +20,7 @@ const Dashboard = () => {
   const [editFormData, setEditFormData] = useState({
     villageName: '',
     surveyNumber: '',
+    dealType: 'Buy',
     pricePerSqYard: '',
     totalSqYard: '',
     totalAmount: '',
@@ -35,6 +42,17 @@ const Dashboard = () => {
   useEffect(() => {
     fetchDeals();
   }, []);
+
+  // Read ?type=Buy|Sell from URL and set filter
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const typeParam = params.get('type');
+    if (typeParam === 'Buy' || typeParam === 'Sell' || typeParam === 'Other') {
+      setDealTypeFilter(typeParam);
+    } else {
+      setDealTypeFilter('All');
+    }
+  }, [location.search]);
 
   const fetchDeals = async () => {
     try {
@@ -75,6 +93,7 @@ const Dashboard = () => {
     setEditFormData({
       villageName: deal.villageName,
       surveyNumber: deal.surveyNumber,
+      dealType: deal.dealType || 'Buy',
       pricePerSqYard: deal.pricePerSqYard,
       totalSqYard: deal.totalSqYard,
       totalAmount: deal.totalAmount,
@@ -84,7 +103,7 @@ const Dashboard = () => {
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setEditFormData({ villageName: '', surveyNumber: '', pricePerSqYard: '', totalSqYard: '', totalAmount: '', paymentDeadlineMonth: '' });
+    setEditFormData({ villageName: '', surveyNumber: '', dealType: 'Buy', pricePerSqYard: '', totalSqYard: '', totalAmount: '', paymentDeadlineMonth: '' });
   };
 
   const handleEditFormChange = (e) => {
@@ -105,7 +124,7 @@ const Dashboard = () => {
       const { data } = await API.put(`/api/deals/${dealId}`, editFormData);
       setDeals(deals.map(deal => deal._id === dealId ? data : deal));
       setEditingId(null);
-      setEditFormData({ villageName: '', surveyNumber: '', pricePerSqYard: '', totalSqYard: '', totalAmount: '', paymentDeadlineMonth: '' });
+      setEditFormData({ villageName: '', surveyNumber: '', dealType: 'Buy', pricePerSqYard: '', totalSqYard: '', totalAmount: '', paymentDeadlineMonth: '' });
       alert('Deal updated successfully');
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to update deal');
@@ -148,12 +167,21 @@ const Dashboard = () => {
   }
 
   // Filter and sort deals for rendering
+  // Filter by search term
   const getFilteredDeals = () => {
-    if (!searchTerm.trim()) return deals;
-    return deals.filter(deal =>
-      deal.villageName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      deal.surveyNumber?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    let filtered = deals;
+    // Apply deal type filter
+    if (dealTypeFilter !== 'All') {
+      filtered = filtered.filter(deal => (deal.dealType || 'Buy') === dealTypeFilter);
+    }
+    // Apply search term filter
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(deal =>
+        deal.villageName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        deal.surveyNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    return filtered;
   };
 
   const getSortedDeals = (filteredDeals) => {
@@ -196,276 +224,308 @@ const Dashboard = () => {
   const sortedDeals = getSortedDeals(filteredDeals);
 
   return (
-    <div>
-      <div className="container">
-        {error && <div className="alert alert-error">{error}</div>}
+    <div className="dashboard-page">
+      {error && <div className="alert alert-error">{error}</div>}
 
-        <div className="dashboard-card">
-
-          {/* ── Search Bar ────────────────────────── */}
-          <div className="dashboard-search">
-            <div className="search-field">
-              <svg className="search-field-icon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <input
-                type="text"
-                className="search-field-input"
-                placeholder="Search by village name or survey number…"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              />
-              {searchTerm && (
-                <button
-                  className="search-field-clear"
-                  onClick={() => { setSearchTerm(''); fetchDeals(); }}
-                  title="Clear"
-                  aria-label="Clear search"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </button>
-              )}
-            </div>
-            <button onClick={handleSearch} className="search-submit-btn" title="Search" aria-label="Search">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      {/* ── Search Bar ────────────────────────── */}
+      <div className="dashboard-search">
+        <div className="search-field">
+          <svg className="search-field-icon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            type="text"
+            className="search-field-input"
+            placeholder="Search by village name or survey number…"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+          />
+          {searchTerm && (
+            <button
+              className="search-field-clear"
+              onClick={() => { setSearchTerm(''); fetchDeals(); }}
+              title="Clear"
+              aria-label="Clear search"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             </button>
-            {/* Sort Button */}
-            <div className="sort-dropdown-wrap">
-              <button
-                className={`sort-btn${sortOpen ? ' sort-btn--active' : ''}`}
-                onClick={() => setSortOpen((v) => !v)}
-                aria-haspopup="listbox"
-                aria-expanded={sortOpen}
-                type="button"
-                title={sortOptions.find(o => o.value === sortOption)?.label || 'Sort'}
-                aria-label="Sort"
-              >
-                {/* Professional sort icon: 3 lines decreasing in width */}
-                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="6" y1="12" x2="18" y2="12" />
-                  <line x1="9" y1="18" x2="15" y2="18" />
-                </svg>
-                {sortOpen ? (
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24" style={{ marginLeft: 4 }}>
-                    <polyline points="18 15 12 9 6 15" />
-                  </svg>
-                ) : (
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24" style={{ marginLeft: 4 }}>
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                )}
-              </button>
-              {sortOpen && (
-                <ul className="sort-dropdown" tabIndex={-1} role="listbox">
-                  {sortOptions.map(opt => (
-                    <li
-                      key={opt.value}
-                      className={`sort-dropdown-option${sortOption === opt.value ? ' sort-dropdown-option--active' : ''}`}
-                      onClick={() => { setSortOption(opt.value); setSortOpen(false); }}
-                      role="option"
-                      aria-selected={sortOption === opt.value}
-                    >
-                      {opt.label}
-                      {/* Arrow indicator for applicable sorts */}
-                      {['unitPriceAsc', 'unitPriceDesc', 'totalAmountAsc', 'totalAmountDesc', 'deadline'].includes(opt.value) && sortOption === opt.value && (
-                        <span className="sort-arrow">{opt.value.endsWith('Asc') ? '↑' : opt.value.endsWith('Desc') ? '↓' : '→'}</span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-          {isAdmin && (
-            <div className="toolbar-row">
-              <div className="dashboard-deals-count-badge">
-                {(() => {
-                  const total = deals.length;
-                  const filtered = sortedDeals.length;
-                  if (!searchTerm) return <span>{total} Total Deals</span>;
-                  if (filtered === total) return <span>{total} Total Deals</span>;
-                  return <span>Showing {filtered} of {total}</span>;
-                })()}
-              </div>
-              <Link to="/add-deal" className="btn-add-deal">
-                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                Add New Deal
-              </Link>
-            </div>
           )}
-
-          {sortedDeals.length === 0 ? (
-            <p className="text-center" style={{ padding: '2rem', color: 'var(--text-secondary)' }}>No deals found</p>
-          ) : (
-            <>
-              {/* ── Desktop / Tablet Table ─────────── */}
-              <div className="deals-table-wrap">
-                <table className="deals-table">
-                  <thead>
-                    <tr>
-                      <th>Village Name</th>
-                      <th>Survey No.</th>
-                      <th>Unit Price</th>
-                      <th>Total Area</th>
-                      <th>Total Amount</th>
-                      <th>Payment Deadline</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedDeals.map((deal) => (
-                      <tr key={deal._id}>
-                        {editingId === deal._id ? (
-                          <>
-                            <td><input type="text" name="villageName" value={editFormData.villageName} onChange={handleEditFormChange} className="form-input edit-input" /></td>
-                            <td><input type="text" name="surveyNumber" value={editFormData.surveyNumber} onChange={handleEditFormChange} className="form-input edit-input" /></td>
-                            <td><input type="number" name="pricePerSqYard" value={editFormData.pricePerSqYard} onChange={handleEditFormChange} className="form-input edit-input" /></td>
-                            <td><input type="number" name="totalSqYard" value={editFormData.totalSqYard} onChange={handleEditFormChange} className="form-input edit-input" /></td>
-                            <td><input type="number" name="totalAmount" value={editFormData.totalAmount} readOnly className="form-input edit-input edit-input--readonly" /></td>
-                            <td><input type="date" name="paymentDeadlineMonth" value={editFormData.paymentDeadlineMonth ? new Date(editFormData.paymentDeadlineMonth).toISOString().split('T')[0] : ''} onChange={handleEditFormChange} className="form-input edit-input" /></td>
-                            <td>
-                              <div className="action-group">
-                                <button onClick={() => handleSaveEdit(deal._id)} className="action-btn action-btn--save">Save</button>
-                                <button onClick={handleCancelEdit} className="action-btn action-btn--cancel">Cancel</button>
-                              </div>
-                            </td>
-                          </>
-                        ) : (
-                          <>
-                            <td className="td-name">{deal.villageName}</td>
-                            <td className="td-num">{deal.surveyNumber}</td>
-                            <td className="td-num">{deal.pricePerSqYard ? formatCurrency(deal.pricePerSqYard) : 'N/A'}</td>
-                            <td className="td-num">{deal.totalSqYard.toLocaleString('en-IN')}</td>
-                            <td className="td-num td-amount">{formatCurrency(deal.totalAmount)}</td>
-                            <td className="td-num">{deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : formatDate(deal.paymentDeadlineMonth)}</td>
-                            <td>
-                              <div className="action-group">
-                                <Link to={`/deals/${deal._id}`} className="action-btn action-btn--view">View</Link>
-                                {isAdmin && (
-                                  <>
-                                    <button onClick={() => handleEdit(deal)} className="action-btn action-btn--edit" title="Edit"><EditIconSvg /></button>
-                                    {confirmDeleteId === deal._id ? (
-                                      <>
-                                        <button onClick={() => handleDelete(deal._id)} className="action-btn action-btn--delete" title="Confirm delete" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>Yes</button>
-                                        <button onClick={() => setConfirmDeleteId(null)} className="action-btn action-btn--cancel" title="Cancel" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>No</button>
-                                      </>
-                                    ) : (
-                                      <button onClick={() => setConfirmDeleteId(deal._id)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
-                                    )}
-                                  </>
-                                )}
-                              </div>
-                            </td>
-                          </>
-                        )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* ── Mobile Card View ───────────────── */}
-              <div className="deals-cards">
-                {sortedDeals.map((deal) => (
-                  <div key={deal._id} className={`deal-card${editingId === deal._id ? ' deal-card--editing' : ''}`}>
-                    {editingId === deal._id ? (
-                      /* ── Edit mode ── */
-                      <>
-                        <div className="deal-card-name" style={{ marginBottom: '1rem' }}>Editing: {deal.villageName}</div>
-                        <div className="deal-card-edit-grid">
-                          <div className="deal-card-field">
-                            <span className="deal-card-label">Village Name</span>
-                            <input type="text" name="villageName" value={editFormData.villageName} onChange={handleEditFormChange} className="form-input edit-input" />
-                          </div>
-                          <div className="deal-card-field">
-                            <span className="deal-card-label">Survey No.</span>
-                            <input type="text" name="surveyNumber" value={editFormData.surveyNumber} onChange={handleEditFormChange} className="form-input edit-input" />
-                          </div>
-                          <div className="deal-card-field">
-                            <span className="deal-card-label">Unit Price (₹)</span>
-                            <input type="number" name="pricePerSqYard" value={editFormData.pricePerSqYard} onChange={handleEditFormChange} className="form-input edit-input" />
-                          </div>
-                          <div className="deal-card-field">
-                            <span className="deal-card-label">Total Area (sq.yd)</span>
-                            <input type="number" name="totalSqYard" value={editFormData.totalSqYard} onChange={handleEditFormChange} className="form-input edit-input" />
-                          </div>
-                          <div className="deal-card-field">
-                            <span className="deal-card-label">Total Amount (auto)</span>
-                            <input type="number" name="totalAmount" value={editFormData.totalAmount} readOnly className="form-input edit-input edit-input--readonly" />
-                          </div>
-                          <div className="deal-card-field">
-                            <span className="deal-card-label">Payment Deadline</span>
-                            <input type="date" name="paymentDeadlineMonth" value={editFormData.paymentDeadlineMonth ? new Date(editFormData.paymentDeadlineMonth).toISOString().split('T')[0] : ''} onChange={handleEditFormChange} className="form-input edit-input" />
-                          </div>
-                        </div>
-                        <div className="deal-card-actions" style={{ marginTop: '1rem' }}>
-                          <button onClick={() => handleSaveEdit(deal._id)} className="action-btn action-btn--save" style={{ flex: 1, justifyContent: 'center' }}>Save Changes</button>
-                          <button onClick={handleCancelEdit} className="action-btn action-btn--cancel">Cancel</button>
-                        </div>
-                      </>
-                    ) : (
-                      /* ── Display mode ── */
-                      <>
-                        <div className="deal-card-name">{deal.villageName}</div>
-                        <div className="deal-card-grid">
-                          <div className="deal-card-field">
-                            <span className="deal-card-label">Survey No.</span>
-                            <span className="deal-card-value">{deal.surveyNumber}</span>
-                          </div>
-                          <div className="deal-card-field">
-                            <span className="deal-card-label">Unit Price</span>
-                            <span className="deal-card-value">{deal.pricePerSqYard ? formatCurrency(deal.pricePerSqYard) : 'N/A'}</span>
-                          </div>
-                          <div className="deal-card-field">
-                            <span className="deal-card-label">Total Area</span>
-                            <span className="deal-card-value">{deal.totalSqYard.toLocaleString('en-IN')}</span>
-                          </div>
-                          <div className="deal-card-field">
-                            <span className="deal-card-label">Total Amount</span>
-                            <span className="deal-card-value deal-card-amount">{formatCurrency(deal.totalAmount)}</span>
-                          </div>
-                          <div className="deal-card-field">
-                            <span className="deal-card-label">Deadline</span>
-                            <span className="deal-card-value">{deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : formatDate(deal.paymentDeadlineMonth)}</span>
-                          </div>
-                        </div>
-                        <div className="deal-card-actions">
-                          <Link to={`/deals/${deal._id}`} className="action-btn action-btn--view">View Details</Link>
-                          {isAdmin && (
-                            <>
-                              <button onClick={() => handleEdit(deal)} className="action-btn action-btn--edit" title="Edit"><EditIconSvg /></button>
-                              {confirmDeleteId === deal._id ? (
-                                <>
-                                  <button onClick={() => handleDelete(deal._id)} className="action-btn action-btn--delete" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>Yes</button>
-                                  <button onClick={() => setConfirmDeleteId(null)} className="action-btn action-btn--cancel" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>No</button>
-                                </>
-                              ) : (
-                                <button onClick={() => setConfirmDeleteId(deal._id)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </>
+        </div>
+        <button onClick={handleSearch} className="search-submit-btn" title="Search" aria-label="Search">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+        {/* Sort Button */}
+        <div className="sort-dropdown-wrap">
+          <button
+            className={`sort-btn${sortOpen ? ' sort-btn--active' : ''}`}
+            onClick={() => setSortOpen((v) => !v)}
+            aria-haspopup="listbox"
+            aria-expanded={sortOpen}
+            type="button"
+            title={sortOptions.find(o => o.value === sortOption)?.label || 'Sort'}
+            aria-label="Sort"
+          >
+            {/* Professional sort icon: 3 lines decreasing in width */}
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="6" y1="12" x2="18" y2="12" />
+              <line x1="9" y1="18" x2="15" y2="18" />
+            </svg>
+            {sortOpen ? (
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24" style={{ marginLeft: 4 }}>
+                <polyline points="18 15 12 9 6 15" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24" style={{ marginLeft: 4 }}>
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            )}
+          </button>
+          {sortOpen && (
+            <ul className="sort-dropdown" tabIndex={-1} role="listbox">
+              {sortOptions.map(opt => (
+                <li
+                  key={opt.value}
+                  className={`sort-dropdown-option${sortOption === opt.value ? ' sort-dropdown-option--active' : ''}`}
+                  onClick={() => { setSortOption(opt.value); setSortOpen(false); }}
+                  role="option"
+                  aria-selected={sortOption === opt.value}
+                >
+                  {opt.label}
+                  {/* Arrow indicator for applicable sorts */}
+                  {['unitPriceAsc', 'unitPriceDesc', 'totalAmountAsc', 'totalAmountDesc', 'deadline'].includes(opt.value) && sortOption === opt.value && (
+                    <span className="sort-arrow">{opt.value.endsWith('Asc') ? '↑' : opt.value.endsWith('Desc') ? '↓' : '→'}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
           )}
         </div>
       </div>
+      {/* Deal Type Filter Pills */}
+      <div className="deal-type-filter-bar">
+        {['All', 'Buy', 'Sell', 'Other'].map(type => (
+          <button
+            key={type}
+            className={`deal-type-pill${dealTypeFilter === type ? ' deal-type-pill--active' : ''} deal-type-pill--${type.toLowerCase()}`}
+            onClick={() => setDealTypeFilter(type)}
+            type="button"
+          >
+            {type === 'Buy' && <span className="deal-type-pill-dot deal-type-pill-dot--buy" />}
+            {type === 'Sell' && <span className="deal-type-pill-dot deal-type-pill-dot--sell" />}
+            {type === 'Other' && <span className="deal-type-pill-dot deal-type-pill-dot--other" />}
+            {type === 'All' ? 'All Deals' : `${type} Deals`}
+          </button>
+        ))}
+      </div>
+      {isAdmin && (
+        <div className="toolbar-row">
+          <div className="dashboard-deals-count-badge">
+            {(() => {
+              const total = deals.length;
+              const filtered = sortedDeals.length;
+              if (!searchTerm && dealTypeFilter === 'All') return <span>{total} Total Deals</span>;
+              if (filtered === total) return <span>{total} Total Deals</span>;
+              return <span>Showing {filtered} of {total}</span>;
+            })()}
+          </div>
+          <Link to="/add-deal" className="btn-add-deal">
+            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add New Deal
+          </Link>
+        </div>
+      )}
+
+      {sortedDeals.length === 0 ? (
+        <p className="text-center" style={{ padding: '2rem', color: 'var(--text-secondary)' }}>No deals found</p>
+      ) : (
+        <>
+          {/* ── Desktop / Tablet Table ─────────── */}
+          <div className="deals-table-wrap">
+            <table className="deals-table">
+              <thead>
+                <tr>
+                  <th>Village Name</th>
+                  <th>Survey No.</th>
+                  <th>Deal Type</th>
+                  <th>Unit Price</th>
+                  <th>Total Area</th>
+                  <th>Total Amount</th>
+                  <th>Payment Deadline</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedDeals.map((deal) => (
+                  <tr key={deal._id}>
+                    {editingId === deal._id ? (
+                      <>
+                        <td><input type="text" name="villageName" value={editFormData.villageName} onChange={handleEditFormChange} className="form-input edit-input" /></td>
+                        <td><input type="text" name="surveyNumber" value={editFormData.surveyNumber} onChange={handleEditFormChange} className="form-input edit-input" /></td>
+                        <td>
+                          <select name="dealType" value={editFormData.dealType} onChange={handleEditFormChange} className="form-input edit-input">
+                            <option value="Buy">Buy</option>
+                            <option value="Sell">Sell</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </td>
+                        <td><input type="number" name="pricePerSqYard" value={editFormData.pricePerSqYard} onChange={handleEditFormChange} className="form-input edit-input" /></td>
+                        <td><input type="number" name="totalSqYard" value={editFormData.totalSqYard} onChange={handleEditFormChange} className="form-input edit-input" /></td>
+                        <td><input type="number" name="totalAmount" value={editFormData.totalAmount} readOnly className="form-input edit-input edit-input--readonly" /></td>
+                        <td><input type="date" name="paymentDeadlineMonth" value={editFormData.paymentDeadlineMonth ? new Date(editFormData.paymentDeadlineMonth).toISOString().split('T')[0] : ''} onChange={handleEditFormChange} className="form-input edit-input" /></td>
+                        <td>
+                          <div className="action-group">
+                            <button onClick={() => handleSaveEdit(deal._id)} className="action-btn action-btn--save">Save</button>
+                            <button onClick={handleCancelEdit} className="action-btn action-btn--cancel">Cancel</button>
+                          </div>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="td-name">{deal.villageName}</td>
+                        <td className="td-num">{deal.surveyNumber}</td>
+                        <td>
+                          <span className={`deal-type-badge deal-type-badge--${(deal.dealType || 'Buy').toLowerCase()}`}>
+                            {deal.dealType || 'Buy'}
+                          </span>
+                        </td>
+                        <td className="td-num">{deal.pricePerSqYard ? formatCurrency(deal.pricePerSqYard) : 'N/A'}</td>
+                        <td className="td-num">{deal.totalSqYard.toLocaleString('en-IN')}</td>
+                        <td className="td-num td-amount">{formatCurrency(deal.totalAmount)}</td>
+                        <td className="td-num">{deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : formatDate(deal.paymentDeadlineMonth)}</td>
+                        <td>
+                          <div className="action-group">
+                            <Link to={`/deals/${deal._id}`} className="action-btn action-btn--view">View</Link>
+                            {isAdmin && (
+                              <>
+                                <button onClick={() => handleEdit(deal)} className="action-btn action-btn--edit" title="Edit"><EditIconSvg /></button>
+                                {confirmDeleteId === deal._id ? (
+                                  <>
+                                    <button onClick={() => handleDelete(deal._id)} className="action-btn action-btn--delete" title="Confirm delete" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>Yes</button>
+                                    <button onClick={() => setConfirmDeleteId(null)} className="action-btn action-btn--cancel" title="Cancel" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>No</button>
+                                  </>
+                                ) : (
+                                  <button onClick={() => setConfirmDeleteId(deal._id)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* ── Mobile Card View ───────────────── */}
+          <div className="deals-cards">
+            {sortedDeals.map((deal) => (
+              <div key={deal._id} className={`deal-card${editingId === deal._id ? ' deal-card--editing' : ''}`}>
+                {editingId === deal._id ? (
+                  /* ── Edit mode ── */
+                  <>
+                    <div className="deal-card-name" style={{ marginBottom: '1rem' }}>Editing: {deal.villageName}</div>
+                    <div className="deal-card-edit-grid">
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Village Name</span>
+                        <input type="text" name="villageName" value={editFormData.villageName} onChange={handleEditFormChange} className="form-input edit-input" />
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Survey No.</span>
+                        <input type="text" name="surveyNumber" value={editFormData.surveyNumber} onChange={handleEditFormChange} className="form-input edit-input" />
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Unit Price (₹)</span>
+                        <input type="number" name="pricePerSqYard" value={editFormData.pricePerSqYard} onChange={handleEditFormChange} className="form-input edit-input" />
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Total Area (sq.yd)</span>
+                        <input type="number" name="totalSqYard" value={editFormData.totalSqYard} onChange={handleEditFormChange} className="form-input edit-input" />
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Total Amount (auto)</span>
+                        <input type="number" name="totalAmount" value={editFormData.totalAmount} readOnly className="form-input edit-input edit-input--readonly" />
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Payment Deadline</span>
+                        <input type="date" name="paymentDeadlineMonth" value={editFormData.paymentDeadlineMonth ? new Date(editFormData.paymentDeadlineMonth).toISOString().split('T')[0] : ''} onChange={handleEditFormChange} className="form-input edit-input" />
+                      </div>
+                    </div>
+                    <div className="deal-card-actions" style={{ marginTop: '1rem' }}>
+                      <button onClick={() => handleSaveEdit(deal._id)} className="action-btn action-btn--save" style={{ flex: 1, justifyContent: 'center' }}>Save Changes</button>
+                      <button onClick={handleCancelEdit} className="action-btn action-btn--cancel">Cancel</button>
+                    </div>
+                  </>
+                ) : (
+                  /* ── Display mode ── */
+                  <>
+                    <div className="deal-card-name">{deal.villageName}</div>
+                    <div className="deal-card-grid">
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Survey No.</span>
+                        <span className="deal-card-value">{deal.surveyNumber}</span>
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Deal Type</span>
+                        <span className="deal-card-value">
+                          <span className={`deal-type-badge deal-type-badge--${(deal.dealType || 'Buy').toLowerCase()}`}>
+                            {deal.dealType || 'Buy'}
+                          </span>
+                        </span>
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Unit Price</span>
+                        <span className="deal-card-value">{deal.pricePerSqYard ? formatCurrency(deal.pricePerSqYard) : 'N/A'}</span>
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Total Area</span>
+                        <span className="deal-card-value">{deal.totalSqYard.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Total Amount</span>
+                        <span className="deal-card-value deal-card-amount">{formatCurrency(deal.totalAmount)}</span>
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Deadline</span>
+                        <span className="deal-card-value">{deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : formatDate(deal.paymentDeadlineMonth)}</span>
+                      </div>
+                    </div>
+                    <div className="deal-card-actions">
+                      <Link to={`/deals/${deal._id}`} className="action-btn action-btn--view">View Details</Link>
+                      {isAdmin && (
+                        <>
+                          <button onClick={() => handleEdit(deal)} className="action-btn action-btn--edit" title="Edit"><EditIconSvg /></button>
+                          {confirmDeleteId === deal._id ? (
+                            <>
+                              <button onClick={() => handleDelete(deal._id)} className="action-btn action-btn--delete" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>Yes</button>
+                              <button onClick={() => setConfirmDeleteId(null)} className="action-btn action-btn--cancel" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>No</button>
+                            </>
+                          ) : (
+                            <button onClick={() => setConfirmDeleteId(deal._id)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };

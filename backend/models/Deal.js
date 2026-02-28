@@ -13,6 +13,12 @@ const dealSchema = new mongoose.Schema({
     trim: true,
     index: true
   },
+  dealType: {
+    type: String,
+    enum: ['Buy', 'Sell', 'Other'],
+    required: [true, 'Please specify deal type (Buy, Sell or Other)'],
+    default: 'Buy'
+  },
   pricePerSqYard: {
     type: Number,
     required: [true, 'Please provide price per sq. yard'],
@@ -49,7 +55,7 @@ const dealSchema = new mongoose.Schema({
 });
 
 // Calculate total amount and banakhat amount before saving
-dealSchema.pre('save', async function() {
+dealSchema.pre('save', async function () {
   this.totalAmount = this.pricePerSqYard * this.totalSqYard;
   this.banakhatAmount = this.totalAmount * 0.25; // 25% of total amount
 });

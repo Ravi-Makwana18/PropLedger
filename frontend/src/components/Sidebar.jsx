@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
 
@@ -52,6 +52,35 @@ const ADMIN_ITEMS = [
         )
     },
     {
+        to: '/dashboard?type=Buy',
+        label: 'Buy Deals',
+        icon: (
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                <polyline points="17 6 23 6 23 12" />
+            </svg>
+        )
+    },
+    {
+        to: '/dashboard?type=Sell',
+        label: 'Sell Deals',
+        icon: (
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+                <polyline points="17 18 23 18 23 12" />
+            </svg>
+        )
+    },
+    {
+        to: '/dashboard?type=Other',
+        label: 'Other Deals',
+        icon: (
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />
+            </svg>
+        )
+    },
+    {
         to: '/admin/notifications',
         label: 'Notifications',
         icon: (
@@ -66,6 +95,7 @@ const ADMIN_ITEMS = [
 const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
     const { user, isAdmin, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogout = () => {
         logout();
@@ -88,7 +118,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
                     <img src={logo} alt="Destination Dholera" className="sidebar-logo" />
                     {!collapsed && (
                         <div className="sidebar-brand-text">
-                            <span className="sidebar-brand-name">Dholera</span>
+                            <span className="sidebar-brand-name">DDPL</span>
                             <span className="sidebar-brand-tagline">Admin Panel</span>
                         </div>
                     )}
@@ -120,18 +150,34 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
                     {isAdmin && (
                         <div className="sidebar-nav-section">
                             {!collapsed && <span className="sidebar-nav-label">Admin</span>}
-                            {ADMIN_ITEMS.map(item => (
-                                <NavLink
-                                    key={item.to}
-                                    to={item.to}
-                                    className={({ isActive }) => `sidebar-nav-item${isActive ? ' sidebar-nav-item--active' : ''}`}
-                                    onClick={onClose}
-                                    title={collapsed ? item.label : undefined}
-                                >
-                                    <span className="sidebar-nav-icon">{item.icon}</span>
-                                    {!collapsed && <span className="sidebar-nav-text">{item.label}</span>}
-                                </NavLink>
-                            ))}
+                            {ADMIN_ITEMS.map(item => {
+                                // For Buy/Sell Deals: match both path and query param
+                                const isActive = location.pathname + location.search === item.to ||
+                                    (item.to === '/dashboard?type=Buy' && location.pathname === '/dashboard' && new URLSearchParams(location.search).get('type') === 'Buy') ||
+                                    (item.to === '/dashboard?type=Sell' && location.pathname === '/dashboard' && new URLSearchParams(location.search).get('type') === 'Sell') ||
+                                    (item.to === '/dashboard?type=Other' && location.pathname === '/dashboard' && new URLSearchParams(location.search).get('type') === 'Other');
+                                return (
+                                    <NavLink
+                                        key={item.to}
+                                        to={item.to}
+                                        className={() => `sidebar-nav-item${isActive ? ' sidebar-nav-item--active' : ''}`}
+                                        onClick={onClose}
+                                        title={collapsed ? item.label : undefined}
+                                    >
+                                        <span className="sidebar-nav-icon">{item.icon}</span>
+                                        {!collapsed && <span className="sidebar-nav-text">{item.label}</span>}
+                                        {!collapsed && item.label === 'Buy Deals' && (
+                                            <span className="sidebar-deal-badge sidebar-deal-badge--buy">Buy</span>
+                                        )}
+                                        {!collapsed && item.label === 'Sell Deals' && (
+                                            <span className="sidebar-deal-badge sidebar-deal-badge--sell">Sell</span>
+                                        )}
+                                        {!collapsed && item.label === 'Other Deals' && (
+                                            <span className="sidebar-deal-badge sidebar-deal-badge--other">Other</span>
+                                        )}
+                                    </NavLink>
+                                );
+                            })}
                         </div>
                     )}
                 </nav>

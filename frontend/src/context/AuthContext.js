@@ -67,13 +67,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    // Clear token from localStorage first (critical for iOS Safari)
+    // Always clear local state immediately — never depend on backend success
     localStorage.removeItem('token');
-    // Clear cookie on backend
-    API.post('/api/auth/logout', {}, { withCredentials: true }).finally(() => {
-      setUser(null);
-      sessionStorage.clear();
-    });
+    sessionStorage.clear();
+    setUser(null);
+    // Best-effort: tell the backend to clear the cookie (ignore errors)
+    API.post('/api/auth/logout', {}, { withCredentials: true }).catch(() => { });
   };
 
   const value = {

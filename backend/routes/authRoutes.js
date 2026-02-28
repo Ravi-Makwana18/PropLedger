@@ -19,6 +19,6 @@ router.post('/send-otp', asyncHandler(sendOTPController));
 router.post('/verify-otp', asyncHandler(verifyOTP));
 router.get('/profile', protect, asyncHandler(getProfile));
 router.get('/verify', protect, asyncHandler(verifyToken));
-router.post('/logout', protect, asyncHandler(logout));
+router.post('/logout', asyncHandler(logout));
 
 module.exports = router;

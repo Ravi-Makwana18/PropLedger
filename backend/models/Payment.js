@@ -16,7 +16,7 @@ const paymentSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide mode of payment'],
     enum: {
-      values: ['NEFT', 'RTGS', 'CASH', 'CHEQUE', 'UPI', 'NA', 'OTHER'],
+      values: ['NEFT', 'RTGS', 'CASH', 'CHEQUE', 'UPI', 'ANGADIA', 'OTHER'],
       message: '{VALUE} is not a valid payment mode'
     }
   },

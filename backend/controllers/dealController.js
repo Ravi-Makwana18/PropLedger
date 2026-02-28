@@ -9,6 +9,7 @@ const createDeal = async (req, res) => {
     const {
       villageName,
       surveyNumber,
+      dealType,
       pricePerSqYard,
       totalSqYard,
       deadlineStartDate,
@@ -18,6 +19,7 @@ const createDeal = async (req, res) => {
     const deal = await Deal.create({
       villageName,
       surveyNumber,
+      dealType: dealType || 'Buy',
       pricePerSqYard,
       totalSqYard,
       deadlineStartDate,
