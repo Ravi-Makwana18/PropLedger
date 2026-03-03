@@ -17,6 +17,7 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [editFormData, setEditFormData] = useState({
     villageName: '',
     surveyNumber: '',
@@ -26,7 +27,7 @@ const Dashboard = () => {
     totalAmount: '',
     paymentDeadlineMonth: ''
   });
-  // Sorting state
+  // ── Sorting state ────────────────────────────────────────────────────────
   const [sortOpen, setSortOpen] = useState(false);
   const [sortOption, setSortOption] = useState('latest');
   const sortOptions = [
@@ -39,11 +40,12 @@ const Dashboard = () => {
     { value: 'deadline', label: 'Payment Deadline (Nearest First)' },
   ];
 
+  // ── On mount: load all deals ────────────────────────────────────────────
   useEffect(() => {
     fetchDeals();
   }, []);
 
-  // Read ?type=Buy|Sell from URL and set filter
+  // ── Sync deal-type filter with the ?type= URL query parameter ────────────
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const typeParam = params.get('type');
@@ -54,6 +56,7 @@ const Dashboard = () => {
     }
   }, [location.search]);
 
+  // ── API: fetch all deals from the server ──────────────────────────────────
   const fetchDeals = async () => {
     try {
       const { data } = await API.get('/api/deals');
@@ -65,6 +68,7 @@ const Dashboard = () => {
     }
   };
 
+  // ── API: keyword search (falls back to full list on empty query) ──────────
   const handleSearch = async () => {
     if (!searchTerm.trim()) { fetchDeals(); return; }
     setLoading(true);
@@ -78,16 +82,23 @@ const Dashboard = () => {
     }
   };
 
+  // ── API: delete deal — 600 ms buffer gives a processing spinner before firing
   const handleDelete = async (dealId) => {
-    try {
-      await API.delete(`/api/deals/${dealId}`);
-      setDeals(deals.filter(deal => deal._id !== dealId));
-      setConfirmDeleteId(null);
-    } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete deal');
-    }
+    setIsDeleting(true);
+    setTimeout(async () => {
+      try {
+        await API.delete(`/api/deals/${dealId}`);
+        setDeals(deals.filter(deal => deal._id !== dealId));
+        setConfirmDeleteId(null);
+      } catch (err) {
+        alert(err.response?.data?.message || 'Failed to delete deal');
+      } finally {
+        setIsDeleting(false);
+      }
+    }, 600);
   };
 
+  // ── Edit helpers ─────────────────────────────────────────────────────────
   const handleEdit = (deal) => {
     setEditingId(deal._id);
     setEditFormData({
@@ -106,6 +117,7 @@ const Dashboard = () => {
     setEditFormData({ villageName: '', surveyNumber: '', dealType: 'Buy', pricePerSqYard: '', totalSqYard: '', totalAmount: '', paymentDeadlineMonth: '' });
   };
 
+  // Auto-calculate totalAmount when unit price or area changes
   const handleEditFormChange = (e) => {
     const { name, value } = e.target;
     setEditFormData(prev => {
@@ -131,6 +143,7 @@ const Dashboard = () => {
     }
   };
 
+  // ── Formatters (currency + date) ─────────────────────────────────────────
   const formatCurrency = (amount) =>
     new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
 
@@ -139,6 +152,7 @@ const Dashboard = () => {
     return new Date(dateString).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
   };
 
+  // ── Inline SVG icon components ──────────────────────────────────────────
   const EditIconSvg = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -155,13 +169,61 @@ const Dashboard = () => {
     </svg>
   );
 
-
-
+  // ── Loading state: shimmer skeleton ──────────────────────────────────────
   if (loading) {
     return (
-      <div className="flex-center" style={{ flexDirection: 'column', gap: '1rem', paddingTop: '4rem' }}>
-        <div className="spinner"></div>
-        <div style={{ fontWeight: 600, fontSize: '1.1rem', color: '#2563eb' }}>Loading dashboard...</div>
+      <div className="dashboard-page">
+        {/* Shimmer skeleton mimicking the dashboard layout */}
+        <div className="db-skeleton-search" />
+        <div className="db-skeleton-pills">
+          {[1, 2, 3, 4].map(i => <div key={i} className="db-skeleton-pill" />)}
+        </div>
+        <div className="db-skeleton-toolbar">
+          <div className="db-skeleton-line" style={{ width: 120, height: 28, borderRadius: 20 }} />
+          <div className="db-skeleton-line" style={{ width: 140, height: 36, borderRadius: 8, marginLeft: 'auto' }} />
+        </div>
+        <div className="deals-table-wrap">
+          <table className="deals-table">
+            <thead>
+              <tr>
+                {['Village Name', 'Survey No.', 'Deal Type', 'Unit Price', 'Total Area', 'Total Amount', 'Deadline', 'Actions'].map(h => (
+                  <th key={h}><div className="db-skeleton-line" style={{ height: 14, width: '70%' }} /></th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[...Array(7)].map((_, i) => (
+                <tr key={i}>
+                  <td><div className="db-skeleton-line" style={{ height: 14, width: '80%' }} /></td>
+                  <td><div className="db-skeleton-line" style={{ height: 14, width: '50%' }} /></td>
+                  <td><div className="db-skeleton-line" style={{ height: 22, width: 48, borderRadius: 20 }} /></td>
+                  <td><div className="db-skeleton-line" style={{ height: 14, width: '65%' }} /></td>
+                  <td><div className="db-skeleton-line" style={{ height: 14, width: '55%' }} /></td>
+                  <td><div className="db-skeleton-line" style={{ height: 14, width: '70%' }} /></td>
+                  <td><div className="db-skeleton-line" style={{ height: 14, width: '50%' }} /></td>
+                  <td><div className="db-skeleton-line" style={{ height: 28, width: 80, borderRadius: 6 }} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {/* Mobile card skeletons */}
+        <div className="deals-cards">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="deal-card">
+              <div className="db-skeleton-line" style={{ height: 18, width: '60%', marginBottom: 12 }} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+                {[...Array(6)].map((_, j) => (
+                  <div key={j}>
+                    <div className="db-skeleton-line" style={{ height: 10, width: '40%', marginBottom: 4 }} />
+                    <div className="db-skeleton-line" style={{ height: 14, width: '80%' }} />
+                  </div>
+                ))}
+              </div>
+              <div className="db-skeleton-line" style={{ height: 32, width: '100%', borderRadius: 6 }} />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -410,14 +472,8 @@ const Dashboard = () => {
                             {isAdmin && (
                               <>
                                 <button onClick={() => handleEdit(deal)} className="action-btn action-btn--edit" title="Edit"><EditIconSvg /></button>
-                                {confirmDeleteId === deal._id ? (
-                                  <>
-                                    <button onClick={() => handleDelete(deal._id)} className="action-btn action-btn--delete" title="Confirm delete" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>Yes</button>
-                                    <button onClick={() => setConfirmDeleteId(null)} className="action-btn action-btn--cancel" title="Cancel" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>No</button>
-                                  </>
-                                ) : (
-                                  <button onClick={() => setConfirmDeleteId(deal._id)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
-                                )}
+                                <button onClick={() => setConfirmDeleteId(deal._id)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
+
                               </>
                             )}
                           </div>
@@ -508,14 +564,8 @@ const Dashboard = () => {
                       {isAdmin && (
                         <>
                           <button onClick={() => handleEdit(deal)} className="action-btn action-btn--edit" title="Edit"><EditIconSvg /></button>
-                          {confirmDeleteId === deal._id ? (
-                            <>
-                              <button onClick={() => handleDelete(deal._id)} className="action-btn action-btn--delete" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>Yes</button>
-                              <button onClick={() => setConfirmDeleteId(null)} className="action-btn action-btn--cancel" style={{ fontSize: '0.78rem', padding: '0 0.5rem' }}>No</button>
-                            </>
-                          ) : (
-                            <button onClick={() => setConfirmDeleteId(deal._id)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
-                          )}
+                          <button onClick={() => setConfirmDeleteId(deal._id)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
+
                         </>
                       )}
                     </div>
@@ -526,6 +576,36 @@ const Dashboard = () => {
           </div>
         </>
       )}
+      {/* ── Delete Confirmation Modal ── */}
+      {confirmDeleteId && (() => {
+        const deal = deals.find(d => d._id === confirmDeleteId);
+        return (
+          <div className="logout-modal-overlay" onClick={() => setConfirmDeleteId(null)}>
+            <div className="logout-modal" onClick={e => e.stopPropagation()}>
+              <div className="logout-modal-icon">
+                <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  <line x1="10" y1="11" x2="10" y2="17" />
+                  <line x1="14" y1="11" x2="14" y2="17" />
+                </svg>
+              </div>
+              <h3 className="logout-modal-title">Delete Deal?</h3>
+              <p className="logout-modal-desc">
+                Are you sure you want to delete<br />
+                <strong>{deal?.villageName}</strong> (Survey #{deal?.surveyNumber})?<br />
+                <span style={{ color: '#e53e3e', fontSize: '0.82rem' }}>This action cannot be undone.</span>
+              </p>
+              <div className="logout-modal-actions">
+                <button className="logout-modal-btn logout-modal-btn--cancel" onClick={() => setConfirmDeleteId(null)} disabled={isDeleting}>Cancel</button>
+                <button className="logout-modal-btn logout-modal-btn--confirm" onClick={() => handleDelete(confirmDeleteId)} disabled={isDeleting}>
+                  {isDeleting ? <><span className="modal-spinner" /> Deleting…</> : 'Yes, Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };

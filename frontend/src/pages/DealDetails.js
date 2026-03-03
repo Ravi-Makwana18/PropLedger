@@ -49,6 +49,7 @@ const DealDetails = () => {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
 
+  // ── State ────────────────────────────────────────────────────────────────
   const [dealData, setDealData] = useState(null);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [paymentForm, setPaymentForm] = useState({
@@ -62,6 +63,7 @@ const DealDetails = () => {
   const [success, setSuccess] = useState('');
   const [editingPaymentId, setEditingPaymentId] = useState(null);
   const [confirmDeletePaymentId, setConfirmDeletePaymentId] = useState(null);
+  const [isDeletingPayment, setIsDeletingPayment] = useState(false);
   const [editPaymentForm, setEditPaymentForm] = useState({
     date: '',
     modeOfPayment: '',
@@ -70,11 +72,14 @@ const DealDetails = () => {
   });
   const [draggedIndex, setDraggedIndex] = useState(null);
 
+  // ── On mount / deal-id change: load deal + payments ──────────────────────
+
   useEffect(() => {
     fetchDealDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  // ── API: fetch full deal + payment history ──────────────────────────────
   const fetchDealDetails = async () => {
     try {
       const { data } = await API.get(`/api/deals/${id}`);
@@ -86,6 +91,7 @@ const DealDetails = () => {
     }
   };
 
+  // ── API: add a new payment to this deal ───────────────────────────────
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -117,25 +123,30 @@ const DealDetails = () => {
     }
   };
 
+  // ── API: delete payment — 600 ms buffer shows processing spinner ──────────
   const handleDeletePayment = async (paymentId) => {
     setError('');
     setSuccess('');
-    try {
-      await API.delete(`/api/payments/${paymentId}`);
-      // Update local state immediately — no re-fetch needed
-      const deleted = dealData.payments.find(p => p._id === paymentId);
-      const deletedAmount = deleted ? deleted.amount : 0;
-      setDealData(prev => ({
-        ...prev,
-        payments: prev.payments.filter(p => p._id !== paymentId),
-        totalPaid: prev.totalPaid - deletedAmount,
-        remainingAmount: prev.remainingAmount + deletedAmount
-      }));
-      setConfirmDeletePaymentId(null);
-      setSuccess('Payment deleted successfully');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to delete payment');
-    }
+    setIsDeletingPayment(true);
+    setTimeout(async () => {
+      try {
+        await API.delete(`/api/payments/${paymentId}`);
+        const deleted = dealData.payments.find(p => p._id === paymentId);
+        const deletedAmount = deleted ? deleted.amount : 0;
+        setDealData(prev => ({
+          ...prev,
+          payments: prev.payments.filter(p => p._id !== paymentId),
+          totalPaid: prev.totalPaid - deletedAmount,
+          remainingAmount: prev.remainingAmount + deletedAmount
+        }));
+        setConfirmDeletePaymentId(null);
+        setSuccess('Payment deleted successfully');
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to delete payment');
+      } finally {
+        setIsDeletingPayment(false);
+      }
+    }, 600);
   };
 
   const handleEditPayment = (payment) => {
@@ -342,9 +353,60 @@ const DealDetails = () => {
   /* ── Loading / Error States ── */
   if (loading) {
     return (
-      <div className="dd-loading-screen">
-        <div className="dd-spinner-lg" />
-        <p>Loading deal details…</p>
+      <div className="dd-page">
+        <div className="dd-wrapper">
+          {/* Header skeleton */}
+          <div className="dd-page-header" style={{ marginBottom: '1.5rem' }}>
+            <div className="dd-sk-line" style={{ width: 70, height: 32, borderRadius: 8 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.75rem' }}>
+              <div className="dd-sk-line" style={{ width: 48, height: 48, borderRadius: 12 }} />
+              <div>
+                <div className="dd-sk-line" style={{ width: 200, height: 22, marginBottom: 8 }} />
+                <div className="dd-sk-line" style={{ width: 140, height: 14 }} />
+              </div>
+            </div>
+          </div>
+
+          {/* Deal info grid skeleton */}
+          <div className="dd-section">
+            <div className="dd-sk-line" style={{ width: 160, height: 18, marginBottom: '1rem' }} />
+            <div className="dd-info-grid">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="dd-sk-pill">
+                  <div className="dd-sk-line" style={{ width: '50%', height: 12, marginBottom: 8 }} />
+                  <div className="dd-sk-line" style={{ width: '75%', height: 18 }} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Payment summary skeleton */}
+          <div className="dd-section">
+            <div className="dd-sk-line" style={{ width: 180, height: 18, marginBottom: '1rem' }} />
+            <div className="dd-stat-grid">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="dd-sk-stat">
+                  <div className="dd-sk-line" style={{ width: '60%', height: 13, marginBottom: 10 }} />
+                  <div className="dd-sk-line" style={{ width: '85%', height: 26 }} />
+                </div>
+              ))}
+            </div>
+            <div className="dd-sk-line" style={{ width: '100%', height: 10, borderRadius: 99, marginTop: '1.25rem' }} />
+          </div>
+
+          {/* Payment rows skeleton */}
+          <div className="dd-section">
+            <div className="dd-sk-line" style={{ width: 170, height: 18, marginBottom: '1rem' }} />
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="dd-sk-row">
+                <div className="dd-sk-line" style={{ width: 90, height: 14 }} />
+                <div className="dd-sk-line" style={{ width: 60, height: 14 }} />
+                <div className="dd-sk-line" style={{ width: 90, height: 14 }} />
+                <div className="dd-sk-line" style={{ width: 120, height: 14 }} />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -646,18 +708,18 @@ const DealDetails = () => {
                                 </svg>
                               </button>
                               {confirmDeletePaymentId === payment._id ? (
-                                <>
-                                  <button
-                                    className="dd-icon-btn dd-icon-btn--confirm-yes"
-                                    onClick={() => handleDeletePayment(payment._id)}
-                                    title="Confirm delete"
-                                  >✓ Yes</button>
-                                  <button
-                                    className="dd-icon-btn dd-icon-btn--confirm-no"
-                                    onClick={() => setConfirmDeletePaymentId(null)}
-                                    title="Cancel"
-                                  >✕ No</button>
-                                </>
+                                <button
+                                  className="dd-icon-btn dd-icon-btn--delete"
+                                  onClick={() => setConfirmDeletePaymentId(payment._id)}
+                                  title="Delete Payment"
+                                >
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="3 6 5 6 21 6" />
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                    <line x1="10" y1="11" x2="10" y2="17" />
+                                    <line x1="14" y1="11" x2="14" y2="17" />
+                                  </svg>
+                                </button>
                               ) : (
                                 <button
                                   className="dd-icon-btn dd-icon-btn--delete"
@@ -699,6 +761,37 @@ const DealDetails = () => {
         </div>
 
       </div>
+
+      {/* ── Delete Payment Confirmation Modal ── */}
+      {confirmDeletePaymentId && (() => {
+        const payment = payments.find(p => p._id === confirmDeletePaymentId);
+        return (
+          <div className="logout-modal-overlay" onClick={() => setConfirmDeletePaymentId(null)}>
+            <div className="logout-modal" onClick={e => e.stopPropagation()}>
+              <div className="logout-modal-icon">
+                <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  <line x1="10" y1="11" x2="10" y2="17" />
+                  <line x1="14" y1="11" x2="14" y2="17" />
+                </svg>
+              </div>
+              <h3 className="logout-modal-title">Delete Payment?</h3>
+              <p className="logout-modal-desc">
+                Are you sure you want to delete this payment record?<br />
+                {payment && <><strong>{formatCurrency(payment.amount)}</strong> &mdash; {payment.modeOfPayment}</>}<br />
+                <span style={{ color: '#e53e3e', fontSize: '0.82rem' }}>This action cannot be undone.</span>
+              </p>
+              <div className="logout-modal-actions">
+                <button className="logout-modal-btn logout-modal-btn--cancel" onClick={() => setConfirmDeletePaymentId(null)} disabled={isDeletingPayment}>Cancel</button>
+                <button className="logout-modal-btn logout-modal-btn--confirm" onClick={() => handleDeletePayment(confirmDeletePaymentId)} disabled={isDeletingPayment}>
+                  {isDeletingPayment ? <><span className="modal-spinner" /> Deleting…</> : 'Yes, Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };

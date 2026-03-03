@@ -4,6 +4,7 @@ const {
   addPayment,
   getPaymentsByDeal,
   getAllPayments,
+  getPaymentHistory,
   updatePayment,
   deletePayment
 } = require('../controllers/paymentController');
@@ -14,6 +15,9 @@ router.route('/')
   .get(protect, asyncHandler(getAllPayments))
   .post(protect, asyncHandler(addPayment));
 
+// /history must be before /:id so Express doesn't match "history" as an id param
+router.get('/history', protect, asyncHandler(getPaymentHistory));
+
 router.get('/deal/:dealId', protect, asyncHandler(getPaymentsByDeal));
 
 router.route('/:id')
@@ -21,3 +25,4 @@ router.route('/:id')
   .delete(protect, admin, asyncHandler(deletePayment));
 
 module.exports = router;
+

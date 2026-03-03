@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import DealDetails from './pages/DealDetails';
 import AddDeal from './pages/AddDeal';
 import AdminNotificationsPage from './pages/AdminNotificationsPage';
+import HistoryPage from './pages/HistoryPage';
 
 // Routes that use the public Navbar/Footer layout
 const PUBLIC_ROUTES = ['/', '/login', '/register'];
@@ -89,6 +90,16 @@ function AppContent() {
             <PrivateRoute adminOnly={true}>
               <AdminLayout>
                 <AdminNotificationsPage />
+              </AdminLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/history"
+          element={
+            <PrivateRoute adminOnly={true}>
+              <AdminLayout>
+                <HistoryPage />
               </AdminLayout>
             </PrivateRoute>
           }

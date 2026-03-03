@@ -1479,9 +1479,10 @@ code {
   height: 50px;
   border-radius: 50%;
   cursor: pointer;
-  z-index: 10;
+  z-index: 20;
   pointer-events: auto;
-  /* Ensure clicks are received even under overlay */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1508,8 +1509,9 @@ code {
 
 @media (max-width: 768px) {
   .slider-arrow {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    background-color: rgba(255, 255, 255, 0.35);
   }
 
   .slider-arrow svg {
@@ -5887,4 +5889,289 @@ code {
 .sidebar-deal-badge--other {
   background: #eff6ff;
   color: #1d4ed8;
+}
+
+/* ── Logout Confirmation Modal ─────────────────────────── */
+.logout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  box-sizing: border-box;
+  animation: fadeIn 0.15s ease;
+}
+
+.logout-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 28px 28px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: slideUp 0.2s ease;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.logout-modal-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #fff1f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  color: #e53e3e;
+}
+
+.logout-modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 8px;
+}
+
+.logout-modal-desc {
+  font-size: 0.9rem;
+  color: #718096;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.logout-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.logout-modal-btn {
+  flex: 1;
+  min-width: 110px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.logout-modal-btn:active {
+  transform: scale(0.97);
+}
+
+.logout-modal-btn--cancel {
+  background: #f0f4f8;
+  color: #4a5568;
+}
+
+.logout-modal-btn--cancel:hover {
+  background: #e2e8f0;
+}
+
+.logout-modal-btn--confirm {
+  background: #e53e3e;
+  color: #fff;
+}
+
+.logout-modal-btn--confirm:hover {
+  background: #c53030;
+}
+
+/* Inline spinner inside modal confirm button */
+.modal-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: modalSpin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+@keyframes modalSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.logout-modal-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+/* ── DealDetails shimmer skeleton ── */
+.dd-sk-line {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+
+.dd-sk-pill {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.dd-sk-stat {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.dd-sk-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile: keep modal compact */
+@media (max-width: 400px) {
+  .logout-modal {
+    padding: 24px 18px 20px;
+  }
+
+  .logout-modal-btn {
+    min-width: 90px;
+    padding: 10px 12px;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   Shimmer Skeleton — Dashboard & Notifications
+═══════════════════════════════════════════════ */
+
+@keyframes shimmer {
+  0% {
+    background-position: -700px 0;
+  }
+
+  100% {
+    background-position: 700px 0;
+  }
+}
+
+.db-skeleton-line {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 700px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 6px;
+}
+
+/* Search bar skeleton */
+.db-skeleton-search {
+  height: 52px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 700px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+/* Filter pills skeleton */
+.db-skeleton-pills {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.db-skeleton-pill {
+  height: 34px;
+  width: 90px;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 700px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+/* Toolbar row skeleton */
+.db-skeleton-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+/* Notification skeleton hero area */
+.nf-skeleton-hero {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #4338ca 100%);
+  padding: 2.25rem 2rem 2.75rem;
+}
+
+.nf-skeleton-hero-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.nf-skeleton-chips {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Notification card skeleton */
+.nf-skeleton-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fff;
+}
+
+.nf-skeleton-card:first-child {
+  border-radius: 16px 16px 0 0;
+}
+
+.nf-skeleton-card:last-child {
+  border-bottom: none;
+  border-radius: 0 0 16px 16px;
+}
+
+/* Override skeleton line color inside dark hero */
+.nf-skeleton-hero .db-skeleton-line {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.07) 25%, rgba(255, 255, 255, 0.14) 50%, rgba(255, 255, 255, 0.07) 75%);
+  background-size: 700px 100%;
+  animation: shimmer 1.4s infinite linear;
 }

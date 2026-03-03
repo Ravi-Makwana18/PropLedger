@@ -8,7 +8,6 @@ const addPayment = async (req, res) => {
   try {
     const { dealId, date, modeOfPayment, amount, remarks } = req.body;
 
-    // Check if deal exists (lean — no Mongoose overhead)
     const dealExists = await Deal.exists({ _id: dealId });
     if (!dealExists) {
       return res.status(404).json({ message: 'Deal not found' });
@@ -23,7 +22,6 @@ const addPayment = async (req, res) => {
       createdBy: req.user._id
     });
 
-    // Populate in-place on the same document (no second DB round trip)
     await payment.populate('createdBy', 'name');
 
     res.status(201).json(payment);
@@ -61,6 +59,54 @@ const getAllPayments = async (req, res) => {
       .populate('createdBy', 'name');
 
     res.json(payments);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get payment history (paginated, searchable, sorted by createdAt desc)
+// @route   GET /api/payments/history
+// @access  Private
+const getPaymentHistory = async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, parseInt(req.query.limit) || 30);
+    const search = (req.query.search || '').trim();
+    const mode = req.query.mode || '';
+
+    let filter = {};
+
+    // Village name search — resolve matching deal IDs first
+    if (search) {
+      const matchingDeals = await Deal.find({
+        villageName: { $regex: search, $options: 'i' }
+      }).select('_id').lean();
+      filter.dealId = { $in: matchingDeals.map(d => d._id) };
+    }
+
+    // Mode of payment filter
+    if (mode && mode !== 'ALL') {
+      filter.modeOfPayment = mode;
+    }
+
+    const [payments, total] = await Promise.all([
+      Payment.find(filter)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .populate('dealId', 'villageName surveyNumber dealType _id')
+        .populate('createdBy', 'name')
+        .lean(),
+      Payment.countDocuments(filter)
+    ]);
+
+    res.json({
+      payments,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      limit
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -108,6 +154,7 @@ module.exports = {
   addPayment,
   getPaymentsByDeal,
   getAllPayments,
+  getPaymentHistory,
   updatePayment,
   deletePayment
 };

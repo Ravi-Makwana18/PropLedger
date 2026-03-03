@@ -18,7 +18,7 @@ const Footer = () => {
             and Complete Property Solutions in Dholera SIR, Gujarat.
           </p>
           <div className="fp-social-row">
-            <span className="fp-social-label">Follow us</span>
+            <span className="fp-social-label">Connect With Us</span>
             <div className="fp-social-icons">
               <a
                 href="https://www.instagram.com/destination_dholera_3614?igsh=bGc0cmM5a3V1ODR3"
@@ -29,20 +29,20 @@ const Footer = () => {
                 <FaInstagram />
               </a>
               <a
-                href="https://wa.me/919714772250"
-                target="_blank" rel="noopener noreferrer"
-                className="fp-social-icon fp-social-icon--whatsapp"
-                aria-label="WhatsApp"
-              >
-                <FaWhatsapp />
-              </a>
-              <a
                 href="https://www.facebook.com/share/17ZLSKyDKn/"
                 target="_blank" rel="noopener noreferrer"
                 className="fp-social-icon fp-social-icon--fb"
                 aria-label="Facebook"
               >
                 <FaFacebookF />
+              </a>
+              <a
+                href="https://wa.me/919714772250"
+                target="_blank" rel="noopener noreferrer"
+                className="fp-social-icon fp-social-icon--whatsapp"
+                aria-label="WhatsApp"
+              >
+                <FaWhatsapp />
               </a>
             </div>
           </div>
@@ -94,8 +94,6 @@ const Footer = () => {
           <ul className="fp-links-list">
             <li><a href="/" className="fp-quick-link">Home</a></li>
             <li><a href="#contact" className="fp-quick-link">Contact</a></li>
-            <li><a href="/login" className="fp-quick-link">Login</a></li>
-            <li><a href="/dashboard" className="fp-quick-link">Dashboard</a></li>
           </ul>
         </div>
 
