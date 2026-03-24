@@ -35,6 +35,17 @@ const dealSchema = new mongoose.Schema({
   banakhatAmount: {
     type: Number
   },
+  totalSqMeter: {
+    type: Number,
+    min: [0, 'Area cannot be negative']
+  },
+  jantri: {
+    type: Number,
+    min: [0, 'Jantri cannot be negative']
+  },
+  whitePayment: {
+    type: Number
+  },
   deadlineStartDate: {
     type: Date,
     required: false
@@ -54,10 +65,11 @@ const dealSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Calculate total amount and banakhat amount before saving
+// Calculate derived amounts before saving
 dealSchema.pre('save', async function () {
   this.totalAmount = this.pricePerSqYard * this.totalSqYard;
   this.banakhatAmount = this.totalAmount * 0.25; // 25% of total amount
+  this.whitePayment = (this.totalSqMeter || 0) * (this.jantri || 0);
 });
 
 // Compound index for search

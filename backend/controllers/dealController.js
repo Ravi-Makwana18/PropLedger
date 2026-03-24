@@ -12,6 +12,8 @@ const createDeal = async (req, res) => {
       dealType,
       pricePerSqYard,
       totalSqYard,
+      totalSqMeter,
+      jantri,
       deadlineStartDate,
       deadlineEndDate
     } = req.body;
@@ -22,6 +24,8 @@ const createDeal = async (req, res) => {
       dealType: dealType || 'Buy',
       pricePerSqYard,
       totalSqYard,
+      ...(totalSqMeter !== undefined && { totalSqMeter }),
+      ...(jantri !== undefined && { jantri }),
       deadlineStartDate,
       deadlineEndDate,
       createdBy: req.user._id
@@ -32,6 +36,7 @@ const createDeal = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // @desc    Get all deals
 // @route   GET /api/deals
@@ -107,19 +112,20 @@ const searchDeals = async (req, res) => {
 // @access  Private/Admin
 const updateDeal = async (req, res) => {
   try {
-    const updatedDeal = await Deal.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true, returnDocument: 'after' }
-    );
+    const deal = await Deal.findById(req.params.id);
 
-    if (!updatedDeal) {
+    if (!deal) {
       return res.status(404).json({ message: 'Deal not found' });
     }
+
+    // Merge incoming fields onto the document so pre-save hook re-runs
+    Object.assign(deal, req.body);
+    const updatedDeal = await deal.save();
 
     res.json(updatedDeal);
   } catch (error) {
     res.status(500).json({ message: error.message });
+
   }
 };
 

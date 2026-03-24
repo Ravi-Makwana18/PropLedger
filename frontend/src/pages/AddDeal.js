@@ -28,6 +28,8 @@ const AddDeal = () => {
     dealType: 'Buy',
     pricePerSqYard: '',
     totalSqYard: '',
+    totalSqMeter: '',
+    jantri: '',
     deadlineStartDate: '',
     deadlineEndDate: '',
   });
@@ -50,6 +52,8 @@ const AddDeal = () => {
         dealType: formData.dealType,
         pricePerSqYard: parseFloat(formData.pricePerSqYard),
         totalSqYard: parseFloat(formData.totalSqYard),
+        ...(formData.totalSqMeter !== '' && { totalSqMeter: parseFloat(formData.totalSqMeter) }),
+        ...(formData.jantri !== '' && { jantri: parseFloat(formData.jantri) }),
         deadlineStartDate: formData.deadlineStartDate,
         deadlineEndDate: formData.deadlineEndDate,
       };
@@ -78,6 +82,11 @@ const AddDeal = () => {
       : 0;
 
   const banakhatAmount = totalAmount * 0.25;
+
+  const whitePayment =
+    formData.totalSqMeter && formData.jantri
+      ? parseFloat(formData.totalSqMeter) * parseFloat(formData.jantri)
+      : 0;
 
   return (
     <div className="ad-page">
@@ -198,20 +207,63 @@ const AddDeal = () => {
                   <span className="ad-input-suffix">sq.yd</span>
                 </div>
               </Field>
+              <Field label="Total Square Meter" hint="Enter total area in sq. meters">
+                <div className="ad-input-suffix-wrap">
+                  <input
+                    type="number"
+                    className="ad-input ad-input--suffixed"
+                    name="totalSqMeter"
+                    placeholder="0.00"
+                    value={formData.totalSqMeter}
+                    onChange={handleChange}
+                    min="0"
+                    step="0.01"
+                  />
+                  <span className="ad-input-suffix">sq.m</span>
+                </div>
+              </Field>
+              <Field label="Jantri (₹/sq.m)" hint="Government valuation rate">
+                <div className="ad-input-prefix-wrap">
+                  <span className="ad-input-prefix">₹</span>
+                  <input
+                    type="number"
+                    className="ad-input ad-input--prefixed"
+                    name="jantri"
+                    placeholder="0.00"
+                    value={formData.jantri}
+                    onChange={handleChange}
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </Field>
             </div>
 
             {/* Live Calculation Cards */}
-            {totalAmount > 0 && (
+            {(totalAmount > 0 || whitePayment > 0) && (
               <div className="ad-calc-strip">
-                <div className="ad-calc-card ad-calc-card--total">
-                  <span className="ad-calc-label">Total Deal Amount</span>
-                  <span className="ad-calc-value">{formatINR(totalAmount)}</span>
-                </div>
-                <div className="ad-calc-divider">×25%</div>
-                <div className="ad-calc-card ad-calc-card--banakhat">
-                  <span className="ad-calc-label">Banakhat Amount (25%)</span>
-                  <span className="ad-calc-value">{formatINR(banakhatAmount)}</span>
-                </div>
+                {totalAmount > 0 && (
+                  <>
+                    <div className="ad-calc-card ad-calc-card--total">
+                      <span className="ad-calc-label">Total Deal Amount</span>
+                      <span className="ad-calc-value">{formatINR(totalAmount)}</span>
+                    </div>
+                    <div className="ad-calc-divider">×25%</div>
+                    <div className="ad-calc-card ad-calc-card--banakhat">
+                      <span className="ad-calc-label">Banakhat Amount (25%)</span>
+                      <span className="ad-calc-value">{formatINR(banakhatAmount)}</span>
+                    </div>
+                  </>
+                )}
+                {whitePayment > 0 && (
+                  <>
+                    {totalAmount > 0 && <div className="ad-calc-divider" style={{ background: 'none', color: '#94a3b8' }}>|</div>}
+                    <div className="ad-calc-card ad-calc-card--white">
+                      <span className="ad-calc-label">White Payment</span>
+                      <span className="ad-calc-value">{formatINR(whitePayment)}</span>
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>

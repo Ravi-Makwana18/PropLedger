@@ -272,6 +272,9 @@ const DealDetails = () => {
       ['Total Area', formatNumber(deal.totalSqYard)],
       ['Total Amount', formatPDFCurrency(deal.totalAmount)],
       ['Banakhat Amount (25%)', formatPDFCurrency(deal.banakhatAmount || deal.totalAmount * 0.25)],
+      ['Total Square Meter', deal.totalSqMeter > 0 ? `${deal.totalSqMeter} sq.m` : 'N/A'],
+      ['Jantri (Rs./sq.m)', deal.jantri > 0 ? formatPDFCurrency(deal.jantri) : 'N/A'],
+      ['White Payment', deal.whitePayment > 0 ? formatPDFCurrency(deal.whitePayment) : 'N/A'],
       ['Deadline', formatDeadlinePeriod(deal.deadlineStartDate, deal.deadlineEndDate)]
     ];
 
@@ -458,9 +461,10 @@ const DealDetails = () => {
               </span>
             } />
             <InfoPill label="Unit Price" value={formatCurrency(deal.pricePerSqYard)} />
-            <InfoPill label="Total Area" value={`${deal.totalSqYard.toLocaleString('en-IN')} sq.yd`} />
+            <InfoPill label="Total Area" value={`${deal.totalSqYard.toLocaleString('en-IN')}`} />
             <InfoPill label="Total Amount" value={formatCurrency(deal.totalAmount)} accent />
             <InfoPill label="Banakhat Amount (25%)" value={formatCurrency(banakhatAmount)} accent />
+            <InfoPill label="White Payment" value={deal.whitePayment > 0 ? formatCurrency(deal.whitePayment) : 'N/A'} accent />
             <InfoPill label="Deadline" value={formatDeadlinePeriod(deal.deadlineStartDate, deal.deadlineEndDate)} />
           </div>
         </div>

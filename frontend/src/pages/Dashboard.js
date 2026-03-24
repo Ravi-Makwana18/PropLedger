@@ -24,6 +24,8 @@ const Dashboard = () => {
     dealType: 'Buy',
     pricePerSqYard: '',
     totalSqYard: '',
+    totalSqMeter: '',
+    jantri: '',
     totalAmount: '',
     paymentDeadlineMonth: ''
   });
@@ -107,6 +109,8 @@ const Dashboard = () => {
       dealType: deal.dealType || 'Buy',
       pricePerSqYard: deal.pricePerSqYard,
       totalSqYard: deal.totalSqYard,
+      totalSqMeter: deal.totalSqMeter || '',
+      jantri: deal.jantri || '',
       totalAmount: deal.totalAmount,
       paymentDeadlineMonth: deal.deadlineEndDate || deal.paymentDeadlineMonth
     });
@@ -114,7 +118,7 @@ const Dashboard = () => {
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setEditFormData({ villageName: '', surveyNumber: '', dealType: 'Buy', pricePerSqYard: '', totalSqYard: '', totalAmount: '', paymentDeadlineMonth: '' });
+    setEditFormData({ villageName: '', surveyNumber: '', dealType: 'Buy', pricePerSqYard: '', totalSqYard: '', totalSqMeter: '', jantri: '', totalAmount: '', paymentDeadlineMonth: '' });
   };
 
   // Auto-calculate totalAmount when unit price or area changes
@@ -186,7 +190,7 @@ const Dashboard = () => {
           <table className="deals-table">
             <thead>
               <tr>
-                {['Village Name', 'Survey No.', 'Deal Type', 'Unit Price', 'Total Area', 'Total Amount', 'Deadline', 'Actions'].map(h => (
+                {['Village Name', 'Survey No.', 'Deal Type', 'Unit Price', 'Total Area', 'Sq. Meter', 'Jantri', 'Total Amount', 'Deadline', 'Actions'].map(h => (
                   <th key={h}><div className="db-skeleton-line" style={{ height: 14, width: '70%' }} /></th>
                 ))}
               </tr>
@@ -423,6 +427,8 @@ const Dashboard = () => {
                   <th>Deal Type</th>
                   <th>Unit Price</th>
                   <th>Total Area</th>
+                  <th>Sq. Meter</th>
+                  <th>Jantri</th>
                   <th>Total Amount</th>
                   <th>Payment Deadline</th>
                   <th>Actions</th>
@@ -444,6 +450,8 @@ const Dashboard = () => {
                         </td>
                         <td><input type="number" name="pricePerSqYard" value={editFormData.pricePerSqYard} onChange={handleEditFormChange} className="form-input edit-input" /></td>
                         <td><input type="number" name="totalSqYard" value={editFormData.totalSqYard} onChange={handleEditFormChange} className="form-input edit-input" /></td>
+                        <td><input type="number" name="totalSqMeter" value={editFormData.totalSqMeter} onChange={handleEditFormChange} className="form-input edit-input" placeholder="0" min="0" step="0.01" /></td>
+                        <td><input type="number" name="jantri" value={editFormData.jantri} onChange={handleEditFormChange} className="form-input edit-input" placeholder="0" min="0" step="0.01" /></td>
                         <td><input type="number" name="totalAmount" value={editFormData.totalAmount} readOnly className="form-input edit-input edit-input--readonly" /></td>
                         <td><input type="date" name="paymentDeadlineMonth" value={editFormData.paymentDeadlineMonth ? new Date(editFormData.paymentDeadlineMonth).toISOString().split('T')[0] : ''} onChange={handleEditFormChange} className="form-input edit-input" /></td>
                         <td>
@@ -464,6 +472,8 @@ const Dashboard = () => {
                         </td>
                         <td className="td-num">{deal.pricePerSqYard ? formatCurrency(deal.pricePerSqYard) : 'N/A'}</td>
                         <td className="td-num">{deal.totalSqYard.toLocaleString('en-IN')}</td>
+                        <td className="td-num">{deal.totalSqMeter ? deal.totalSqMeter.toLocaleString('en-IN') : 0}</td>
+                        <td className="td-num">{deal.jantri ? formatCurrency(deal.jantri) : 0}</td>
                         <td className="td-num td-amount">{formatCurrency(deal.totalAmount)}</td>
                         <td className="td-num">{deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : formatDate(deal.paymentDeadlineMonth)}</td>
                         <td>
@@ -549,6 +559,14 @@ const Dashboard = () => {
                       <div className="deal-card-field">
                         <span className="deal-card-label">Total Area</span>
                         <span className="deal-card-value">{deal.totalSqYard.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Sq. Meter</span>
+                        <span className="deal-card-value">{deal.totalSqMeter ? deal.totalSqMeter.toLocaleString('en-IN') : 0}</span>
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Jantri</span>
+                        <span className="deal-card-value">{deal.jantri ? formatCurrency(deal.jantri) : 0}</span>
                       </div>
                       <div className="deal-card-field">
                         <span className="deal-card-label">Total Amount</span>

@@ -1723,7 +1723,7 @@ code {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9375rem;
-  min-width: 720px;
+  min-width: 1100px;
 }
 
 .deals-table thead tr {
@@ -2524,6 +2524,8 @@ code {
 /* ── MAIN CONTENT AREA ───────────────────────────────────── */
 .admin-content {
   flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
   padding: 24px;
   min-height: calc(100vh - var(--topbar-height));
   background: var(--content-bg);
@@ -2640,7 +2642,9 @@ code {
 /* SaaS-quality data table */
 .deals-table-wrap {
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   border: 1px solid #e5e7eb;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
@@ -2653,7 +2657,7 @@ code {
   }
 
   .deals-table {
-    min-width: 720px;
+    min-width: 1100px;
     /* ensures all columns + action buttons are always reachable */
   }
 
@@ -4724,6 +4728,11 @@ code {
 .ad-calc-card--banakhat .ad-calc-value {
   color: #059669;
 }
+
+.ad-calc-card--white .ad-calc-value {
+  color: #7c3aed;
+}
+
 
 .ad-calc-divider {
   font-size: 0.75rem;
