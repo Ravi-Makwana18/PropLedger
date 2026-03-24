@@ -6,16 +6,6 @@ import logo from '../assets/logo.png';
 // ── Main navigation links (visible to all authenticated users) ────────────
 const NAV_ITEMS = [
     {
-        to: '/',
-        label: 'Home',
-        icon: (
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-        )
-    },
-    {
         to: '/dashboard',
         label: 'Dashboard',
         icon: (
@@ -82,16 +72,7 @@ const ADMIN_ITEMS = [
             </svg>
         )
     },
-    {
-        to: '/admin/notifications',
-        label: 'Notifications',
-        icon: (
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-        )
-    },
+
     {
         to: '/history',
         label: 'History',
@@ -122,7 +103,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
             setShowLogoutModal(false);
             setIsLoggingOut(false);
             logout();
-            navigate('/');
+            navigate('/login');
             onClose?.();
         }, 700);
     };

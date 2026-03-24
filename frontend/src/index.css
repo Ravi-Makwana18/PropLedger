@@ -3892,6 +3892,77 @@ code {
   letter-spacing: 0.2px;
 }
 
+/* ── WHATSAPP FLOATING ACTION BUTTON ─────────────────────────── */
+.whatsapp-fab {
+  position: fixed;
+  bottom: 1.75rem;
+  right: 1.75rem;
+  z-index: 9999;
+  width: 56px;
+  height: 56px;
+  background: #25d366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.45);
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.whatsapp-fab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(37, 211, 102, 0.4);
+  animation: waPulse 2s ease-out infinite;
+}
+
+@keyframes waPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  70% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+
+.whatsapp-fab:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 28px rgba(37, 211, 102, 0.55);
+}
+
+.whatsapp-fab-icon {
+  font-size: 30px;
+  color: #fff;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  line-height: 1;
+}
+
+@media (max-width: 767px) {
+  .whatsapp-fab {
+    bottom: 1.25rem;
+    right: 1.25rem;
+    width: 50px;
+    height: 50px;
+  }
+
+  .whatsapp-fab-icon {
+    font-size: 26px;
+  }
+}
+
 @media (max-width: 1023px) {
   .footer-premium-inner {
     grid-template-columns: 1fr 1fr;
@@ -4219,7 +4290,7 @@ code {
 .login-input {
   width: 100%;
   height: 50px;
-  padding: 0 3rem 0 2.75rem;
+  padding: 0 3rem 0 1rem;
   font-size: 0.95rem;
   color: #0f172a;
   background: #f8fafc;

@@ -92,7 +92,6 @@ const Login = () => {
                 Mobile Number
               </label>
               <div className="login-input-wrap">
-                <span className="login-input-icon">📱</span>
                 <input
                   id="mobileNumber"
                   name="mobileNumber"
@@ -113,7 +112,6 @@ const Login = () => {
                 Password
               </label>
               <div className="login-input-wrap">
-                <span className="login-input-icon">🔑</span>
                 <input
                   id="password"
                   name="password"

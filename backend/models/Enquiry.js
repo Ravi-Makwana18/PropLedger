@@ -14,7 +14,7 @@ const enquirySchema = new mongoose.Schema({
   enquiryType: {
     type: String,
     default: 'General Question',
-    enum: ['Land Buying', 'Land Selling', 'N.A. File', 'General Question'],
+    enum: ['Land Buying', 'Land Selling', 'N.A. File', 'Plot Enquiries', 'General Question'],
   },
   message: {
     type: String,

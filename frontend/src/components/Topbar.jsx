@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import API from '../api/axios';
 
 const Topbar = ({ onMenuClick, pageTitle }) => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [avatarOpen, setAvatarOpen] = useState(false);
-    const [unreadCount, setUnreadCount] = useState(0);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const dropdownRef = useRef(null);
@@ -23,19 +21,7 @@ const Topbar = ({ onMenuClick, pageTitle }) => {
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
-    // Fetch the unread notification count immediately and then poll every 30 s.
-    // Only runs for admin users — regular users have no notifications route.
-    useEffect(() => {
-        if (user?.role !== 'admin') return;
-        const fetchCount = () => {
-            API.get('/api/enquiry/unread-count')
-                .then(res => setUnreadCount(res.data.count || 0))
-                .catch(() => { });
-        };
-        fetchCount();
-        const interval = setInterval(fetchCount, 30000);
-        return () => clearInterval(interval);
-    }, [user]);
+
 
     // Open the sign-out confirmation modal (also closes the avatar dropdown)
     const openLogoutModal = () => {
@@ -51,7 +37,7 @@ const Topbar = ({ onMenuClick, pageTitle }) => {
             setShowLogoutModal(false);
             setIsLoggingOut(false);
             logout();
-            navigate('/');
+            navigate('/login');
         }, 700);
     };
 
@@ -74,16 +60,6 @@ const Topbar = ({ onMenuClick, pageTitle }) => {
                 </div>
 
                 <div className="topbar-right">
-                    {/* ── Notification bell (admin only — shows unread badge) ── */}
-                    <Link to="/admin/notifications" className="topbar-icon-btn" title="Notifications" aria-label="Notifications">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                        </svg>
-                        {unreadCount > 0 && (
-                            <span className="topbar-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
-                        )}
-                    </Link>
 
                     {/* ── Avatar dropdown (user info + sign-out) ── */}
                     <div className="topbar-avatar-wrap" ref={dropdownRef}>

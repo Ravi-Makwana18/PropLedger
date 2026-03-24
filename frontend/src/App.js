@@ -1,11 +1,8 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
 import AdminLayout from './components/Layout';
-import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -14,22 +11,13 @@ import AddDeal from './pages/AddDeal';
 import AdminNotificationsPage from './pages/AdminNotificationsPage';
 import HistoryPage from './pages/HistoryPage';
 
-// Routes that use the public Navbar/Footer layout
-const PUBLIC_ROUTES = ['/', '/login', '/register'];
-
 function AppContent() {
-  const location = useLocation();
-  const isPublic = PUBLIC_ROUTES.includes(location.pathname);
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
   return (
     <>
-      {/* Public pages keep the Navbar/Footer */}
-      {isPublic && !isAuthPage && <Navbar />}
-
       <Routes>
         {/* ── Public routes ─────────────────────── */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -106,7 +94,6 @@ function AppContent() {
         />
       </Routes>
 
-      {isPublic && !isAuthPage && <Footer />}
     </>
   );
 }
