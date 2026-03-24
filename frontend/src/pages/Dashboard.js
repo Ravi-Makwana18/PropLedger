@@ -522,6 +522,14 @@ const Dashboard = () => {
                         <input type="number" name="totalSqYard" value={editFormData.totalSqYard} onChange={handleEditFormChange} className="form-input edit-input" />
                       </div>
                       <div className="deal-card-field">
+                        <span className="deal-card-label">Total Sq. Meter</span>
+                        <input type="number" name="totalSqMeter" value={editFormData.totalSqMeter} onChange={handleEditFormChange} className="form-input edit-input" placeholder="0" min="0" step="0.01" />
+                      </div>
+                      <div className="deal-card-field">
+                        <span className="deal-card-label">Jantri (₹)</span>
+                        <input type="number" name="jantri" value={editFormData.jantri} onChange={handleEditFormChange} className="form-input edit-input" placeholder="0" min="0" step="0.01" />
+                      </div>
+                      <div className="deal-card-field">
                         <span className="deal-card-label">Total Amount (auto)</span>
                         <input type="number" name="totalAmount" value={editFormData.totalAmount} readOnly className="form-input edit-input edit-input--readonly" />
                       </div>
