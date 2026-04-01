@@ -764,7 +764,8 @@ const DealDetails = () => {
 
       {/* ── Edit Payment Modal ── */}
       {editingPaymentId && (() => {
-        const _payment = payments.find(p => p._id === editingPaymentId);
+        // eslint-disable-next-line no-unused-vars
+        const payment = payments.find(p => p._id === editingPaymentId);
         return (
           <div className="logout-modal-overlay" onClick={handleCancelEdit}>
             <div className="dashboard-modal dashboard-modal--large" onClick={e => e.stopPropagation()}>

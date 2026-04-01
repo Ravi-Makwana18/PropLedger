@@ -484,7 +484,8 @@ const Dashboard = () => {
       )}
       {/* ── Edit Modal ── */}
       {editingId && (() => {
-        const _deal = deals.find(d => d._id === editingId);
+        // eslint-disable-next-line no-unused-vars
+        const deal = deals.find(d => d._id === editingId);
         return (
           <div className="dashboard-modal-overlay" onClick={handleCancelEdit}>
             <div className="dashboard-modal dashboard-modal--large" onClick={e => e.stopPropagation()}>
