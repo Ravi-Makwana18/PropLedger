@@ -48,7 +48,22 @@ const getPageTitle = (pathname) => {
 const AdminLayout = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
   const location = useLocation();
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 767;
+      setIsMobile(mobile);
+      // Close mobile drawer when switching to desktop
+      if (!mobile && mobileOpen) {
+        setMobileOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [mobileOpen]);
 
   // Close mobile drawer on route change
   useEffect(() => {
@@ -60,8 +75,7 @@ const AdminLayout = ({ children }) => {
    * Toggles sidebar on desktop, opens drawer on mobile
    */
   const handleMenuClick = () => {
-    const mobile = window.innerWidth < 768;
-    if (mobile) {
+    if (isMobile) {
       setMobileOpen(v => !v);
     } else {
       setSidebarCollapsed(v => !v);
@@ -74,13 +88,10 @@ const AdminLayout = ({ children }) => {
   const handleClose = () => setMobileOpen(false);
 
   const pageTitle = getPageTitle(location.pathname);
-
-  // Determine if currently on mobile
-  const isMobileNow = typeof window !== 'undefined' && window.innerWidth < 768;
-  const sidebarCollapsedProp = !isMobileNow && sidebarCollapsed;
+  const sidebarCollapsedProp = !isMobile && sidebarCollapsed;
 
   return (
-    <div className={`admin-layout${sidebarCollapsed && !isMobileNow ? ' admin-layout--collapsed' : ''}`}>
+    <div className={`admin-layout${sidebarCollapsed && !isMobile ? ' admin-layout--collapsed' : ''}`}>
       <Sidebar
         collapsed={sidebarCollapsedProp}
         mobileOpen={mobileOpen}
