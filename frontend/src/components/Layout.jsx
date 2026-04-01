@@ -75,8 +75,12 @@ const AdminLayout = ({ children }) => {
    * Toggles sidebar on desktop, opens drawer on mobile
    */
   const handleMenuClick = () => {
+    console.log('Menu clicked - isMobile:', isMobile, 'mobileOpen:', mobileOpen);
     if (isMobile) {
-      setMobileOpen(v => !v);
+      setMobileOpen(v => {
+        console.log('Setting mobileOpen to:', !v);
+        return !v;
+      });
     } else {
       setSidebarCollapsed(v => !v);
     }
@@ -103,6 +107,12 @@ const AdminLayout = ({ children }) => {
           {children}
         </main>
       </div>
+      {/* Debug info - remove after testing */}
+      {isMobile && (
+        <div style={{ position: 'fixed', bottom: 10, right: 10, background: 'red', color: 'white', padding: '5px', zIndex: 9999, fontSize: '10px' }}>
+          Mobile: {isMobile ? 'YES' : 'NO'} | Open: {mobileOpen ? 'YES' : 'NO'}
+        </div>
+      )}
     </div>
   );
 };
