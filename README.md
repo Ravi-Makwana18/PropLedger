@@ -2,7 +2,6 @@
 
 A comprehensive full-stack MERN application for managing land deals, tracking payments, and maintaining customer records. Built with modern web technologies and best practices.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen.svg)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)
 
