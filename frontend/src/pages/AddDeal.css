@@ -475,3 +475,89 @@
     align-items: flex-start;
   }
 }
+
+@media (max-width: 360px) {
+  .ad-page {
+    padding: 0 0.5rem;
+  }
+
+  .ad-page-header {
+    padding: 1.25rem 0.875rem;
+    border-radius: 12px;
+  }
+
+  .ad-back-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .ad-page-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+
+  .ad-page-title {
+    font-size: 1.125rem;
+  }
+
+  .ad-page-subtitle {
+    font-size: 0.8125rem;
+  }
+
+  .ad-section {
+    padding: 0.875rem;
+    border-radius: 16px;
+  }
+
+  .ad-section-header {
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.875rem;
+  }
+
+  .ad-section-icon {
+    font-size: 1.25rem;
+  }
+
+  .ad-section-title {
+    font-size: 1.125rem;
+  }
+
+  .ad-label {
+    font-size: 0.8125rem;
+  }
+
+  .ad-input {
+    padding: 0.75rem 0.875rem;
+    font-size: 0.875rem;
+  }
+
+  .ad-calc-strip {
+    padding: 1.25rem;
+    gap: 0.875rem;
+  }
+
+  .ad-calc-card {
+    padding: 0.875rem 1rem;
+    min-width: 150px;
+  }
+
+  .ad-calc-label {
+    font-size: 0.6875rem;
+  }
+
+  .ad-calc-value {
+    font-size: 1.125rem;
+  }
+
+  .ad-btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.9375rem;
+    min-width: 120px;
+  }
+
+  .ad-error-banner {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+  }
+}

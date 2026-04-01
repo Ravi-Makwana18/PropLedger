@@ -2075,13 +2075,20 @@ code {
 @media (max-width: 767px) {
   .sidebar {
     transform: translateX(-100%);
-    width: 280px !important;
+    width: 280px;
     box-shadow: 4px 0 32px rgba(0, 0, 0, 0.4);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999;
   }
 
-  .sidebar--mobile-open {
-    transform: translateX(0);
+  .sidebar.sidebar--mobile-open {
+    transform: translateX(0) !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .sidebar {
+    width: 260px;
   }
 }
 
@@ -2108,15 +2115,15 @@ code {
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
-    z-index: 199;
+    z-index: 9998;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .sidebar-overlay--visible {
-    opacity: 1;
-    pointer-events: auto;
+    opacity: 1 !important;
+    pointer-events: auto !important;
   }
 }
 
@@ -2555,7 +2562,7 @@ code {
   padding: 0 28px;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 150;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   flex-shrink: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2608,6 +2615,11 @@ code {
   width: 44px;
   height: 44px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 101;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  pointer-events: auto;
 }
 
 .topbar-hamburger:hover {
@@ -2625,6 +2637,14 @@ code {
     width: 40px;
     height: 40px;
     padding: 8px;
+    background: #f1f5f9;
+    border: 2px solid #e2e8f0;
+  }
+  
+  .topbar-hamburger:active {
+    background: #1a5490;
+    color: white;
+    border-color: #1a5490;
   }
 }
 
@@ -3076,6 +3096,24 @@ code {
 
   .topbar-title {
     font-size: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .admin-content {
+    padding: 12px;
+  }
+
+  .topbar {
+    padding: 0 12px;
+  }
+
+  .topbar-title {
+    font-size: 14px;
+  }
+
+  .topbar-breadcrumb {
+    font-size: 11px;
   }
 }
 

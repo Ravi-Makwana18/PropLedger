@@ -141,6 +141,9 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
 
+  // Debug logging for props
+  console.log('🎯 Sidebar received props - collapsed:', collapsed, 'mobileOpen:', mobileOpen, 'isMobile:', isMobile);
+
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
@@ -152,10 +155,12 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
 
   // Close sidebar on route change (mobile only)
   useEffect(() => {
-    if (isMobile && mobileOpen) {
-      onClose?.();
+    if (isMobile && mobileOpen && onClose) {
+      console.log('🚪 Closing sidebar due to route change');
+      onClose();
     }
-  }, [location.pathname, isMobile, mobileOpen, onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
 
   /**
    * Open logout confirmation modal
@@ -172,7 +177,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
       setIsLoggingOut(false);
       logout();
       navigate('/login');
-      onClose?.();
+      if (onClose) onClose();
     }, 700);
   };
 
@@ -181,11 +186,15 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
       {/* Mobile overlay */}
       <div
         className={`sidebar-overlay${mobileOpen ? ' sidebar-overlay--visible' : ''}`}
-        onClick={onClose}
+        onClick={() => onClose && onClose()}
         aria-hidden="true"
       />
 
-      <aside className={`sidebar${collapsed ? ' sidebar--collapsed' : ''}${mobileOpen ? ' sidebar--mobile-open' : ''}`}>
+      <aside 
+        className={`sidebar${collapsed ? ' sidebar--collapsed' : ''}${mobileOpen ? ' sidebar--mobile-open' : ''}`} 
+        data-mobile-open={mobileOpen}
+        style={isMobile && mobileOpen ? { transform: 'translateX(0)' } : {}}
+      >
         {/* Brand / logo area */}
         <div className="sidebar-brand">
           <img src={logo} alt="PropLedger" className="sidebar-logo" />
@@ -194,7 +203,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
               <span className="sidebar-brand-name">PropLedger</span>
             </div>
           )}
-          <button className="sidebar-close-btn" onClick={onClose} aria-label="Close sidebar">
+          <button className="sidebar-close-btn" onClick={() => onClose && onClose()} aria-label="Close sidebar">
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -211,7 +220,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) => `sidebar-nav-item${isActive ? ' sidebar-nav-item--active' : ''}`}
-                onClick={onClose}
+                onClick={() => onClose && onClose()}
                 title={collapsed ? item.label : undefined}
               >
                 <span className="sidebar-nav-icon">{item.icon}</span>
@@ -235,7 +244,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
                     key={item.to}
                     to={item.to}
                     className={() => `sidebar-nav-item${isActive ? ' sidebar-nav-item--active' : ''}`}
-                    onClick={onClose}
+                    onClick={() => onClose && onClose()}
                     title={collapsed ? item.label : undefined}
                   >
                     <span className="sidebar-nav-icon">{item.icon}</span>
@@ -258,7 +267,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
                   key={item.to}
                   to={item.to}
                   className={({ isActive }) => `sidebar-nav-item${isActive ? ' sidebar-nav-item--active' : ''}`}
-                  onClick={onClose}
+                  onClick={() => onClose && onClose()}
                   title={collapsed ? item.label : undefined}
                 >
                   <span className="sidebar-nav-icon">{item.icon}</span>
