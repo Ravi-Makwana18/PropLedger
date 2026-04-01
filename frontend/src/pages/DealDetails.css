@@ -1,0 +1,1357 @@
+/* ═══════════════════════════════════════════════
+   DealDetails.css – Modern Professional Design
+═══════════════════════════════════════════════ */
+
+.dd-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+  min-height: 100vh;
+  padding-bottom: 5rem;
+}
+
+.dd-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ── Page Header ── */
+.dd-page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.dd-page-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.dd-back-btn {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.625rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  white-space: nowrap;
+}
+
+.dd-back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateX(-3px);
+}
+
+.dd-page-title-block {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dd-page-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  backdrop-filter: blur(10px);
+  flex-shrink: 0;
+}
+
+.dd-page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.dd-page-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0.25rem 0 0;
+}
+
+/* ── Toast Messages ── */
+.dd-toast {
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dd-toast--error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.dd-toast--success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+
+/* ── Section ── */
+.dd-section {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.dd-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f3f4f6;
+  flex-wrap: wrap;
+}
+
+.dd-section-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.dd-section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  flex: 1;
+}
+
+.dd-payment-count {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 600;
+  padding: 0.375rem 0.875rem;
+  background: #f1f5f9;
+  border-radius: 50px;
+  margin-left: auto;
+}
+
+/* ── Info Pills ── */
+.dd-info-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1rem;
+}
+
+.dd-info-pill {
+  padding: 1rem 1.25rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.dd-info-pill:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.dd-info-pill--accent {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-color: #cbd5e1;
+}
+
+.dd-pill-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.dd-pill-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* ── Stat Cards ── */
+.dd-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.dd-stat-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 1px solid;
+}
+
+.dd-stat-card--total {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-color: #93c5fd;
+}
+
+.dd-stat-card--paid {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border-color: #6ee7b7;
+}
+
+.dd-stat-card--remaining {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-color: #fcd34d;
+}
+
+.dd-stat-card--cleared {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border-color: #6ee7b7;
+}
+
+.dd-stat-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #374151;
+}
+
+.dd-stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+/* ── Progress Bar ── */
+.dd-progress-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dd-progress-bar-bg {
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+
+.dd-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+
+.dd-progress-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dd-cleared-badge {
+  padding: 0.25rem 0.75rem;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ── Payment Form Card ── */
+.dd-payment-form-card {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.dd-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.dd-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dd-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.dd-required {
+  color: #dc2626;
+  font-size: 1rem;
+}
+
+.dd-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.2s;
+  background: white;
+}
+
+.dd-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.dd-textarea {
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+
+.dd-input-prefix-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.dd-input-prefix {
+  position: absolute;
+  left: 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.dd-input--prefixed {
+  padding-left: 2.25rem;
+}
+
+.dd-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* ── Buttons ── */
+.dd-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.dd-btn--sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.dd-btn--ghost {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.dd-btn--ghost:hover {
+  background: #e5e7eb;
+}
+
+.dd-btn--submit {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.dd-btn--submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.dd-btn--add-payment {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.dd-btn--add-payment:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.dd-btn--pdf {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.dd-btn--pdf:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+}
+
+.dd-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dd-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* ── Payment Cards List ── */
+.dd-payments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dd-payment-card {
+  background: white;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  gap: 1rem;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.dd-payment-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.dd-payment-drag-handle {
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #cbd5e1;
+  cursor: grab;
+  user-select: none;
+  font-size: 1.25rem;
+  padding: 0.5rem;
+  transition: color 0.2s;
+}
+
+.dd-payment-drag-handle:hover {
+  color: #94a3b8;
+}
+
+.dd-payment-drag-handle:active {
+  cursor: grabbing;
+}
+
+.dd-payment-card[draggable="true"] .dd-payment-info {
+  margin-left: 2rem;
+}
+
+.dd-payment-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dd-payment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.dd-payment-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.dd-payment-date svg {
+  flex-shrink: 0;
+}
+
+.dd-mode-badge {
+  padding: 0.375rem 0.875rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.dd-payment-amount-large {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.dd-payment-remarks {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #64748b;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.dd-payment-remarks svg {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.dd-payment-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-self: flex-start;
+}
+
+.dd-payment-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.dd-payment-btn svg {
+  flex-shrink: 0;
+}
+
+.dd-payment-btn--edit {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.dd-payment-btn--edit:hover {
+  background: #dbeafe;
+}
+
+.dd-payment-btn--delete {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.dd-payment-btn--delete:hover {
+  background: #fee2e2;
+}
+
+.dd-payment-total-card {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border: 1.5px solid #6ee7b7;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dd-payment-total-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #065f46;
+}
+
+.dd-payment-total-amount {
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: #065f46;
+  letter-spacing: -0.02em;
+}
+
+/* ── Empty State ── */
+.dd-empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #94a3b8;
+}
+
+.dd-empty-icon {
+  font-size: 3rem;
+  line-height: 1;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+/* ── Sticky Action Bar ── */
+.dd-action-bar {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 100;
+}
+
+/* ── Skeleton Loading ── */
+.dd-sk-line {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: dd-shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+
+.dd-sk-pill {
+  padding: 1rem 1.25rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.dd-sk-stat {
+  padding: 1.5rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.dd-sk-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+@keyframes dd-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ── Deal Type Badge ── */
+.deal-type-badge {
+  padding: 0.375rem 0.875rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: inline-block;
+}
+
+.deal-type-badge--buy {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.deal-type-badge--sell {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.deal-type-badge--other {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+@media (max-width: 1400px) {
+  .dd-info-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .dd-info-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .dd-page-header {
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+  }
+
+  .dd-back-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .dd-page-title {
+    font-size: 1.5rem;
+  }
+
+  .dd-page-subtitle {
+    font-size: 0.9375rem;
+  }
+
+  /* Mobile Accordion */
+  .dd-section {
+    padding: 0;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .dd-section-header {
+    margin-bottom: 0;
+    padding: 1rem 3rem 1rem 1.5rem;
+    border-bottom: none;
+    transition: all 0.2s;
+    background: white;
+    position: relative;
+  }
+
+  .dd-section-header:hover {
+    background: #f8fafc;
+  }
+
+  .dd-section-header::after {
+    content: '';
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #667eea;
+    transition: transform 0.3s ease;
+    pointer-events: none;
+  }
+
+  .dd-section--expanded .dd-section-header::after {
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  .dd-section-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 1.5rem;
+  }
+
+  .dd-section--expanded .dd-section-content {
+    max-height: 3000px;
+    padding: 0 1.5rem 1.5rem;
+  }
+
+  .dd-info-grid,
+  .dd-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dd-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dd-action-bar {
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+  }
+
+  .dd-btn--pdf {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    font-size: 0.9375rem;
+  }
+
+  .dd-payment-count {
+    margin-left: 0;
+  }
+
+  .dd-btn--sm {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+    margin-left: auto;
+  }
+
+  .dd-form-actions {
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .dd-btn {
+    width: 100%;
+  }
+
+  /* Payment Cards Mobile */
+  .dd-payment-card {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .dd-payment-card[draggable="true"] .dd-payment-info {
+    margin-left: 0;
+  }
+
+  .dd-payment-drag-handle {
+    display: none;
+  }
+
+  .dd-payment-actions {
+    flex-direction: row;
+    align-self: stretch;
+  }
+
+  .dd-payment-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.75rem 0.875rem;
+  }
+
+  .dd-payment-btn span {
+    display: none;
+  }
+
+  .dd-payment-amount-large {
+    font-size: 1.375rem;
+  }
+
+  .dd-payment-total-card {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+    max-width: 100%;
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .dd-payment-total-amount {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dd-page-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .dd-back-btn {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .dd-page-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+
+  .dd-page-title {
+    font-size: 1.25rem;
+  }
+
+  .dd-page-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .dd-section {
+    padding: 1rem;
+  }
+
+  .dd-page-title-block {
+    gap: 0.75rem;
+  }
+
+  .dd-btn--pdf {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+  }
+
+  .dd-btn--sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .dd-section-title {
+    font-size: 1.125rem;
+  }
+
+  .dd-payment-count {
+    font-size: 0.75rem;
+    padding: 0.3125rem 0.75rem;
+  }
+}
+
+/* ── Edit Payment Modal (matching Dashboard styles) ── */
+.dashboard-modal--large {
+  max-width: 600px;
+  text-align: left;
+  padding: 0;
+}
+
+.dashboard-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dashboard-modal-header .dashboard-modal-title {
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: left;
+  font-weight: 700;
+  color: #111827;
+}
+
+.dashboard-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #6b7280;
+  transition: all 0.2s;
+  border-radius: 8px;
+}
+
+.dashboard-modal-close:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.dashboard-modal-body {
+  padding: 2rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.dashboard-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.dashboard-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.dashboard-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dashboard-form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.dashboard-form-input {
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+  width: 100%;
+}
+
+.dashboard-form-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.dashboard-modal--large .dashboard-modal-actions {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid #e5e7eb;
+  margin: 0;
+  display: flex;
+  gap: 1rem;
+}
+
+.dashboard-modal-btn {
+  flex: 1;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.dashboard-modal-btn--cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.dashboard-modal-btn--cancel:hover {
+  background: #e5e7eb;
+}
+
+.dashboard-modal-btn--confirm {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.dashboard-modal-btn--confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.dashboard-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.logout-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.logout-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  animation: slideUp 0.3s ease;
+}
+
+.logout-modal-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #dc2626;
+}
+
+.logout-modal-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 1rem 0;
+}
+
+.logout-modal-desc {
+  font-size: 1rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+}
+
+.logout-modal-desc strong {
+  color: #111827;
+  font-weight: 700;
+}
+
+.logout-modal-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.logout-modal-btn {
+  flex: 1;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.logout-modal-btn--cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.logout-modal-btn--cancel:hover {
+  background: #e5e7eb;
+}
+
+.logout-modal-btn--confirm {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+}
+
+.logout-modal-btn--confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
+}
+
+.logout-modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-modal--large {
+    max-width: calc(100% - 2rem);
+  }
+
+  .dashboard-modal-header {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .dashboard-modal-body {
+    padding: 1.5rem;
+    max-height: 50vh;
+  }
+
+  .dashboard-form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .dashboard-modal--large .dashboard-modal-actions {
+    padding: 1.25rem 1.5rem;
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  .dashboard-modal--large .dashboard-modal-btn {
+    flex: 1;
+  }
+
+  .logout-modal {
+    padding: 1.75rem 1.25rem;
+    max-width: calc(100% - 2rem);
+  }
+
+  .logout-modal-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+  }
+
+  .logout-modal-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .logout-modal-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .logout-modal-desc {
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .logout-modal-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .logout-modal-btn {
+    width: 100%;
+    padding: 0.875rem;
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-modal-header {
+    padding: 1rem 1.25rem;
+  }
+
+  .dashboard-modal-header .dashboard-modal-title {
+    font-size: 1.125rem;
+  }
+
+  .dashboard-modal-body {
+    padding: 1.25rem;
+  }
+
+  .dashboard-modal--large .dashboard-modal-actions {
+    padding: 1rem 1.25rem;
+    flex-direction: column;
+  }
+
+  .dashboard-modal--large .dashboard-modal-btn {
+    width: 100%;
+  }
+
+  .logout-modal {
+    padding: 1.5rem 1rem;
+  }
+
+  .logout-modal-icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 0.875rem;
+  }
+
+  .logout-modal-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .logout-modal-title {
+    font-size: 1.125rem;
+    margin-bottom: 0.625rem;
+  }
+
+  .logout-modal-desc {
+    font-size: 0.8125rem;
+    margin-bottom: 1rem;
+  }
+
+  .logout-modal-btn {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+}

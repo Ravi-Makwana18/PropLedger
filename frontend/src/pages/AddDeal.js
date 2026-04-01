@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
+import './AddDeal.css';
 
 const formatINR = (amount) =>
   new Intl.NumberFormat('en-IN', {

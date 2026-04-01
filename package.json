@@ -1,22 +1,28 @@
 {
-  "name": "dholera-sir",
+  "name": "propledger",
   "version": "1.0.0",
-  "description": "Land Deal Management System",
-  "main": "server.js",
+  "description": "PropLedger - Land Deal Management System for tracking property deals, payments, and customer enquiries",
+  "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
     "client": "npm start --prefix frontend",
-    "dev:all": "concurrently \"npm run dev\" \"npm run client\""
+    "dev:all": "concurrently \"npm run dev\" \"npm run client\"",
+    "seed:admin": "node backend/seedAdmin.js"
   },
   "keywords": [
-    "land",
-    "deal",
-    "payment",
-    "tracking"
+    "land-management",
+    "property-deals",
+    "payment-tracking",
+    "real-estate",
+    "mern-stack"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "PropLedger Development Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/propledger.git"
+  },
   "dependencies": {
     "axios": "^1.13.5",
     "bcryptjs": "^3.0.3",
@@ -27,6 +33,11 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1",
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.11",
+    "razorpay": "^2.9.6"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
   }
 }

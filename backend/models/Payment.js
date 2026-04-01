@@ -1,32 +1,46 @@
+/**
+ * ============================================
+ * PropLedger - Payment Model
+ * ============================================
+ * Tracks payments made for land deals
+ * 
+ * @author PropLedger Development Team
+ * @version 1.0.0
+ */
+
 const mongoose = require('mongoose');
 
+/**
+ * Payment Schema Definition
+ * Stores payment transactions linked to deals
+ */
 const paymentSchema = new mongoose.Schema({
   dealId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Deal',
-    required: [true, 'Deal ID is required'],
-    index: true
+    required: [true, 'Deal reference is required'],
+    index: true  // Indexed for faster queries by deal
   },
   date: {
     type: Date,
-    required: [true, 'Please provide payment date'],
-    default: Date.now
+    required: [true, 'Payment date is required']
   },
   modeOfPayment: {
     type: String,
-    required: [true, 'Please provide mode of payment'],
     enum: {
-      values: ['NEFT', 'RTGS', 'CASH', 'CHEQUE', 'UPI', 'ANGADIA', 'OTHER'],
+      values: ['NEFT', 'RTGS', 'CASH', 'CHEQUE', 'UPI', 'ANGADIA'],
       message: '{VALUE} is not a valid payment mode'
-    }
+    },
+    required: [true, 'Payment mode is required']
   },
   amount: {
     type: Number,
-    required: [true, 'Please provide payment amount'],
+    required: [true, 'Payment amount is required'],
     min: [0, 'Amount cannot be negative']
   },
   remarks: {
     type: String,
+    default: '',
     trim: true
   },
   createdBy: {
@@ -35,7 +49,10 @@ const paymentSchema = new mongoose.Schema({
     required: true
   }
 }, {
-  timestamps: true
+  timestamps: true  // Automatically add createdAt and updatedAt
 });
+
+// Compound index for efficient queries by deal and user
+paymentSchema.index({ dealId: 1, createdBy: 1 });
 
 module.exports = mongoose.model('Payment', paymentSchema);

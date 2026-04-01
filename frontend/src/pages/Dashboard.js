@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import './Dashboard.css';
 
 const Dashboard = () => {
   const { isAdmin } = useAuth();
@@ -18,6 +19,7 @@ const Dashboard = () => {
   const [editingId, setEditingId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [editFormData, setEditFormData] = useState({
     villageName: '',
     surveyNumber: '',
@@ -32,6 +34,7 @@ const Dashboard = () => {
   // ── Sorting state ────────────────────────────────────────────────────────
   const [sortOpen, setSortOpen] = useState(false);
   const [sortOption, setSortOption] = useState('latest');
+  const [expandedDeals, setExpandedDeals] = useState([]); // For mobile accordion - all closed by default
   const sortOptions = [
     { value: 'latest', label: 'Latest Added' },
     { value: 'village', label: 'Village Name (A-Z)' },
@@ -41,6 +44,15 @@ const Dashboard = () => {
     { value: 'totalAmountDesc', label: 'Total Amount (High-Low)' },
     { value: 'deadline', label: 'Payment Deadline (Nearest First)' },
   ];
+
+  // Toggle deal expansion for mobile
+  const toggleDeal = (dealId) => {
+    setExpandedDeals(prev => 
+      prev.includes(dealId) 
+        ? prev.filter(id => id !== dealId)
+        : [...prev, dealId]
+    );
+  };
 
   // ── On mount: load all deals ────────────────────────────────────────────
   useEffect(() => {
@@ -136,14 +148,29 @@ const Dashboard = () => {
   };
 
   const handleSaveEdit = async (dealId) => {
+    setIsSavingEdit(true);
     try {
-      const { data } = await API.put(`/api/deals/${dealId}`, editFormData);
+      // Prepare payload with correct field names
+      const payload = {
+        villageName: editFormData.villageName,
+        surveyNumber: editFormData.surveyNumber,
+        dealType: editFormData.dealType,
+        pricePerSqYard: parseFloat(editFormData.pricePerSqYard),
+        totalSqYard: parseFloat(editFormData.totalSqYard),
+        totalSqMeter: editFormData.totalSqMeter ? parseFloat(editFormData.totalSqMeter) : undefined,
+        jantri: editFormData.jantri ? parseFloat(editFormData.jantri) : undefined,
+        deadlineEndDate: editFormData.paymentDeadlineMonth || undefined
+      };
+      
+      const { data } = await API.put(`/api/deals/${dealId}`, payload);
       setDeals(deals.map(deal => deal._id === dealId ? data : deal));
       setEditingId(null);
-      setEditFormData({ villageName: '', surveyNumber: '', dealType: 'Buy', pricePerSqYard: '', totalSqYard: '', totalAmount: '', paymentDeadlineMonth: '' });
+      setEditFormData({ villageName: '', surveyNumber: '', dealType: 'Buy', pricePerSqYard: '', totalSqYard: '', totalSqMeter: '', jantri: '', totalAmount: '', paymentDeadlineMonth: '' });
       alert('Deal updated successfully');
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to update deal');
+    } finally {
+      setIsSavingEdit(false);
     }
   };
 
@@ -177,55 +204,11 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="dashboard-page">
-        {/* Shimmer skeleton mimicking the dashboard layout */}
-        <div className="db-skeleton-search" />
-        <div className="db-skeleton-pills">
-          {[1, 2, 3, 4].map(i => <div key={i} className="db-skeleton-pill" />)}
-        </div>
-        <div className="db-skeleton-toolbar">
-          <div className="db-skeleton-line" style={{ width: 120, height: 28, borderRadius: 20 }} />
-          <div className="db-skeleton-line" style={{ width: 140, height: 36, borderRadius: 8, marginLeft: 'auto' }} />
-        </div>
-        <div className="deals-table-wrap">
-          <table className="deals-table">
-            <thead>
-              <tr>
-                {['Village Name', 'Survey No.', 'Deal Type', 'Unit Price', 'Total Area', 'Sq. Meter', 'Jantri', 'Total Amount', 'Deadline', 'Actions'].map(h => (
-                  <th key={h}><div className="db-skeleton-line" style={{ height: 14, width: '70%' }} /></th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[...Array(7)].map((_, i) => (
-                <tr key={i}>
-                  <td><div className="db-skeleton-line" style={{ height: 14, width: '80%' }} /></td>
-                  <td><div className="db-skeleton-line" style={{ height: 14, width: '50%' }} /></td>
-                  <td><div className="db-skeleton-line" style={{ height: 22, width: 48, borderRadius: 20 }} /></td>
-                  <td><div className="db-skeleton-line" style={{ height: 14, width: '65%' }} /></td>
-                  <td><div className="db-skeleton-line" style={{ height: 14, width: '55%' }} /></td>
-                  <td><div className="db-skeleton-line" style={{ height: 14, width: '70%' }} /></td>
-                  <td><div className="db-skeleton-line" style={{ height: 14, width: '50%' }} /></td>
-                  <td><div className="db-skeleton-line" style={{ height: 28, width: 80, borderRadius: 6 }} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {/* Mobile card skeletons */}
-        <div className="deals-cards">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="deal-card">
-              <div className="db-skeleton-line" style={{ height: 18, width: '60%', marginBottom: 12 }} />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
-                {[...Array(6)].map((_, j) => (
-                  <div key={j}>
-                    <div className="db-skeleton-line" style={{ height: 10, width: '40%', marginBottom: 4 }} />
-                    <div className="db-skeleton-line" style={{ height: 14, width: '80%' }} />
-                  </div>
-                ))}
-              </div>
-              <div className="db-skeleton-line" style={{ height: 32, width: '100%', borderRadius: 6 }} />
-            </div>
+        <div className="dashboard-skeleton-card" style={{ height: 200, marginBottom: '2rem' }} />
+        <div className="dashboard-skeleton-card" style={{ height: 80, marginBottom: '1.5rem' }} />
+        <div className="dashboard-deals-grid">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="dashboard-skeleton-card" />
           ))}
         </div>
       </div>
@@ -289,121 +272,127 @@ const Dashboard = () => {
   const filteredDeals = getFilteredDeals();
   const sortedDeals = getSortedDeals(filteredDeals);
 
+  const totalDeals = deals.length;
+  const filteredCount = sortedDeals.length;
+  const totalValue = sortedDeals.reduce((sum, deal) => sum + (deal.totalAmount || 0), 0);
+
   return (
     <div className="dashboard-page">
-      {error && <div className="alert alert-error">{error}</div>}
+      {/* ── Hero Header ── */}
+      <div className="dashboard-hero">
+        <div className="dashboard-hero-inner">
+          <div className="dashboard-hero-top">
+            <div className="dashboard-hero-icon">
+              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+            </div>
+            <div>
+              <h1 className="dashboard-hero-title">Land Deals</h1>
+              <p className="dashboard-hero-subtitle">Manage and track all your property transactions</p>
+            </div>
+          </div>
 
-      {/* ── Search Bar ────────────────────────── */}
-      <div className="dashboard-search">
-        <div className="search-field">
-          <svg className="search-field-icon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input
-            type="text"
-            className="search-field-input"
-            placeholder="Search by village name or survey number…"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-          />
-          {searchTerm && (
-            <button
-              className="search-field-clear"
-              onClick={() => { setSearchTerm(''); fetchDeals(); }}
-              title="Clear"
-              aria-label="Clear search"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          )}
-        </div>
-        <button onClick={handleSearch} className="search-submit-btn" title="Search" aria-label="Search">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-        </button>
-        {/* Sort Button */}
-        <div className="sort-dropdown-wrap">
-          <button
-            className={`sort-btn${sortOpen ? ' sort-btn--active' : ''}`}
-            onClick={() => setSortOpen((v) => !v)}
-            aria-haspopup="listbox"
-            aria-expanded={sortOpen}
-            type="button"
-            title={sortOptions.find(o => o.value === sortOption)?.label || 'Sort'}
-            aria-label="Sort"
-          >
-            {/* Professional sort icon: 3 lines decreasing in width */}
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="6" y1="12" x2="18" y2="12" />
-              <line x1="9" y1="18" x2="15" y2="18" />
-            </svg>
-            {sortOpen ? (
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24" style={{ marginLeft: 4 }}>
-                <polyline points="18 15 12 9 6 15" />
-              </svg>
-            ) : (
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24" style={{ marginLeft: 4 }}>
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            )}
-          </button>
-          {sortOpen && (
-            <ul className="sort-dropdown" tabIndex={-1} role="listbox">
-              {sortOptions.map(opt => (
-                <li
-                  key={opt.value}
-                  className={`sort-dropdown-option${sortOption === opt.value ? ' sort-dropdown-option--active' : ''}`}
-                  onClick={() => { setSortOption(opt.value); setSortOpen(false); }}
-                  role="option"
-                  aria-selected={sortOption === opt.value}
-                >
-                  {opt.label}
-                  {/* Arrow indicator for applicable sorts */}
-                  {['unitPriceAsc', 'unitPriceDesc', 'totalAmountAsc', 'totalAmountDesc', 'deadline'].includes(opt.value) && sortOption === opt.value && (
-                    <span className="sort-arrow">{opt.value.endsWith('Asc') ? '↑' : opt.value.endsWith('Desc') ? '↓' : '→'}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
+          {/* Summary chips */}
+          <div className="dashboard-summary-row">
+            <div className="dashboard-chip">
+              <span className="dashboard-chip-label">Total Deals</span>
+              <span className="dashboard-chip-value">{totalDeals}</span>
+            </div>
+            <div className="dashboard-chip">
+              <span className="dashboard-chip-label">Showing</span>
+              <span className="dashboard-chip-value">{filteredCount}</span>
+            </div>
+            <div className="dashboard-chip">
+              <span className="dashboard-chip-label">Total Value</span>
+              <span className="dashboard-chip-value">{formatCurrency(totalValue)}</span>
+            </div>
+          </div>
         </div>
       </div>
+
+      {error && <div className="hp-error-banner">⚠️ {error}</div>}
+
+      {/* ── Filters Bar ── */}
+      <div className="dashboard-filters-wrap">
+        <div className="dashboard-filters">
+          {/* Search */}
+          <div className="dashboard-search-wrap">
+            <svg className="dashboard-search-icon" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              className="dashboard-search-input"
+              placeholder="Search by village name or survey number…"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            />
+          </div>
+
+          <button onClick={handleSearch} className="dashboard-search-btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <span className="dashboard-search-btn-text">Search</span>
+          </button>
+
+          {/* Sort Button */}
+          <div style={{ position: 'relative' }}>
+            <button
+              className="dashboard-sort-btn"
+              onClick={() => setSortOpen((v) => !v)}
+            >
+              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="6" y1="12" x2="18" y2="12" />
+                <line x1="9" y1="18" x2="15" y2="18" />
+              </svg>
+              <span className="dashboard-sort-btn-text">Sort</span>
+            </button>
+            {sortOpen && (
+              <div className="dashboard-sort-dropdown">
+                {sortOptions.map(opt => (
+                  <div
+                    key={opt.value}
+                    className={`dashboard-sort-option${sortOption === opt.value ? ' dashboard-sort-option--active' : ''}`}
+                    onClick={() => { setSortOption(opt.value); setSortOpen(false); }}
+                  >
+                    {opt.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Deal Type Filter Pills */}
-      <div className="deal-type-filter-bar">
+      <div className="dashboard-type-pills">
         {['All', 'Buy', 'Sell', 'Other'].map(type => (
           <button
             key={type}
-            className={`deal-type-pill${dealTypeFilter === type ? ' deal-type-pill--active' : ''} deal-type-pill--${type.toLowerCase()}`}
+            className={`dashboard-type-pill${dealTypeFilter === type ? ' dashboard-type-pill--active' : ''}`}
             onClick={() => setDealTypeFilter(type)}
-            type="button"
           >
-            {type === 'Buy' && <span className="deal-type-pill-dot deal-type-pill-dot--buy" />}
-            {type === 'Sell' && <span className="deal-type-pill-dot deal-type-pill-dot--sell" />}
-            {type === 'Other' && <span className="deal-type-pill-dot deal-type-pill-dot--other" />}
+            {type === 'Buy' && <span className="dashboard-type-pill-dot dashboard-type-pill-dot--buy" />}
+            {type === 'Sell' && <span className="dashboard-type-pill-dot dashboard-type-pill-dot--sell" />}
+            {type === 'Other' && <span className="dashboard-type-pill-dot dashboard-type-pill-dot--other" />}
             {type === 'All' ? 'All Deals' : `${type} Deals`}
           </button>
         ))}
       </div>
+
       {isAdmin && (
-        <div className="toolbar-row">
-          <div className="dashboard-deals-count-badge">
-            {(() => {
-              const total = deals.length;
-              const filtered = sortedDeals.length;
-              if (!searchTerm && dealTypeFilter === 'All') return <span>{total} Total Deals</span>;
-              if (filtered === total) return <span>{total} Total Deals</span>;
-              return <span>Showing {filtered} of {total}</span>;
-            })()}
+        <div className="dashboard-toolbar">
+          <div className="dashboard-count-badge">
+            {filteredCount} of {totalDeals} deals
           </div>
-          <Link to="/add-deal" className="btn-add-deal">
+          <Link to="/add-deal" className="dashboard-add-btn">
             <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
@@ -414,218 +403,252 @@ const Dashboard = () => {
       )}
 
       {sortedDeals.length === 0 ? (
-        <p className="text-center" style={{ padding: '2rem', color: 'var(--text-secondary)' }}>No deals found</p>
+        <div className="dashboard-empty">
+          <span className="dashboard-empty-icon">📁</span>
+          <h3>No deals found</h3>
+          <p>{searchTerm || dealTypeFilter !== 'All' ? 'Try adjusting your filters.' : 'No deals have been created yet.'}</p>
+        </div>
       ) : (
-        <>
-          {/* ── Desktop / Tablet Table ─────────── */}
-          <div className="deals-table-wrap">
-            <table className="deals-table">
-              <thead>
-                <tr>
-                  <th>Village Name</th>
-                  <th>Survey No.</th>
-                  <th>Deal Type</th>
-                  <th>Unit Price</th>
-                  <th>Total Area</th>
-                  <th>Sq. Meter</th>
-                  <th>Jantri</th>
-                  <th>Total Amount</th>
-                  <th>Payment Deadline</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedDeals.map((deal) => (
-                  <tr key={deal._id}>
-                    {editingId === deal._id ? (
-                      <>
-                        <td><input type="text" name="villageName" value={editFormData.villageName} onChange={handleEditFormChange} className="form-input edit-input" /></td>
-                        <td><input type="text" name="surveyNumber" value={editFormData.surveyNumber} onChange={handleEditFormChange} className="form-input edit-input" /></td>
-                        <td>
-                          <select name="dealType" value={editFormData.dealType} onChange={handleEditFormChange} className="form-input edit-input">
-                            <option value="Buy">Buy</option>
-                            <option value="Sell">Sell</option>
-                            <option value="Other">Other</option>
-                          </select>
-                        </td>
-                        <td><input type="number" name="pricePerSqYard" value={editFormData.pricePerSqYard} onChange={handleEditFormChange} className="form-input edit-input" /></td>
-                        <td><input type="number" name="totalSqYard" value={editFormData.totalSqYard} onChange={handleEditFormChange} className="form-input edit-input" /></td>
-                        <td><input type="number" name="totalSqMeter" value={editFormData.totalSqMeter} onChange={handleEditFormChange} className="form-input edit-input" placeholder="0" min="0" step="0.01" /></td>
-                        <td><input type="number" name="jantri" value={editFormData.jantri} onChange={handleEditFormChange} className="form-input edit-input" placeholder="0" min="0" step="0.01" /></td>
-                        <td><input type="number" name="totalAmount" value={editFormData.totalAmount} readOnly className="form-input edit-input edit-input--readonly" /></td>
-                        <td><input type="date" name="paymentDeadlineMonth" value={editFormData.paymentDeadlineMonth ? new Date(editFormData.paymentDeadlineMonth).toISOString().split('T')[0] : ''} onChange={handleEditFormChange} className="form-input edit-input" /></td>
-                        <td>
-                          <div className="action-group">
-                            <button onClick={() => handleSaveEdit(deal._id)} className="action-btn action-btn--save">Save</button>
-                            <button onClick={handleCancelEdit} className="action-btn action-btn--cancel">Cancel</button>
-                          </div>
-                        </td>
-                      </>
-                    ) : (
-                      <>
-                        <td className="td-name">{deal.villageName}</td>
-                        <td className="td-num">{deal.surveyNumber}</td>
-                        <td>
-                          <span className={`deal-type-badge deal-type-badge--${(deal.dealType || 'Buy').toLowerCase()}`}>
-                            {deal.dealType || 'Buy'}
-                          </span>
-                        </td>
-                        <td className="td-num">{deal.pricePerSqYard ? formatCurrency(deal.pricePerSqYard) : 'N/A'}</td>
-                        <td className="td-num">{deal.totalSqYard.toLocaleString('en-IN')}</td>
-                        <td className="td-num">{deal.totalSqMeter ? deal.totalSqMeter.toLocaleString('en-IN') : 0}</td>
-                        <td className="td-num">{deal.jantri ? formatCurrency(deal.jantri) : 0}</td>
-                        <td className="td-num td-amount">{formatCurrency(deal.totalAmount)}</td>
-                        <td className="td-num">{deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : formatDate(deal.paymentDeadlineMonth)}</td>
-                        <td>
-                          <div className="action-group">
-                            <Link to={`/deals/${deal._id}`} className="action-btn action-btn--view">View</Link>
-                            {isAdmin && (
-                              <>
-                                <button onClick={() => handleEdit(deal)} className="action-btn action-btn--edit" title="Edit"><EditIconSvg /></button>
-                                <button onClick={() => setConfirmDeleteId(deal._id)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
+        <div className="dashboard-deals-grid">
+          {sortedDeals.map((deal) => (
+            <div key={deal._id} className={`dashboard-deal-card ${expandedDeals.includes(deal._id) ? 'dashboard-deal-card--expanded' : ''}`}>
+              <div className="dashboard-deal-header" onClick={() => toggleDeal(deal._id)}>
+                <div className="dashboard-deal-header-left">
+                  <h3 className="dashboard-deal-title">{deal.villageName}</h3>
+                  <div className="dashboard-deal-survey">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="dashboard-deal-survey-text">Survey #</span>{deal.surveyNumber}
+                  </div>
+                </div>
+                <span className={`dashboard-deal-type-badge dashboard-deal-type-badge--${(deal.dealType || 'Buy').toLowerCase()}`}>
+                  <span className="dashboard-deal-type-badge-text">{deal.dealType || 'Buy'}</span>
+                </span>
+              </div>
 
-                              </>
-                            )}
-                          </div>
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              <div className="dashboard-deal-content">
 
-          {/* ── Mobile Card View ───────────────── */}
-          <div className="deals-cards">
-            {sortedDeals.map((deal) => (
-              <div key={deal._id} className={`deal-card${editingId === deal._id ? ' deal-card--editing' : ''}`}>
-                {editingId === deal._id ? (
-                  /* ── Edit mode ── */
+              <div className="dashboard-deal-details">
+                <div className="dashboard-deal-detail">
+                  <span className="dashboard-deal-detail-label">Unit Price</span>
+                  <span className="dashboard-deal-detail-value">{formatCurrency(deal.pricePerSqYard)}</span>
+                </div>
+                <div className="dashboard-deal-detail">
+                  <span className="dashboard-deal-detail-label">Total Area</span>
+                  <span className="dashboard-deal-detail-value">{deal.totalSqYard.toLocaleString('en-IN')} sq.yd</span>
+                </div>
+                <div className="dashboard-deal-detail">
+                  <span className="dashboard-deal-detail-label">Sq. Meter</span>
+                  <span className="dashboard-deal-detail-value">{deal.totalSqMeter ? deal.totalSqMeter.toLocaleString('en-IN') : 0}</span>
+                </div>
+                <div className="dashboard-deal-detail">
+                  <span className="dashboard-deal-detail-label">Jantri</span>
+                  <span className="dashboard-deal-detail-value">{deal.jantri ? formatCurrency(deal.jantri) : '₹0'}</span>
+                </div>
+                <div className="dashboard-deal-detail">
+                  <span className="dashboard-deal-detail-label">Deadline</span>
+                  <span className="dashboard-deal-detail-value">{deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : formatDate(deal.paymentDeadlineMonth)}</span>
+                </div>
+                <div className="dashboard-deal-detail">
+                  <span className="dashboard-deal-detail-label">Total Amount</span>
+                  <span className="dashboard-deal-amount">{formatCurrency(deal.totalAmount)}</span>
+                </div>
+              </div>
+
+              <div className="dashboard-deal-actions">
+                <Link to={`/deals/${deal._id}`} className="dashboard-action-btn dashboard-action-btn--view">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <span className="dashboard-action-btn-text">View Details</span>
+                </Link>
+                {isAdmin && (
                   <>
-                    <div className="deal-card-name" style={{ marginBottom: '1rem' }}>Editing: {deal.villageName}</div>
-                    <div className="deal-card-edit-grid">
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Village Name</span>
-                        <input type="text" name="villageName" value={editFormData.villageName} onChange={handleEditFormChange} className="form-input edit-input" />
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Survey No.</span>
-                        <input type="text" name="surveyNumber" value={editFormData.surveyNumber} onChange={handleEditFormChange} className="form-input edit-input" />
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Unit Price (₹)</span>
-                        <input type="number" name="pricePerSqYard" value={editFormData.pricePerSqYard} onChange={handleEditFormChange} className="form-input edit-input" />
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Total Area (sq.yd)</span>
-                        <input type="number" name="totalSqYard" value={editFormData.totalSqYard} onChange={handleEditFormChange} className="form-input edit-input" />
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Total Sq. Meter</span>
-                        <input type="number" name="totalSqMeter" value={editFormData.totalSqMeter} onChange={handleEditFormChange} className="form-input edit-input" placeholder="0" min="0" step="0.01" />
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Jantri (₹)</span>
-                        <input type="number" name="jantri" value={editFormData.jantri} onChange={handleEditFormChange} className="form-input edit-input" placeholder="0" min="0" step="0.01" />
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Total Amount (auto)</span>
-                        <input type="number" name="totalAmount" value={editFormData.totalAmount} readOnly className="form-input edit-input edit-input--readonly" />
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Payment Deadline</span>
-                        <input type="date" name="paymentDeadlineMonth" value={editFormData.paymentDeadlineMonth ? new Date(editFormData.paymentDeadlineMonth).toISOString().split('T')[0] : ''} onChange={handleEditFormChange} className="form-input edit-input" />
-                      </div>
-                    </div>
-                    <div className="deal-card-actions" style={{ marginTop: '1rem' }}>
-                      <button onClick={() => handleSaveEdit(deal._id)} className="action-btn action-btn--save" style={{ flex: 1, justifyContent: 'center' }}>Save Changes</button>
-                      <button onClick={handleCancelEdit} className="action-btn action-btn--cancel">Cancel</button>
-                    </div>
-                  </>
-                ) : (
-                  /* ── Display mode ── */
-                  <>
-                    <div className="deal-card-name">{deal.villageName}</div>
-                    <div className="deal-card-grid">
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Survey No.</span>
-                        <span className="deal-card-value">{deal.surveyNumber}</span>
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Deal Type</span>
-                        <span className="deal-card-value">
-                          <span className={`deal-type-badge deal-type-badge--${(deal.dealType || 'Buy').toLowerCase()}`}>
-                            {deal.dealType || 'Buy'}
-                          </span>
-                        </span>
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Unit Price</span>
-                        <span className="deal-card-value">{deal.pricePerSqYard ? formatCurrency(deal.pricePerSqYard) : 'N/A'}</span>
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Total Area</span>
-                        <span className="deal-card-value">{deal.totalSqYard.toLocaleString('en-IN')}</span>
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Sq. Meter</span>
-                        <span className="deal-card-value">{deal.totalSqMeter ? deal.totalSqMeter.toLocaleString('en-IN') : 0}</span>
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Jantri</span>
-                        <span className="deal-card-value">{deal.jantri ? formatCurrency(deal.jantri) : 0}</span>
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Total Amount</span>
-                        <span className="deal-card-value deal-card-amount">{formatCurrency(deal.totalAmount)}</span>
-                      </div>
-                      <div className="deal-card-field">
-                        <span className="deal-card-label">Deadline</span>
-                        <span className="deal-card-value">{deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : formatDate(deal.paymentDeadlineMonth)}</span>
-                      </div>
-                    </div>
-                    <div className="deal-card-actions">
-                      <Link to={`/deals/${deal._id}`} className="action-btn action-btn--view">View Details</Link>
-                      {isAdmin && (
-                        <>
-                          <button onClick={() => handleEdit(deal)} className="action-btn action-btn--edit" title="Edit"><EditIconSvg /></button>
-                          <button onClick={() => setConfirmDeleteId(deal._id)} className="action-btn action-btn--delete" title="Delete"><DeleteIconSvg /></button>
-
-                        </>
-                      )}
-                    </div>
+                    <button onClick={() => handleEdit(deal)} className="dashboard-action-btn dashboard-action-btn--edit">
+                      <EditIconSvg />
+                      <span className="dashboard-action-btn-text">Edit</span>
+                    </button>
+                    <button onClick={() => setConfirmDeleteId(deal._id)} className="dashboard-action-btn dashboard-action-btn--delete">
+                      <DeleteIconSvg />
+                      <span className="dashboard-action-btn-text">Delete</span>
+                    </button>
                   </>
                 )}
               </div>
-            ))}
-          </div>
-        </>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
+      {/* ── Edit Modal ── */}
+      {editingId && (() => {
+        const deal = deals.find(d => d._id === editingId);
+        return (
+          <div className="dashboard-modal-overlay" onClick={handleCancelEdit}>
+            <div className="dashboard-modal dashboard-modal--large" onClick={e => e.stopPropagation()}>
+              <div className="dashboard-modal-header">
+                <h3 className="dashboard-modal-title">Edit Deal</h3>
+                <button className="dashboard-modal-close" onClick={handleCancelEdit}>
+                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              <div className="dashboard-modal-body">
+                <div className="dashboard-edit-form">
+                  <div className="dashboard-form-row">
+                    <div className="dashboard-form-group">
+                      <label className="dashboard-form-label">Village Name</label>
+                      <input
+                        type="text"
+                        name="villageName"
+                        className="dashboard-form-input"
+                        value={editFormData.villageName}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                    <div className="dashboard-form-group">
+                      <label className="dashboard-form-label">Survey Number</label>
+                      <input
+                        type="text"
+                        name="surveyNumber"
+                        className="dashboard-form-input"
+                        value={editFormData.surveyNumber}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="dashboard-form-row">
+                    <div className="dashboard-form-group">
+                      <label className="dashboard-form-label">Deal Type</label>
+                      <select
+                        name="dealType"
+                        className="dashboard-form-input"
+                        value={editFormData.dealType}
+                        onChange={handleEditFormChange}
+                      >
+                        <option value="Buy">Buy</option>
+                        <option value="Sell">Sell</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    <div className="dashboard-form-group">
+                      <label className="dashboard-form-label">Price per Sq. Yard</label>
+                      <input
+                        type="number"
+                        name="pricePerSqYard"
+                        className="dashboard-form-input"
+                        value={editFormData.pricePerSqYard}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="dashboard-form-row">
+                    <div className="dashboard-form-group">
+                      <label className="dashboard-form-label">Total Sq. Yard</label>
+                      <input
+                        type="number"
+                        name="totalSqYard"
+                        className="dashboard-form-input"
+                        value={editFormData.totalSqYard}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                    <div className="dashboard-form-group">
+                      <label className="dashboard-form-label">Total Sq. Meter</label>
+                      <input
+                        type="number"
+                        name="totalSqMeter"
+                        className="dashboard-form-input"
+                        value={editFormData.totalSqMeter}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="dashboard-form-row">
+                    <div className="dashboard-form-group">
+                      <label className="dashboard-form-label">Jantri</label>
+                      <input
+                        type="number"
+                        name="jantri"
+                        className="dashboard-form-input"
+                        value={editFormData.jantri}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                    <div className="dashboard-form-group">
+                      <label className="dashboard-form-label">Total Amount</label>
+                      <input
+                        type="number"
+                        name="totalAmount"
+                        className="dashboard-form-input"
+                        value={editFormData.totalAmount}
+                        readOnly
+                        style={{ backgroundColor: '#f7fafc', cursor: 'not-allowed' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">Payment Deadline</label>
+                    <input
+                      type="date"
+                      name="paymentDeadlineMonth"
+                      className="dashboard-form-input"
+                      value={editFormData.paymentDeadlineMonth ? new Date(editFormData.paymentDeadlineMonth).toISOString().split('T')[0] : ''}
+                      onChange={handleEditFormChange}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="dashboard-modal-actions">
+                <button className="dashboard-modal-btn dashboard-modal-btn--cancel" onClick={handleCancelEdit} disabled={isSavingEdit}>Cancel</button>
+                <button className="dashboard-modal-btn dashboard-modal-btn--confirm" onClick={() => handleSaveEdit(editingId)} disabled={isSavingEdit}>
+                  {isSavingEdit ? (
+                    <>
+                      <span className="dashboard-modal-spinner" />
+                      Saving...
+                    </>
+                  ) : (
+                    'Save Changes'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* ── Delete Confirmation Modal ── */}
       {confirmDeleteId && (() => {
         const deal = deals.find(d => d._id === confirmDeleteId);
         return (
-          <div className="logout-modal-overlay" onClick={() => setConfirmDeleteId(null)}>
-            <div className="logout-modal" onClick={e => e.stopPropagation()}>
-              <div className="logout-modal-icon">
-                <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+          <div className="dashboard-modal-overlay" onClick={() => setConfirmDeleteId(null)}>
+            <div className="dashboard-modal" onClick={e => e.stopPropagation()}>
+              <div className="dashboard-modal-icon">
+                <svg width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                   <polyline points="3 6 5 6 21 6" />
                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                   <line x1="10" y1="11" x2="10" y2="17" />
                   <line x1="14" y1="11" x2="14" y2="17" />
                 </svg>
               </div>
-              <h3 className="logout-modal-title">Delete Deal?</h3>
-              <p className="logout-modal-desc">
+              <h3 className="dashboard-modal-title">Delete Deal?</h3>
+              <p className="dashboard-modal-desc">
                 Are you sure you want to delete<br />
                 <strong>{deal?.villageName}</strong> (Survey #{deal?.surveyNumber})?<br />
                 <span style={{ color: '#e53e3e', fontSize: '0.82rem' }}>This action cannot be undone.</span>
               </p>
-              <div className="logout-modal-actions">
-                <button className="logout-modal-btn logout-modal-btn--cancel" onClick={() => setConfirmDeleteId(null)} disabled={isDeleting}>Cancel</button>
-                <button className="logout-modal-btn logout-modal-btn--confirm" onClick={() => handleDelete(confirmDeleteId)} disabled={isDeleting}>
-                  {isDeleting ? <><span className="modal-spinner" /> Deleting…</> : 'Yes, Delete'}
+              <div className="dashboard-modal-actions">
+                <button className="dashboard-modal-btn dashboard-modal-btn--cancel" onClick={() => setConfirmDeleteId(null)} disabled={isDeleting}>Cancel</button>
+                <button className="dashboard-modal-btn dashboard-modal-btn--confirm" onClick={() => handleDelete(confirmDeleteId)} disabled={isDeleting}>
+                  {isDeleting ? <><span className="dashboard-modal-spinner" /> Deleting…</> : 'Yes, Delete'}
                 </button>
               </div>
             </div>

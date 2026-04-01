@@ -1,41 +1,71 @@
+/**
+ * ============================================
+ * PropLedger - Payment Controller
+ * ============================================
+ * Handles payment tracking and management operations
+ * 
+ * @author PropLedger Development Team
+ * @version 1.0.0
+ */
+
 const Payment = require('../models/Payment');
 const Deal = require('../models/Deal');
 
-// @desc    Add payment
-// @route   POST /api/payments
-// @access  Private
+/**
+ * @desc    Add new payment to a deal
+ * @route   POST /api/payments
+ * @access  Private
+ */
 const addPayment = async (req, res) => {
+  const session = await Payment.startSession();
+  session.startTransaction();
+  
   try {
     const { dealId, date, modeOfPayment, amount, remarks } = req.body;
 
-    const dealExists = await Deal.exists({ _id: dealId });
-    if (!dealExists) {
-      return res.status(404).json({ message: 'Deal not found' });
+    // Verify deal exists and belongs to user (within transaction)
+    const deal = await Deal.findOne({ _id: dealId, createdBy: req.user._id }).session(session);
+    if (!deal) {
+      await session.abortTransaction();
+      return res.status(404).json({ message: 'Deal not found or access denied' });
     }
 
-    const payment = await Payment.create({
+    // Create payment (within transaction)
+    const [payment] = await Payment.create([{
       dealId,
       date,
       modeOfPayment,
       amount,
       remarks,
       createdBy: req.user._id
-    });
+    }], { session });
 
     await payment.populate('createdBy', 'name');
 
+    await session.commitTransaction();
     res.status(201).json(payment);
   } catch (error) {
+    await session.abortTransaction();
     res.status(500).json({ message: error.message });
+  } finally {
+    session.endSession();
   }
 };
 
-// @desc    Get payments for a deal
-// @route   GET /api/payments/deal/:dealId
-// @access  Private
+/**
+ * @desc    Get all payments for a specific deal
+ * @route   GET /api/payments/deal/:dealId
+ * @access  Private
+ */
 const getPaymentsByDeal = async (req, res) => {
   try {
-    const payments = await Payment.find({ dealId: req.params.dealId })
+    // Verify the deal belongs to the user
+    const deal = await Deal.findOne({ _id: req.params.dealId, createdBy: req.user._id });
+    if (!deal) {
+      return res.status(404).json({ message: 'Deal not found' });
+    }
+
+    const payments = await Payment.find({ dealId: req.params.dealId, createdBy: req.user._id })
       .sort({ date: -1 })
       .populate('createdBy', 'name')
       .lean();
@@ -48,12 +78,14 @@ const getPaymentsByDeal = async (req, res) => {
   }
 };
 
-// @desc    Get all payments
-// @route   GET /api/payments
-// @access  Private
+/**
+ * @desc    Get all payments for current user
+ * @route   GET /api/payments
+ * @access  Private
+ */
 const getAllPayments = async (req, res) => {
   try {
-    const payments = await Payment.find()
+    const payments = await Payment.find({ createdBy: req.user._id })
       .sort({ date: -1 })
       .populate('dealId', 'villageName surveyNumber')
       .populate('createdBy', 'name');
@@ -64,9 +96,11 @@ const getAllPayments = async (req, res) => {
   }
 };
 
-// @desc    Get payment history (paginated, searchable, sorted by createdAt desc)
-// @route   GET /api/payments/history
-// @access  Private
+/**
+ * @desc    Get paginated payment history with search and filters
+ * @route   GET /api/payments/history
+ * @access  Private
+ */
 const getPaymentHistory = async (req, res) => {
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1);
@@ -74,11 +108,12 @@ const getPaymentHistory = async (req, res) => {
     const search = (req.query.search || '').trim();
     const mode = req.query.mode || '';
 
-    let filter = {};
+    let filter = { createdBy: req.user._id };
 
     // Village name search — resolve matching deal IDs first
     if (search) {
       const matchingDeals = await Deal.find({
+        createdBy: req.user._id,
         villageName: { $regex: search, $options: 'i' }
       }).select('_id').lean();
       filter.dealId = { $in: matchingDeals.map(d => d._id) };
@@ -112,13 +147,15 @@ const getPaymentHistory = async (req, res) => {
   }
 };
 
-// @desc    Update payment
-// @route   PUT /api/payments/:id
-// @access  Private/Admin
+/**
+ * @desc    Update existing payment
+ * @route   PUT /api/payments/:id
+ * @access  Private/Admin
+ */
 const updatePayment = async (req, res) => {
   try {
-    const updatedPayment = await Payment.findByIdAndUpdate(
-      req.params.id,
+    const updatedPayment = await Payment.findOneAndUpdate(
+      { _id: req.params.id, createdBy: req.user._id },
       req.body,
       { new: true, runValidators: true, returnDocument: 'after' }
     ).populate('createdBy', 'name');
@@ -133,20 +170,32 @@ const updatePayment = async (req, res) => {
   }
 };
 
-// @desc    Delete payment
-// @route   DELETE /api/payments/:id
-// @access  Private/Admin
+/**
+ * @desc    Delete payment
+ * @route   DELETE /api/payments/:id
+ * @access  Private/Admin
+ */
 const deletePayment = async (req, res) => {
+  const session = await Payment.startSession();
+  session.startTransaction();
+  
   try {
-    const payment = await Payment.findByIdAndDelete(req.params.id);
+    const payment = await Payment.findOne({ _id: req.params.id, createdBy: req.user._id }).session(session);
 
     if (!payment) {
+      await session.abortTransaction();
       return res.status(404).json({ message: 'Payment not found' });
     }
 
+    await Payment.findByIdAndDelete(payment._id).session(session);
+
+    await session.commitTransaction();
     res.json({ message: 'Payment deleted' });
   } catch (error) {
+    await session.abortTransaction();
     res.status(500).json({ message: error.message });
+  } finally {
+    session.endSession();
   }
 };
 

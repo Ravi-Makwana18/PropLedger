@@ -1,17 +1,32 @@
+/**
+ * ============================================
+ * PropLedger - Deal Model
+ * ============================================
+ * Defines the land deal schema with automatic calculations
+ * Tracks property details, pricing, and payment deadlines
+ * 
+ * @author PropLedger Development Team
+ * @version 1.0.0
+ */
+
 const mongoose = require('mongoose');
 
+/**
+ * Deal Schema Definition
+ * Stores land deal information with automatic amount calculations
+ */
 const dealSchema = new mongoose.Schema({
   villageName: {
     type: String,
     required: [true, 'Please provide village name'],
     trim: true,
-    index: true
+    index: true  // Indexed for faster search queries
   },
   surveyNumber: {
     type: String,
     required: [true, 'Please provide survey number'],
     trim: true,
-    index: true
+    index: true  // Indexed for faster search queries
   },
   dealType: {
     type: String,
@@ -31,9 +46,11 @@ const dealSchema = new mongoose.Schema({
   },
   totalAmount: {
     type: Number
+    // Calculated automatically in pre-save hook
   },
   banakhatAmount: {
     type: Number
+    // Calculated as 25% of total amount in pre-save hook
   },
   totalSqMeter: {
     type: Number,
@@ -45,6 +62,7 @@ const dealSchema = new mongoose.Schema({
   },
   whitePayment: {
     type: Number
+    // Calculated from totalSqMeter * jantri in pre-save hook
   },
   deadlineStartDate: {
     type: Date,
@@ -60,19 +78,27 @@ const dealSchema = new mongoose.Schema({
     required: true
   }
 }, {
-  timestamps: true,
+  timestamps: true,  // Automatically add createdAt and updatedAt
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
 
-// Calculate derived amounts before saving
+/**
+ * Pre-save middleware
+ * Automatically calculates derived amounts before saving
+ * - totalAmount = pricePerSqYard * totalSqYard
+ * - banakhatAmount = 25% of totalAmount
+ * - whitePayment = totalSqMeter * jantri
+ */
 dealSchema.pre('save', async function () {
   this.totalAmount = this.pricePerSqYard * this.totalSqYard;
-  this.banakhatAmount = this.totalAmount * 0.25; // 25% of total amount
+  this.banakhatAmount = this.totalAmount * 0.25; // 25% of total
   this.whitePayment = (this.totalSqMeter || 0) * (this.jantri || 0);
 });
 
-// Compound index for search
+/**
+ * Compound index for efficient search by village and survey number
+ */
 dealSchema.index({ villageName: 1, surveyNumber: 1 });
 
 module.exports = mongoose.model('Deal', dealSchema);

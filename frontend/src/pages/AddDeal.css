@@ -1,0 +1,477 @@
+/* ═══════════════════════════════════════════════
+   AddDeal.css – Modern Professional Design
+═══════════════════════════════════════════════ */
+
+.ad-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.ad-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ── Page Header ── */
+.ad-page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.ad-page-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ad-back-btn {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.625rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.ad-back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateX(-3px);
+}
+
+.ad-back-arrow {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.ad-page-title-block {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ad-page-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  backdrop-filter: blur(10px);
+  flex-shrink: 0;
+}
+
+.ad-page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ad-page-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0.25rem 0 0;
+}
+
+/* ── Error Banner ── */
+.ad-error-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ── Form ── */
+.ad-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ── Section ── */
+.ad-section {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.ad-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.ad-section-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.ad-section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+/* ── Field ── */
+.ad-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ad-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.ad-required {
+  color: #dc2626;
+  font-size: 1rem;
+}
+
+.ad-hint {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin-top: -0.25rem;
+}
+
+/* ── Input ── */
+.ad-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.2s;
+  background: #f8fafc;
+}
+
+.ad-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background: #fff;
+}
+
+.ad-input::placeholder {
+  color: #94a3b8;
+}
+
+/* ── Input with Prefix/Suffix ── */
+.ad-input-prefix-wrap,
+.ad-input-suffix-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ad-input-prefix {
+  position: absolute;
+  left: 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.ad-input--prefixed {
+  padding-left: 2.25rem;
+}
+
+.ad-input-suffix {
+  position: absolute;
+  right: 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.ad-input--suffixed {
+  padding-right: 3.5rem;
+}
+
+/* ── Grid ── */
+.ad-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+/* ── Deal Type Row ── */
+.ad-deal-type-row {
+  margin-top: 1.25rem;
+}
+
+.ad-deal-type-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ad-deal-type-select {
+  flex: 0 0 200px;
+}
+
+.ad-deal-type-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ad-deal-type-badge--buy {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.ad-deal-type-badge--sell {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.ad-deal-type-badge--other {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+/* ── Calculation Strip ── */
+.ad-calc-strip {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.ad-calc-card {
+  flex: 1;
+  min-width: 180px;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ad-calc-card--total {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border: 1px solid #93c5fd;
+}
+
+.ad-calc-card--banakhat {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #fcd34d;
+}
+
+.ad-calc-card--white {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border: 1px solid #6ee7b7;
+}
+
+.ad-calc-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #374151;
+}
+
+.ad-calc-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.ad-calc-divider {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #94a3b8;
+  padding: 0 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Action Buttons ── */
+.ad-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+}
+
+.ad-btn {
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 140px;
+}
+
+.ad-btn--cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.ad-btn--cancel:hover {
+  background: #e5e7eb;
+}
+
+.ad-btn--submit {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.ad-btn--submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.ad-btn--submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ad-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: ad-spin 0.6s linear infinite;
+}
+
+@keyframes ad-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ad-page-header {
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+  }
+
+  .ad-page-title {
+    font-size: 1.5rem;
+  }
+
+  .ad-page-subtitle {
+    font-size: 0.9375rem;
+  }
+
+  .ad-section {
+    padding: 1.5rem;
+  }
+
+  .ad-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .ad-deal-type-select-wrap {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ad-deal-type-select {
+    flex: 1;
+  }
+
+  .ad-calc-strip {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ad-calc-divider {
+    display: none;
+  }
+
+  .ad-actions {
+    flex-direction: column-reverse;
+  }
+
+  .ad-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .ad-page-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .ad-page-title {
+    font-size: 1.25rem;
+  }
+
+  .ad-section {
+    padding: 1rem;
+  }
+
+  .ad-page-title-block {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

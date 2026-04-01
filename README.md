@@ -1,290 +1,369 @@
-# Dholera SIR - Land Deal Management System
+# 🏗️ PropLedger - Land Deal Management System
 
-A comprehensive MERN stack web application for managing land deals, tracking payments, and maintaining deal records. Built with MongoDB, Express.js, React, and Node.js.
+A comprehensive full-stack MERN application for managing land deals, tracking payments, and maintaining customer records. Built with modern web technologies and best practices.
 
-## Features
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen.svg)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green.svg)
 
-### Authentication
-- Mobile number + Password authentication
-- OTP verification system
+## ✨ Features
+
+### 🔐 Authentication & Authorization
+- Secure mobile number + password authentication
+- JWT-based session management
+- OTP verification system (ready for SMS integration)
 - Role-based access control (Admin/User)
+- Token-based API protection
 
-### Deal Management
-- Add new land deals with village name and survey number
-- Search deals by village name or survey number
-- Track price per sq. yard and total area
-- Calculate total deal amount automatically
-- Set payment deadline months
+### 📊 Deal Management
+- Create and manage land deals with comprehensive details
+- Track village name, survey number, and property specifications
+- Automatic calculation of total amounts and derived values
+- Support for Buy/Sell/Other deal types
+- Advanced search functionality by village or survey number
+- Payment deadline tracking
 
-### Payment Tracking
-- Add multiple payment records per deal
-- Support for various payment modes (NEFT, RTGS, CASH, CHEQUE, UPI, etc.)
-- Track payment date, amount, and remarks
-- Real-time calculation of total paid and remaining amounts
-- Complete payment history with detailed logs
+### 💰 Payment Tracking
+- Record multiple payments per deal
+- Support for various payment modes (NEFT, RTGS, CASH, CHEQUE, UPI, ANGADIA)
+- Real-time calculation of paid and remaining amounts
+- Complete payment history with audit trail
+- Detailed payment logs with timestamps
 
-### Responsive Design
-- Mobile-friendly interface
-- Works seamlessly on laptops, tablets, and smartphones
-- Modern, clean UI with intuitive navigation
+### 📱 Customer Enquiry Management
+- Public enquiry submission form
+- Admin dashboard for managing enquiries
+- Read/unread status tracking
+- Enquiry type categorization
 
-## Technology Stack
+### 🎨 Modern UI/UX
+- Fully responsive design (mobile, tablet, desktop)
+- Clean and intuitive interface
+- Real-time data updates
+- Professional styling with modern CSS
+
+## 🛠️ Technology Stack
 
 ### Backend
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **MongoDB** - Database
-- **Mongoose** - ODM
-- **JWT** - Authentication tokens
-- **bcryptjs** - Password hashing
+- **Node.js** - JavaScript runtime environment
+- **Express.js** - Fast, unopinionated web framework
+- **MongoDB** - NoSQL database with Mongoose ODM
+- **JWT** - Secure authentication tokens
+- **bcryptjs** - Password hashing and encryption
 
 ### Frontend
-- **React** - UI library
-- **React Router** - Navigation
-- **Axios** - HTTP client
-- **CSS3** - Styling (responsive design)
+- **React** - Component-based UI library
+- **React Router** - Client-side routing
+- **Axios** - HTTP client with interceptors
+- **Context API** - Global state management
+- **CSS3** - Modern responsive styling
 
-## Installation
+### DevOps & Tools
+- **Nodemon** - Development auto-reload
+- **Concurrently** - Run multiple npm scripts
+- **dotenv** - Environment variable management
+- **CORS** - Cross-origin resource sharing
 
-### Prerequisites
-- Node.js (v14 or higher)
-- MongoDB (local or Atlas)
-- npm or yarn
+## 📋 Prerequisites
 
-### Backend Setup
+Before you begin, ensure you have the following installed:
+- **Node.js** (v14.0.0 or higher)
+- **npm** (v6.0.0 or higher)
+- **MongoDB Atlas** account (or local MongoDB)
+- **Git** for version control
 
-1. Navigate to the project root directory:
+## 🚀 Installation & Setup
+
+### 1. Clone the Repository
+
 ```bash
-cd /Users/ravimakwana/DholeraSIR
+git clone https://github.com/yourusername/propledger.git
+cd propledger
 ```
 
-2. Install backend dependencies:
+### 2. Install Dependencies
+
 ```bash
-npm install express mongoose dotenv cors jsonwebtoken bcryptjs nodemon concurrently
-```
-
-3. Create `.env` file in the backend directory:
-```bash
-cp backend/.env.example backend/.env
-```
-
-4. Update the `.env` file with your configuration:
-```env
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/dholera-sir
-JWT_SECRET=your_secret_key_here
-JWT_EXPIRE=30d
-NODE_ENV=development
-```
-
-5. Start the backend server:
-```bash
-npm run dev
-```
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-```bash
-cd frontend
-```
-
-2. Install frontend dependencies:
-```bash
+# Install root dependencies
 npm install
+
+# Install frontend dependencies
+cd frontend
+npm install
+cd ..
 ```
 
-3. Start the React development server:
-```bash
-npm start
+### 3. Environment Configuration
+
+Create a `.env` file in the root directory:
+
+```env
+# Server Configuration
+PORT=5001
+NODE_ENV=development
+
+# MongoDB Connection
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>?retryWrites=true&w=majority
+
+# JWT Configuration
+JWT_SECRET=your_super_secret_jwt_key_here
+JWT_EXPIRE=30d
+
+# Admin Seeder (Optional)
+ADMIN_NAME=Admin
+ADMIN_MOBILE=9999999999
+ADMIN_PASSWORD=admin@123
 ```
 
-The application will open at `http://localhost:3000`
+Create `frontend/.env`:
 
-### Running Both Servers Simultaneously
+```env
+REACT_APP_API_URL=http://localhost:5001
+```
 
-From the root directory:
+### 4. MongoDB Atlas Setup
+
+1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a new cluster
+3. Create a database user with read/write permissions
+4. Whitelist your IP address (or use 0.0.0.0/0 for development)
+5. Get your connection string and update `MONGO_URI` in `.env`
+
+### 5. Create Admin User
+
 ```bash
+npm run seed:admin
+```
+
+This will create an admin user with credentials from your `.env` file.
+
+### 6. Start the Application
+
+```bash
+# Start both backend and frontend
 npm run dev:all
+
+# Or start separately:
+# Backend only
+npm run dev
+
+# Frontend only (in another terminal)
+npm run client
 ```
 
-## Database Schema
+The application will be available at:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5001
 
-### User Schema
-```javascript
-{
-  mobileNumber: String (unique),
-  password: String (hashed),
-  name: String,
-  role: String (admin/user),
-  otp: String,
-  otpExpiry: Date,
-  isVerified: Boolean
-}
+## 📁 Project Structure
+
+```
+propledger/
+├── backend/
+│   ├── config/
+│   │   └── db.js                 # MongoDB connection
+│   ├── controllers/
+│   │   ├── authController.js     # Authentication logic
+│   │   ├── dealController.js     # Deal management
+│   │   ├── paymentController.js  # Payment tracking
+│   │   └── enquiryController.js  # Enquiry handling
+│   ├── middleware/
+│   │   ├── auth.js               # JWT verification
+│   │   ├── errorHandler.js       # Global error handler
+│   │   └── asyncHandler.js       # Async wrapper
+│   ├── models/
+│   │   ├── User.js               # User schema
+│   │   ├── Deal.js               # Deal schema
+│   │   ├── Payment.js            # Payment schema
+│   │   └── Enquiry.js            # Enquiry schema
+│   ├── routes/
+│   │   ├── authRoutes.js         # Auth endpoints
+│   │   ├── dealRoutes.js         # Deal endpoints
+│   │   ├── paymentRoutes.js      # Payment endpoints
+│   │   └── enquiryRoutes.js      # Enquiry endpoints
+│   ├── utils/
+│   │   ├── generateToken.js      # JWT generator
+│   │   └── smsService.js         # OTP SMS service
+│   ├── seedAdmin.js              # Admin user seeder
+│   └── server.js                 # Express app entry
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── axios.js          # Axios configuration
+│   │   ├── components/
+│   │   │   ├── Layout.jsx        # Main layout
+│   │   │   ├── Sidebar.jsx       # Navigation sidebar
+│   │   │   ├── Topbar.jsx        # Top navigation
+│   │   │   └── PrivateRoute.js   # Protected routes
+│   │   ├── context/
+│   │   │   └── AuthContext.js    # Auth state management
+│   │   ├── pages/
+│   │   │   ├── Login.js          # Login page
+│   │   │   ├── Register.js       # Registration page
+│   │   │   ├── Dashboard.js      # Main dashboard
+│   │   │   ├── AddDeal.js        # Create deal form
+│   │   │   ├── DealDetails.js    # Deal details view
+│   │   │   └── HistoryPage.js    # Payment history
+│   │   ├── App.js                # Root component
+│   │   └── index.js              # React entry point
+│   └── package.json
+├── .env                          # Environment variables
+├── .env.example                  # Environment template
+├── .gitignore                    # Git ignore rules
+├── package.json                  # Root dependencies
+└── README.md                     # This file
 ```
 
-### Deal Schema
-```javascript
-{
-  villageName: String,
-  surveyNumber: String,
-  pricePerSqYard: Number,
-  totalSqYard: Number,
-  totalAmount: Number (calculated),
-  paymentDeadlineMonth: Date,
-  customerName: String,
-  customerContact: String,
-  createdBy: ObjectId (ref: User)
-}
-```
-
-### Payment Schema
-```javascript
-{
-  dealId: ObjectId (ref: Deal),
-  date: Date,
-  modeOfPayment: String,
-  amount: Number,
-  remarks: String,
-  createdBy: ObjectId (ref: User)
-}
-```
-
-## API Endpoints
+## 🔌 API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/send-otp` - Send OTP to mobile
-- `POST /api/auth/verify-otp` - Verify OTP
-- `GET /api/auth/profile` - Get user profile (Protected)
+```
+POST   /api/auth/register        # Register new user
+POST   /api/auth/login           # Login user
+POST   /api/auth/logout          # Logout user
+POST   /api/auth/send-otp        # Send OTP to mobile
+POST   /api/auth/verify-otp      # Verify OTP
+GET    /api/auth/profile         # Get user profile (Protected)
+GET    /api/auth/verify          # Verify JWT token (Protected)
+```
 
 ### Deals
-- `GET /api/deals` - Get all deals (Protected)
-- `GET /api/deals/:id` - Get deal by ID with payment summary (Protected)
-- `GET /api/deals/search?q=term` - Search deals (Protected)
-- `POST /api/deals` - Create new deal (Admin only)
-- `PUT /api/deals/:id` - Update deal (Admin only)
-- `DELETE /api/deals/:id` - Delete deal (Admin only)
+```
+GET    /api/deals                # Get all deals (Protected)
+POST   /api/deals                # Create new deal (Admin)
+GET    /api/deals/search?q=term  # Search deals (Protected)
+GET    /api/deals/:id            # Get deal by ID (Protected)
+PUT    /api/deals/:id            # Update deal (Admin)
+DELETE /api/deals/:id            # Delete deal (Admin)
+```
 
 ### Payments
-- `GET /api/payments` - Get all payments (Protected)
-- `GET /api/payments/deal/:dealId` - Get payments for a deal (Protected)
-- `POST /api/payments` - Add payment (Protected)
-- `PUT /api/payments/:id` - Update payment (Admin only)
-- `DELETE /api/payments/:id` - Delete payment (Admin only)
-
-## Usage
-
-### Creating an Admin User
-To create an admin user, you need to manually set the role in the database:
-
-```javascript
-// Using MongoDB shell or Compass
-db.users.updateOne(
-  { mobileNumber: "your_mobile_number" },
-  { $set: { role: "admin" } }
-)
+```
+GET    /api/payments             # Get all payments (Protected)
+POST   /api/payments             # Add payment (Protected)
+GET    /api/payments/history     # Get payment history (Protected)
+GET    /api/payments/deal/:id    # Get payments for deal (Protected)
+PUT    /api/payments/:id         # Update payment (Admin)
+DELETE /api/payments/:id         # Delete payment (Admin)
 ```
 
-### Adding a Deal (Admin Only)
-1. Login as admin
-2. Click "Add Deal" in the navigation
-3. Fill in the deal details:
-   - Village Name
-   - Survey Number
-   - Price per Sq. Yard
-   - Total Sq. Yard
-   - Payment Deadline Month
-   - Customer details (optional)
-4. Submit to create the deal
-
-### Adding Payments
-1. Navigate to a deal's detail page
-2. Click "Add Payment" button (Admin only)
-3. Fill in payment details:
-   - Date
-   - Mode of Payment
-   - Amount
-   - Remarks
-4. Submit to record the payment
-
-### Searching Deals
-- Use the search bar on the dashboard
-- Search by village name or survey number
-- Results update in real-time
-
-## OTP Integration
-
-The application includes OTP functionality. For production, integrate with:
-
-### Option 1: MSG91 (Recommended for India)
-```javascript
-// Update backend/utils/smsService.js
-const axios = require('axios');
-
-const sendOTP = async (mobileNumber, otp) => {
-  const response = await axios.get('https://api.msg91.com/api/v5/otp', {
-    params: {
-      authkey: process.env.MSG91_API_KEY,
-      mobile: mobileNumber,
-      otp: otp
-    }
-  });
-  return response.data.type === 'success';
-};
+### Enquiries
+```
+POST   /api/enquiry              # Submit enquiry (Public)
+GET    /api/enquiry/all          # Get all enquiries
+GET    /api/enquiry/unread-count # Get unread count
+PATCH  /api/enquiry/:id/read     # Mark as read
+DELETE /api/enquiry/:id          # Delete enquiry
+DELETE /api/enquiry/all          # Delete all enquiries
 ```
 
-### Option 2: Twilio
-```javascript
-// Update backend/utils/smsService.js
-const twilio = require('twilio');
+## 🔒 Security Features
 
-const sendOTP = async (mobileNumber, otp) => {
-  const client = twilio(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-  );
-  
-  await client.messages.create({
-    body: `Your OTP is: ${otp}. Valid for 10 minutes.`,
-    from: process.env.TWILIO_PHONE_NUMBER,
-    to: `+91${mobileNumber}`
-  });
-  return true;
-};
+- ✅ Password hashing with bcryptjs (10 salt rounds)
+- ✅ JWT-based authentication with 1-hour expiry
+- ✅ HTTP-only cookies for token storage
+- ✅ CORS configuration for cross-origin requests
+- ✅ Input validation and sanitization
+- ✅ Protected routes with role-based access
+- ✅ Environment variable protection
+- ✅ MongoDB injection prevention with Mongoose
+- ✅ Error handling without exposing sensitive data
+
+## 📱 SMS Integration (Optional)
+
+The application supports OTP verification via SMS. To enable:
+
+### Option 1: MSG91 (Popular in India)
+
+1. Sign up at [MSG91](https://msg91.com/)
+2. Get your API key and template ID
+3. Update `.env`:
+```env
+MSG91_API_KEY=your_api_key
+MSG91_SENDER_ID=your_sender_id
+```
+4. Uncomment MSG91 code in `backend/utils/smsService.js`
+
+### Option 2: Twilio (International)
+
+1. Sign up at [Twilio](https://www.twilio.com/)
+2. Get your Account SID, Auth Token, and Phone Number
+3. Update `.env`:
+```env
+TWILIO_ACCOUNT_SID=your_account_sid
+TWILIO_AUTH_TOKEN=your_auth_token
+TWILIO_PHONE_NUMBER=your_phone_number
+```
+4. Uncomment Twilio code in `backend/utils/smsService.js`
+
+## 🚢 Deployment
+
+### Backend (Render/Railway/Heroku)
+
+1. Create a new web service
+2. Connect your GitHub repository
+3. Set environment variables from `.env`
+4. Deploy!
+
+### Frontend (Vercel/Netlify)
+
+1. Create a new project
+2. Connect your GitHub repository
+3. Set build command: `npm run build`
+4. Set output directory: `build`
+5. Add environment variable: `REACT_APP_API_URL=your_backend_url`
+6. Deploy!
+
+## 🧪 Testing
+
+```bash
+# Test backend connection
+curl http://localhost:5001/api/health
+
+# Test MongoDB connection
+npm run dev
+# Check console for "✅ MongoDB Connected"
 ```
 
-## Security Features
+## 🤝 Contributing
 
-- JWT-based authentication
-- Password hashing with bcryptjs
-- OTP verification for new users
-- Protected routes with role-based access
-- Input validation and sanitization
+Contributions are welcome! Please follow these steps:
 
-## Responsive Design
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-The application is fully responsive and works on:
-- Desktop (1920px and above)
-- Laptop (1024px - 1919px)
-- Tablet (768px - 1023px)
-- Mobile (320px - 767px)
+## 👥 Authors
 
-## Future Enhancements
+**PropLedger Development Team**
 
-- Export deals and payments to Excel/PDF
-- Email notifications for payment reminders
-- Dashboard analytics and charts
-- Bulk upload of deals
-- Document attachment support
-- Payment receipt generation
-- Advanced filtering and sorting
+## 🙏 Acknowledgments
 
-## License
+- MongoDB Atlas for database hosting
+- Vercel/Render for deployment platforms
+- React community for excellent documentation
+- Express.js team for the robust framework
 
-This project is private and proprietary.
+## 📞 Support
 
-## Support
+For support, email ravimakwana8205@gmail.com or open an issue in the repository.
 
-For support, contact the development team.
+## 🗺️ Roadmap
+
+- [ ] Export deals and payments to Excel/PDF
+- [ ] Email notifications for payment reminders
+- [ ] Dashboard analytics with charts
+- [ ] Bulk upload of deals via CSV
+- [ ] Document attachment support
+- [ ] Payment receipt generation
+- [ ] Advanced filtering and sorting
+- [ ] Mobile app (React Native)
+- [ ] Multi-language support
+- [ ] Dark mode theme
+
+---
+
+**Built with ❤️ by Ravi Makwana*
