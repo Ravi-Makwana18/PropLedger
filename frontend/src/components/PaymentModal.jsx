@@ -4,7 +4,7 @@ import PAYMENT_CONFIG from '../config/paymentConfig';
 import { useAuth } from '../context/AuthContext';
 
 const PaymentModal = ({ isOpen, onClose, selectedPlan, onSuccess }) => {
-  const { refreshUser } = useAuth();
+  useAuth();
   const [step, setStep] = useState(1); // 1: QR Code, 2: Upload Screenshot, 3: Success
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

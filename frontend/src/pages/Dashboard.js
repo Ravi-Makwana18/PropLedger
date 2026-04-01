@@ -484,7 +484,7 @@ const Dashboard = () => {
       )}
       {/* ── Edit Modal ── */}
       {editingId && (() => {
-        const deal = deals.find(d => d._id === editingId);
+        const _deal = deals.find(d => d._id === editingId);
         return (
           <div className="dashboard-modal-overlay" onClick={handleCancelEdit}>
             <div className="dashboard-modal dashboard-modal--large" onClick={e => e.stopPropagation()}>

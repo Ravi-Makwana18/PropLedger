@@ -764,7 +764,7 @@ const DealDetails = () => {
 
       {/* ── Edit Payment Modal ── */}
       {editingPaymentId && (() => {
-        const payment = payments.find(p => p._id === editingPaymentId);
+        const _payment = payments.find(p => p._id === editingPaymentId);
         return (
           <div className="logout-modal-overlay" onClick={handleCancelEdit}>
             <div className="dashboard-modal dashboard-modal--large" onClick={e => e.stopPropagation()}>

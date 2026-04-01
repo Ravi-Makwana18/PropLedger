@@ -155,7 +155,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
     if (isMobile && mobileOpen) {
       onClose?.();
     }
-  }, [location.pathname]);
+  }, [location.pathname, isMobile, mobileOpen, onClose]);
 
   /**
    * Open logout confirmation modal
