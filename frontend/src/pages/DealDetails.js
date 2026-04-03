@@ -306,21 +306,34 @@ const DealDetails = () => {
         return result;
       };
 
-      doc.setFontSize(18);
-      doc.setTextColor(79, 70, 229);
-      doc.text(user?.companyName || 'PropLedger', pageWidth / 2, 15, { align: 'center' });
+      const drawPageBorder = (doc) => {
+        const pw = doc.internal.pageSize.width;
+        const ph = doc.internal.pageSize.height;
+        const margin = 5;
+        
+        doc.setDrawColor(120, 120, 120);
+        doc.setLineWidth(0.6);
+        doc.roundedRect(margin, margin, pw - 2 * margin, ph - 2 * margin, 2, 2);
+      };
+
+      doc.setFontSize(20);
+      doc.setTextColor(0);
+      doc.setFont("helvetica", "bold");
+      doc.text(user?.companyName || 'PropLedger', pageWidth / 2, 14, { align: 'center' });
 
       // Village name and survey number
       doc.setFontSize(14);
-      doc.setTextColor(79, 70, 229);
-      doc.text(`${deal.villageName} - ${deal.newSurveyNo || deal.surveyNumber}`, pageWidth / 2, 25, { align: 'center' });
+      doc.setTextColor(204, 150, 30);
+      doc.text(`${deal.villageName} - ${'Survey No.'}${deal.newSurveyNo || deal.surveyNumber}`, pageWidth / 2, 25, { align: 'center' });
 
       doc.setFontSize(14);
       doc.setTextColor(79, 70, 229);
-      doc.text('Deal Details', 14, 40);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Deal Details', pageWidth / 2, 40, {align : 'center'});
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
       let yPos = 50;
+
 
       // Helper function to print two columns
       const printRow = (label1, value1, label2, value2, y) => {
@@ -340,32 +353,16 @@ const DealDetails = () => {
       printRow('District:', deal.district || 'N/A', 'Sub-District:', deal.subDistrict || 'N/A', yPos);
       yPos += 8;
 
-      // Village (full width)
-      doc.setFont('helvetica', 'bold');
-      doc.text('Village:', 14, yPos);
-      doc.setFont('helvetica', 'normal');
-      doc.text(deal.villageName, 55, yPos);
+      // Village and deal type
+      printRow('Village:', deal.villageName, 'Deal Type:', deal.dealType || 'Buy', yPos);
       yPos += 8;
 
       // Old Survey No. and New Survey No.
       printRow('Old Survey No.:', deal.oldSurveyNo || 'N/A', 'New Survey No.:', deal.newSurveyNo || deal.surveyNumber || 'N/A', yPos);
       yPos += 8;
 
-      // Deal Type (full width)
-      doc.setFont('helvetica', 'bold');
-      doc.text('Deal Type:', 14, yPos);
-      doc.setFont('helvetica', 'normal');
-      doc.text(deal.dealType || 'Buy', 55, yPos);
-      yPos += 8;
-
       // Unit Price and Total Area
-      printRow('Unit Price:', formatPDFCurrency(deal.pricePerSqYard), 'Total Area:', formatNumber(deal.totalSqYard) + ' sq.yd', yPos);
-      yPos += 8;
-
-      // 25% amount and 75% amount
-      const amount25 = deal.totalAmount * 0.25;
-      const amount75 = deal.totalAmount * 0.75;
-      printRow('25% Amount:', formatPDFCurrency(amount25), '75% Amount:', formatPDFCurrency(amount75), yPos);
+      printRow('Unit Price:', formatPDFCurrency(deal.pricePerSqYard), 'Total Area (sq. yds):', formatNumber(deal.totalSqYard), yPos);
       yPos += 8;
 
       // Total Amount (full width)
@@ -376,14 +373,14 @@ const DealDetails = () => {
       yPos += 8;
 
       // Jantri and Total Sq. mtr
-      printRow('Jantri:', deal.jantri > 0 ? formatPDFCurrency(deal.jantri) : 'N/A', 'Total Sq. mtr:', deal.totalSqMeter > 0 ? `${deal.totalSqMeter} sq.m` : 'N/A', yPos);
+      printRow('Jantri:', deal.jantri > 0 ? formatPDFCurrency(deal.jantri) : 'N/A', 'Total Area (sq. mtr):', deal.totalSqMeter > 0 ? `${deal.totalSqMeter} sq.m` : 'N/A', yPos);
       yPos += 8;
 
       // White amount calculation with TDS from database
       if (deal.tdsAmount > 0) {
         // Show white payment before TDS
         doc.setFont('helvetica', 'bold');
-        doc.text('White Amount(Before):', 14, yPos);
+        doc.text('Bank Amount (Before):', 14, yPos);
         doc.setFont('helvetica', 'normal');
         doc.text(formatPDFCurrency(deal.whitePaymentBeforeTDS || 0), 55, yPos);
         yPos += 8;
@@ -397,19 +394,24 @@ const DealDetails = () => {
 
         // Show white payment after TDS
         doc.setFont('helvetica', 'bold');
-        doc.text('White Amount(After):', 14, yPos);
+        doc.text('Bank Amount (After):', 14, yPos);
         doc.setFont('helvetica', 'normal');
         doc.text(formatPDFCurrency(deal.whitePayment || 0), 55, yPos);
         yPos += 8;
       } else {
         // Show white amount (no TDS)
         doc.setFont('helvetica', 'bold');
-        doc.text('White Amount:', 14, yPos);
+        doc.text('Bank Amount:', 14, yPos);
         doc.setFont('helvetica', 'normal');
         doc.text(deal.whitePayment > 0 ? formatPDFCurrency(deal.whitePayment) : 'N/A', 55, yPos);
         yPos += 8;
       }
-
+      // 25% amount and 75% amount
+      const amount25 = deal.totalAmount * 0.25;
+      const amount75 = deal.totalAmount * 0.75;
+      printRow('25% Amount:', formatPDFCurrency(amount25), '75% Amount:', formatPDFCurrency(amount75), yPos);
+      yPos += 8;
+      
       // 25% Deadline and 75% Deadline
       printRow('25% Deadline:', deal.deadlineStartDate ? formatDate(deal.deadlineStartDate) : 'N/A', '75% Deadline:', deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : 'N/A', yPos);
       yPos += 8;
@@ -417,13 +419,15 @@ const DealDetails = () => {
       yPos += 10;
       doc.setFontSize(14);
       doc.setTextColor(79, 70, 229);
-      doc.text('Payment Summary', 14, yPos);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Payment Summary', pageWidth / 2, yPos, {align: 'center'});
       yPos += 10;
 
       // Total Amount Summary Table
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
-      doc.text('Total Amount Summary', 14, yPos);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Total Amount Summary:', 14, yPos);
       yPos += 5;
 
       autoTable(doc, {
@@ -448,16 +452,16 @@ const DealDetails = () => {
       yPos = doc.lastAutoTable.finalY + 10;
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
-      doc.text('White Payment Summary', 14, yPos);
+      doc.text('Bank Payment Summary:', 14, yPos);
       yPos += 5;
 
       autoTable(doc, {
         startY: yPos,
         head: [['Description', 'Amount']],
         body: [
-          ['White Payment', formatPDFCurrency(deal.whitePayment || 0)],
-          ['White Paid (Bank)', formatPDFCurrency(whitePaid || 0)],
-          ['White Remaining', formatPDFCurrency(whiteRemaining || 0)]
+          ['Bank Payment', formatPDFCurrency(deal.whitePayment || 0)],
+          ['Bank Paid', formatPDFCurrency(whitePaid || 0)],
+          ['Bank Remaining', formatPDFCurrency(whiteRemaining || 0)]
         ],
         theme: 'grid',
         headStyles: { fillColor: [16, 185, 129], textColor: 255 },
@@ -476,7 +480,8 @@ const DealDetails = () => {
 
         doc.setFontSize(14);
         doc.setTextColor(79, 70, 229);
-        doc.text('Payment History', 14, yPos);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Payment History', pageWidth / 2, yPos, {align: 'center'});
         yPos += 5;
 
         const paymentRows = payments.map(payment => [
@@ -497,14 +502,14 @@ const DealDetails = () => {
 
         // Show totals for both Bank and Other payments
         autoTable(doc, {
-          startY: doc.lastAutoTable.finalY,
+          startY: doc.lastAutoTable.finalY + 10,
           body: [
-            ['TOTAL (Other):', '', formatPDFCurrency(totalPaid), ''],
-            ['TOTAL (Bank):', '', formatPDFCurrency(whitePaid || 0), '']
+            ['Total Amount Paid:', '', formatPDFCurrency(totalPaid), ''],
+            ['Total Amount Paid (Bank):', '', formatPDFCurrency(whitePaid || 0), '']
           ],
           theme: 'plain',
           styles: { fontStyle: 'bold', fillColor: [209, 250, 229] },
-          margin: { left: 14, right: 14 }
+          margin: { left: 24, right: 24 }
         });
       }
 
@@ -512,6 +517,8 @@ const DealDetails = () => {
       const pageHeight = doc.internal.pageSize.height;
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
+
+        drawPageBorder(doc);
 
         // Footer - Generated date and page number
         doc.setFontSize(8);
@@ -528,16 +535,18 @@ const DealDetails = () => {
         doc.setTextColor(180, 180, 180);
         doc.text(
           'Powered by PropLedger',
-          pageWidth - 14,
-          pageHeight - 5,
+          pageWidth - 10,
+          pageHeight - 8,
           { align: 'right' }
         );
       }
 
-      doc.save(`Deal_${deal.villageName}_${deal.surveyNumber}.pdf`);
+      doc.save(`${deal.villageName}_${deal.surveyNumber}.pdf`);
       setIsGeneratingPDF(false);
     }, 800);
   };
+  
+  
 
   /* ── Loading / Error States ── */
   if (loading) {
@@ -668,10 +677,10 @@ const DealDetails = () => {
           <div className="dd-section-content">
 
             <div className="dd-stat-grid">
-              <StatCard label="White Payment" value={formatCurrency(deal.whitePaymentBeforeTDS || deal.whitePayment || 0)} variant="total" />
-              <StatCard label="White Paid" value={formatCurrency(whitePaid || 0)} variant="paid" />
+              <StatCard label="Bank Amount" value={formatCurrency(deal.whitePaymentBeforeTDS || deal.whitePayment || 0)} variant="total" />
+              <StatCard label="Bank Paid" value={formatCurrency(whitePaid || 0)} variant="paid" />
               <StatCard
-                label="White Remaining"
+                label="Bank Remaining"
                 value={formatCurrency(whiteRemaining || 0)}
                 variant={whiteRemaining > 0 ? 'remaining' : 'cleared'}
               />
@@ -693,7 +702,7 @@ const DealDetails = () => {
                 <span style={{ fontSize: '1rem' }}>ℹ️</span>
                 <span>
                   <strong>Note:</strong> 1% TDS ({formatCurrency(deal.tdsAmount)}) has been deducted from the original white payment of {formatCurrency(deal.whitePaymentBeforeTDS)}.
-                  Final white payment: {formatCurrency(deal.whitePayment)}
+                  Final Bank payment: {formatCurrency(deal.whitePayment)}
                 </span>
               </div>
             )}
@@ -707,7 +716,7 @@ const DealDetails = () => {
                 />
               </div>
               <span className="dd-progress-label">
-                {whitePaidPercent.toFixed(1)}% paid (White Payment)
+                {whitePaidPercent.toFixed(1)}% paid (Bank Payment)
                 {whiteRemaining <= 0 && <span className="dd-cleared-badge">✔ Cleared</span>}
               </span>
             </div>
@@ -925,7 +934,7 @@ const DealDetails = () => {
                 {/* Total Summary Cards */}
                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '0.5rem', flexWrap: 'wrap' }}>
                   <div className="dd-payment-total-card" style={{ background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', borderColor: '#93c5fd', margin: 0 }}>
-                    <div className="dd-payment-total-label" style={{ color: '#1e40af' }}>White Paid</div>
+                    <div className="dd-payment-total-label" style={{ color: '#1e40af' }}>Bank Paid</div>
                     <div className="dd-payment-total-amount" style={{ color: '#1e40af' }}>{formatCurrency(whitePaid || 0)}</div>
                   </div>
 
