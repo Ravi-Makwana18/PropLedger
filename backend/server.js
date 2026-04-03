@@ -42,12 +42,15 @@ app.use(express.urlencoded({ extended: true }));
  * Allows cross-origin requests from specified domains
  * Supports credentials (cookies) for authentication
  */
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://prop-ledger-opal.vercel.app",
+  process.env.FRONTEND_URL, // Add your Render frontend URL here via env var
+].filter(Boolean);
+
 app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "https://prop-ledger-opal.vercel.app"
-  ],
+  origin: allowedOrigins,
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -127,6 +130,21 @@ app.get('/', (req, res) => {
  * (Vercel, Render, Heroku, etc.)
  */
 app.set("trust proxy", 1);
+
+/**
+ * Serve React Frontend in Production
+ * Serves static files from the frontend build directory
+ * and falls back to index.html for client-side routing
+ */
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from frontend build
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+  // For any route not matched by the API, serve React's index.html
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+  });
+}
 
 // Global error handler - must be last middleware
 app.use(errorHandler);

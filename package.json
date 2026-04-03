@@ -8,6 +8,7 @@
     "dev": "nodemon backend/server.js",
     "client": "npm start --prefix frontend",
     "dev:all": "concurrently \"npm run dev\" \"npm run client\"",
+    "render-build": "npm install && npm install --prefix frontend && npm run build --prefix frontend",
     "seed:admin": "node backend/seedAdmin.js",
     "build:indexes": "node backend/scripts/buildIndexes.js"
   },
