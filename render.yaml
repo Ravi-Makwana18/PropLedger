@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: propledger-backend
+    name: PropLedger
     runtime: node
     rootDir: backend
     buildCommand: npm install
