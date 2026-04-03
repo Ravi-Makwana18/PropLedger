@@ -63,7 +63,8 @@ const userSchema = new mongoose.Schema({
     sparse: true, // Allow null for old users during migration
     lowercase: true,
     trim: true,
-    match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email']
+    match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email'],
+    index: true  // Index for faster login queries
   },
   phone: {
     type: String,
@@ -98,8 +99,13 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'superadmin'],
+    enum: ['admin', 'manager', 'superadmin'],
     default: 'admin'
+  },
+  createdByAdmin: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
   },
   // Legacy fields for backward compatibility
   mobileNumber: {

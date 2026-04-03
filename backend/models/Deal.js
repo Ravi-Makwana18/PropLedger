@@ -16,17 +16,38 @@ const mongoose = require('mongoose');
  * Stores land deal information with automatic amount calculations
  */
 const dealSchema = new mongoose.Schema({
+  district: {
+    type: String,
+    required: [true, 'Please provide district name'],
+    trim: true,
+    index: true
+  },
+  subDistrict: {
+    type: String,
+    required: [true, 'Please provide sub-district name'],
+    trim: true,
+    index: true
+  },
   villageName: {
     type: String,
     required: [true, 'Please provide village name'],
     trim: true,
     index: true  // Indexed for faster search queries
   },
+  oldSurveyNo: {
+    type: String,
+    trim: true
+  },
+  newSurveyNo: {
+    type: String,
+    required: [true, 'Please provide new survey number'],
+    trim: true,
+    index: true
+  },
   surveyNumber: {
     type: String,
-    required: [true, 'Please provide survey number'],
     trim: true,
-    index: true  // Indexed for faster search queries
+    index: true  // Keep for backward compatibility
   },
   dealType: {
     type: String,
@@ -62,7 +83,21 @@ const dealSchema = new mongoose.Schema({
   },
   whitePayment: {
     type: Number
-    // Calculated from totalSqMeter * jantri in pre-save hook
+    // Calculated from totalSqMeter * jantri in pre-save hook (after TDS if applicable)
+  },
+  whitePaymentBeforeTDS: {
+    type: Number
+    // Original white payment before TDS deduction
+  },
+  tdsAmount: {
+    type: Number,
+    default: 0
+    // 1% TDS if white payment exceeds 50,00,000
+  },
+  notes: {
+    type: String,
+    trim: true,
+    default: ''
   },
   deadlineStartDate: {
     type: Date,
@@ -75,7 +110,8 @@ const dealSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
+    index: true  // Index for faster user-specific queries
   }
 }, {
   timestamps: true,  // Automatically add createdAt and updatedAt
@@ -88,17 +124,38 @@ const dealSchema = new mongoose.Schema({
  * Automatically calculates derived amounts before saving
  * - totalAmount = pricePerSqYard * totalSqYard
  * - banakhatAmount = 25% of totalAmount
- * - whitePayment = totalSqMeter * jantri
+ * - whitePaymentBeforeTDS = totalSqMeter * jantri
+ * - If whitePaymentBeforeTDS >= 50,00,000 then deduct 1% TDS
+ * - whitePayment = whitePaymentBeforeTDS - tdsAmount
+ * - surveyNumber = newSurveyNo (for backward compatibility)
  */
 dealSchema.pre('save', async function () {
   this.totalAmount = this.pricePerSqYard * this.totalSqYard;
   this.banakhatAmount = this.totalAmount * 0.25; // 25% of total
-  this.whitePayment = (this.totalSqMeter || 0) * (this.jantri || 0);
+  
+  const calculatedWhitePayment = (this.totalSqMeter || 0) * (this.jantri || 0);
+  this.whitePaymentBeforeTDS = calculatedWhitePayment;
+  
+  // Apply 1% TDS if white payment exceeds or equals 50,00,000
+  if (calculatedWhitePayment >= 5000000) {
+    this.tdsAmount = calculatedWhitePayment * 0.01;
+    this.whitePayment = calculatedWhitePayment - this.tdsAmount;
+  } else {
+    this.tdsAmount = 0;
+    this.whitePayment = calculatedWhitePayment;
+  }
+  
+  // Set surveyNumber from newSurveyNo for backward compatibility
+  if (this.newSurveyNo) {
+    this.surveyNumber = String(this.newSurveyNo);
+  }
 });
 
 /**
- * Compound index for efficient search by village and survey number
+ * Compound indexes for efficient queries
  */
-dealSchema.index({ villageName: 1, surveyNumber: 1 });
+dealSchema.index({ villageName: 1, newSurveyNo: 1 });
+dealSchema.index({ district: 1, subDistrict: 1 });
+dealSchema.index({ createdBy: 1, createdAt: -1 });  // For sorted user queries
 
 module.exports = mongoose.model('Deal', dealSchema);

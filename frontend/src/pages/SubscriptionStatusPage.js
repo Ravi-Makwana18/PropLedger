@@ -23,10 +23,10 @@ const SubscriptionStatusPage = () => {
 
   useEffect(() => {
     fetchPaymentHistory();
-    
+
     // Only poll if there's a pending payment
     const hasPendingPayment = payments.length > 0 && payments[0]?.paymentStatus === 'pending';
-    
+
     if (hasPendingPayment) {
       const interval = setInterval(fetchPaymentHistory, 10000);
       return () => clearInterval(interval);
@@ -98,9 +98,9 @@ const SubscriptionStatusPage = () => {
       <div className="subscription-hero">
         <div className="subscription-hero-content">
           <div className="subscription-hero-badge">
-            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+            {/* <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
+            </svg> */}
             Subscription Management
           </div>
           <h1 className="subscription-hero-title">Your Subscription</h1>
@@ -111,17 +111,17 @@ const SubscriptionStatusPage = () => {
       {/* Current Subscription Card */}
       <div className="subscription-current-card">
         <div className="subscription-card-header">
-          <div className="subscription-card-icon">
+          {/* <div className="subscription-card-icon">
             <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
-          </div>
+          </div> */}
           <div>
             <h2 className="subscription-card-title">Current Plan</h2>
             <p className="subscription-card-subtitle">Your active subscription details</p>
           </div>
         </div>
-        
+
         <div className="subscription-plan-details">
           <div className="subscription-plan-main">
             <div className="subscription-plan-name">
@@ -156,12 +156,12 @@ const SubscriptionStatusPage = () => {
               <div>
                 <div className="subscription-info-label">Valid Until</div>
                 <div className="subscription-info-value">
-                  {user?.subscriptionEndDate 
-                    ? new Date(user.subscriptionEndDate).toLocaleDateString('en-IN', { 
-                        day: 'numeric', 
-                        month: 'long', 
-                        year: 'numeric' 
-                      })
+                  {user?.subscriptionEndDate
+                    ? new Date(user.subscriptionEndDate).toLocaleDateString('en-IN', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })
                     : 'N/A'}
                 </div>
               </div>
@@ -205,15 +205,15 @@ const SubscriptionStatusPage = () => {
             </div>
             <h3 className="subscription-modal-title">Active Subscription</h3>
             <p className="subscription-modal-desc">
-              You already have an active {getPlanLabel(user?.subscriptionPlan)} subscription. 
+              You already have an active {getPlanLabel(user?.subscriptionPlan)} subscription.
               You can upgrade or change your plan after your current subscription expires on{' '}
               <strong>
-                {user?.subscriptionEndDate 
-                  ? new Date(user.subscriptionEndDate).toLocaleDateString('en-IN', { 
-                      day: 'numeric', 
-                      month: 'long', 
-                      year: 'numeric' 
-                    })
+                {user?.subscriptionEndDate
+                  ? new Date(user.subscriptionEndDate).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                  })
                   : 'N/A'}
               </strong>.
             </p>
@@ -260,7 +260,7 @@ const SubscriptionStatusPage = () => {
             <div className="subscription-alert-content">
               <div className="subscription-alert-title">Payment Under Review</div>
               <div className="subscription-alert-desc">
-                Your payment of ₹{latestPayment.amount.toLocaleString('en-IN')} for {getPlanLabel(latestPayment.subscriptionPlan)} is being reviewed by admin. 
+                Your payment of ₹{latestPayment.amount.toLocaleString('en-IN')} for {getPlanLabel(latestPayment.subscriptionPlan)} is being reviewed by admin.
                 You'll get access once approved. This usually takes a few hours.
               </div>
             </div>
@@ -300,9 +300,9 @@ const SubscriptionStatusPage = () => {
                         <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                         </svg>
-                        {new Date(payment.createdAt).toLocaleDateString('en-IN', { 
-                          day: 'numeric', 
-                          month: 'short', 
+                        {new Date(payment.createdAt).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
                           year: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit'
@@ -330,7 +330,7 @@ const SubscriptionStatusPage = () => {
                         <div className="subscription-payment-detail-value">{payment.transactionId}</div>
                       </div>
                     </div>
-                    
+
                     {payment.upiTransactionId && (
                       <div className="subscription-payment-detail-item">
                         <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
@@ -343,7 +343,7 @@ const SubscriptionStatusPage = () => {
                         </div>
                       </div>
                     )}
-                    
+
                     {payment.verifiedAt && (
                       <div className="subscription-payment-detail-item">
                         <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">

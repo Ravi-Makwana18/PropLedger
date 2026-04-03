@@ -24,13 +24,17 @@ const Field = ({ label, required, children, hint }) => (
 const AddDeal = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    district: '',
+    subDistrict: '',
     villageName: '',
-    surveyNumber: '',
+    oldSurveyNo: '',
+    newSurveyNo: '',
     dealType: 'Buy',
     pricePerSqYard: '',
     totalSqYard: '',
     totalSqMeter: '',
     jantri: '',
+    notes: '',
     deadlineStartDate: '',
     deadlineEndDate: '',
   });
@@ -48,13 +52,17 @@ const AddDeal = () => {
 
     try {
       const payload = {
+        district: formData.district,
+        subDistrict: formData.subDistrict,
         villageName: formData.villageName,
-        surveyNumber: formData.surveyNumber,
+        ...(formData.oldSurveyNo !== '' && { oldSurveyNo: formData.oldSurveyNo }),
+        newSurveyNo: formData.newSurveyNo,
         dealType: formData.dealType,
         pricePerSqYard: parseFloat(formData.pricePerSqYard),
         totalSqYard: parseFloat(formData.totalSqYard),
         ...(formData.totalSqMeter !== '' && { totalSqMeter: parseFloat(formData.totalSqMeter) }),
         ...(formData.jantri !== '' && { jantri: parseFloat(formData.jantri) }),
+        ...(formData.notes !== '' && { notes: formData.notes }),
         deadlineStartDate: formData.deadlineStartDate,
         deadlineEndDate: formData.deadlineEndDate,
       };
@@ -82,12 +90,17 @@ const AddDeal = () => {
       ? parseFloat(formData.pricePerSqYard) * parseFloat(formData.totalSqYard)
       : 0;
 
-  const banakhatAmount = totalAmount * 0.25;
+  const amount25Percent = totalAmount * 0.25;
+  const amount75Percent = totalAmount * 0.75;
 
   const whitePayment =
     formData.totalSqMeter && formData.jantri
       ? parseFloat(formData.totalSqMeter) * parseFloat(formData.jantri)
       : 0;
+
+  // Apply 1% TDS if white payment exceeds 50,00,000
+  const whitePaymentAfterTDS = whitePayment > 5000000 ? whitePayment - (whitePayment * 0.01) : whitePayment;
+  const tdsAmount = whitePayment > 5000000 ? whitePayment * 0.01 : 0;
 
   return (
     <div className="ad-page">
@@ -95,11 +108,11 @@ const AddDeal = () => {
 
         {/* ── Page Header ── */}
         <div className="ad-page-header">
-          <button className="ad-back-btn" onClick={() => navigate(-1)}>
+          {/* <button className="ad-back-btn" onClick={() => navigate(-1)}>
             <span className="ad-back-arrow">←</span> Back
-          </button>
+          </button> */}
           <div className="ad-page-title-block">
-            <div className="ad-page-icon">🏡</div>
+            {/* <div className="ad-page-icon">🏡</div> */}
             <div>
               <h1 className="ad-page-title">Add New Deal</h1>
               <p className="ad-page-subtitle">Fill in the property details below to create a new deal</p>
@@ -123,30 +136,64 @@ const AddDeal = () => {
               <h2 className="ad-section-title">Property Details</h2>
             </div>
             <div className="ad-grid-2">
-              <Field label="Village Name" required>
+              <Field label="District" required>
                 <input
                   type="text"
                   className="ad-input"
-                  name="villageName"
-                  placeholder="e.g. Navagam, Dholera"
-                  value={formData.villageName}
+                  name="district"
+                  placeholder="e.g. Ahmedabad"
+                  value={formData.district}
                   onChange={handleChange}
                   required
                 />
               </Field>
-              <Field label="Survey Number" required>
+              <Field label="Sub-District" required>
                 <input
                   type="text"
                   className="ad-input"
-                  name="surveyNumber"
-                  placeholder="e.g. 123/4"
-                  value={formData.surveyNumber}
+                  name="subDistrict"
+                  placeholder="e.g. Dholka"
+                  value={formData.subDistrict}
                   onChange={handleChange}
                   required
                 />
               </Field>
             </div>
-            {/* Deal Type row — full width below Village/Survey */}
+            <Field label="Village" required>
+              <input
+                type="text"
+                className="ad-input"
+                name="villageName"
+                placeholder="e.g. Navagam"
+                value={formData.villageName}
+                onChange={handleChange}
+                required
+              />
+            </Field>
+            <div className="ad-grid-2">
+              <Field label="Old Survey No.">
+                <input
+                  type="text"
+                  className="ad-input"
+                  name="oldSurveyNo"
+                  placeholder="e.g. 123"
+                  value={formData.oldSurveyNo}
+                  onChange={handleChange}
+                />
+              </Field>
+              <Field label="New Survey No." required>
+                <input
+                  type="text"
+                  className="ad-input"
+                  name="newSurveyNo"
+                  placeholder="e.g. 123/4"
+                  value={formData.newSurveyNo}
+                  onChange={handleChange}
+                  required
+                />
+              </Field>
+            </div>
+            {/* Deal Type row — full width below */}
             <div className="ad-deal-type-row">
               <Field label="Deal Type" required>
                 <div className="ad-deal-type-select-wrap">
@@ -251,8 +298,13 @@ const AddDeal = () => {
                     </div>
                     <div className="ad-calc-divider">×25%</div>
                     <div className="ad-calc-card ad-calc-card--banakhat">
-                      <span className="ad-calc-label">Banakhat Amount (25%)</span>
-                      <span className="ad-calc-value">{formatINR(banakhatAmount)}</span>
+                      <span className="ad-calc-label">25% Amount</span>
+                      <span className="ad-calc-value">{formatINR(amount25Percent)}</span>
+                    </div>
+                    <div className="ad-calc-divider">×75%</div>
+                    <div className="ad-calc-card ad-calc-card--white">
+                      <span className="ad-calc-label">75% Amount</span>
+                      <span className="ad-calc-value">{formatINR(amount75Percent)}</span>
                     </div>
                   </>
                 )}
@@ -260,23 +312,56 @@ const AddDeal = () => {
                   <>
                     {totalAmount > 0 && <div className="ad-calc-divider" style={{ background: 'none', color: '#94a3b8' }}>|</div>}
                     <div className="ad-calc-card ad-calc-card--white">
-                      <span className="ad-calc-label">White Payment</span>
+                      <span className="ad-calc-label">White Payment{whitePayment > 5000000 ? ' (Before TDS)' : ''}</span>
                       <span className="ad-calc-value">{formatINR(whitePayment)}</span>
                     </div>
+                    {whitePayment > 5000000 && (
+                      <>
+                        <div className="ad-calc-divider">-1%</div>
+                        <div className="ad-calc-card ad-calc-card--banakhat">
+                          <span className="ad-calc-label">TDS (1%)</span>
+                          <span className="ad-calc-value">{formatINR(tdsAmount)}</span>
+                        </div>
+                        <div className="ad-calc-divider">=</div>
+                        <div className="ad-calc-card ad-calc-card--total">
+                          <span className="ad-calc-label">White Payment (After TDS)</span>
+                          <span className="ad-calc-value">{formatINR(whitePaymentAfterTDS)}</span>
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
               </div>
             )}
           </div>
 
-          {/* ── Section 3: Deadline ── */}
+          {/* ── Section 3: Notes ── */}
+          <div className="ad-section">
+            <div className="ad-section-header">
+              <span className="ad-section-icon">📝</span>
+              <h2 className="ad-section-title">Notes</h2>
+            </div>
+            <Field label="Additional Notes" hint="Add any additional information or remarks">
+              <textarea
+                className="ad-input ad-textarea"
+                name="notes"
+                placeholder="e.g., Special conditions, important details, etc."
+                value={formData.notes}
+                onChange={handleChange}
+                rows="4"
+                style={{ resize: 'vertical', minHeight: '100px' }}
+              />
+            </Field>
+          </div>
+
+          {/* ── Section 4: Deadline ── */}
           <div className="ad-section">
             <div className="ad-section-header">
               <span className="ad-section-icon">📅</span>
-              <h2 className="ad-section-title">Deal Deadline</h2>
+              <h2 className="ad-section-title">Payment Deadlines</h2>
             </div>
             <div className="ad-grid-2">
-              <Field label="Start Date">
+              <Field label="25% Deadline">
                 <input
                   type="date"
                   className="ad-input"
@@ -285,7 +370,7 @@ const AddDeal = () => {
                   onChange={handleChange}
                 />
               </Field>
-              <Field label="End Date">
+              <Field label="75% Deadline">
                 <input
                   type="date"
                   className="ad-input"

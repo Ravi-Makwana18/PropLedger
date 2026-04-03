@@ -11,7 +11,7 @@
 
 /* ── Hero Header ── */
 .dashboard-hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #0a3a6a 100%);
   border-radius: 20px;
   padding: 2.5rem 2rem 3rem;
   margin-bottom: 2rem;
@@ -161,14 +161,14 @@
 }
 
 .dashboard-search-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #1a5490;
+  box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
   background: #fff;
 }
 
 .dashboard-search-btn {
   padding: 0.75rem 1.25rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -188,7 +188,7 @@
 
 .dashboard-search-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(26, 84, 144, 0.4);
 }
 
 .dashboard-sort-btn {
@@ -213,7 +213,7 @@
 }
 
 .dashboard-sort-btn:hover {
-  border-color: #667eea;
+  border-color: #1a5490;
   background: #fff;
 }
 
@@ -243,12 +243,12 @@
 
 .dashboard-sort-option:hover {
   background: #f8fafc;
-  color: #667eea;
+  color: #1a5490;
 }
 
 .dashboard-sort-option--active {
-  background: #eff6ff;
-  color: #667eea;
+  background: #e3f0fa;
+  color: #1a5490;
   font-weight: 600;
 }
 
@@ -279,12 +279,12 @@
 }
 
 .dashboard-type-pill:hover {
-  border-color: #667eea;
-  background: #f8fafc;
+  border-color: #1a5490;
+  background: #e3f0fa;
 }
 
 .dashboard-type-pill--active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   border-color: transparent;
   color: white;
 }
@@ -331,7 +331,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -344,7 +344,7 @@
 
 .dashboard-add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3);
 }
 
 /* ── Deals Grid ── */
@@ -366,7 +366,7 @@
 .dashboard-deal-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  border-color: #667eea;
+  border-color: #1a5490;
 }
 
 .dashboard-deal-header {
@@ -466,10 +466,7 @@
 .dashboard-deal-amount {
   font-size: 1.25rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #1a5490;
 }
 
 .dashboard-deal-actions {
@@ -500,14 +497,14 @@
 }
 
 .dashboard-action-btn--view {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   color: white;
   border: none;
 }
 
 .dashboard-action-btn--view:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(26, 84, 144, 0.4);
 }
 
 .dashboard-action-btn--edit {
@@ -517,9 +514,9 @@
 }
 
 .dashboard-action-btn--edit:hover {
-  background: #eff6ff;
-  color: #667eea;
-  border-color: #667eea;
+  background: #e3f0fa;
+  color: #1a5490;
+  border-color: #1a5490;
 }
 
 .dashboard-action-btn--delete {
@@ -574,6 +571,7 @@
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -600,6 +598,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -621,6 +620,7 @@
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -722,15 +722,15 @@
   .dashboard-summary-row {
     gap: 0.75rem;
   }
-  
+
   .dashboard-chip {
     padding: 0.75rem 0.625rem;
   }
-  
+
   .dashboard-chip-label {
     font-size: 0.625rem;
   }
-  
+
   .dashboard-chip-value {
     font-size: 1.125rem;
   }
@@ -761,16 +761,16 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 0.625rem;
   }
-  
+
   .dashboard-chip {
     padding: 0.625rem 0.5rem;
   }
-  
+
   .dashboard-chip-label {
     font-size: 0.5625rem;
     letter-spacing: 0.02em;
   }
-  
+
   .dashboard-chip-value {
     font-size: 1rem;
   }
@@ -858,7 +858,7 @@
     height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    border-top: 6px solid #667eea;
+    border-top: 6px solid #1a5490;
     transition: transform 0.3s ease;
   }
 
@@ -977,11 +977,11 @@
   .dashboard-chip {
     padding: 0.5rem 0.375rem;
   }
-  
+
   .dashboard-chip-label {
     font-size: 0.5rem;
   }
-  
+
   .dashboard-chip-value {
     font-size: 0.875rem;
   }
@@ -1397,8 +1397,8 @@
 }
 
 .dashboard-form-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #1a5490;
+  box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
 }
 
 .dashboard-modal--large .dashboard-modal-actions {
@@ -1408,11 +1408,11 @@
 }
 
 .dashboard-modal--large .dashboard-modal-btn--confirm {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
 }
 
 .dashboard-modal--large .dashboard-modal-btn--confirm:hover {
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3);
 }
 
 @media (max-width: 768px) {

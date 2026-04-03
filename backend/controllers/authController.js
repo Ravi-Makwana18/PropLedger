@@ -337,6 +337,95 @@ const upgradeSubscription = async (req, res) => {
  * @route   PUT /api/auth/profile-picture
  * @access  Private
  */
+const createManagedUser = async (req, res) => {
+  try {
+    if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'superadmin')) {
+      return res.status(403).json({ message: 'Only admins can create users' });
+    }
+
+    const { name, phone, email, password } = req.body;
+
+    if (!name || !phone || !email || !password) {
+      return res.status(400).json({ message: 'Name, phone, email and password are required' });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters' });
+    }
+
+    const trimmedName = name.trim();
+    const trimmedPhone = String(phone).trim();
+    const normalizedEmail = email.toLowerCase().trim();
+    const userExists = await User.findOne({ email: normalizedEmail });
+
+    if (userExists) {
+      return res.status(400).json({ message: 'Email already registered' });
+    }
+
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(normalizedEmail)) {
+      return res.status(400).json({ message: 'Please provide a valid email address' });
+    }
+
+    const managedUserPayload = {
+      email: normalizedEmail,
+      password,
+      role: 'manager',
+      createdByAdmin: req.user._id,
+      isVerified: true
+    };
+
+    const managedUser = new User(managedUserPayload);
+
+    managedUser.companyName = req.user.companyName || 'PropLedger';
+    managedUser.contactPersonName = trimmedName;
+    managedUser.country = req.user.country || 'India';
+    managedUser.state = req.user.state || 'Unknown';
+    managedUser.city = req.user.city || 'Unknown';
+    managedUser.pincode = String(req.user.pincode || '000000');
+    managedUser.phone = trimmedPhone;
+    managedUser.name = trimmedName;
+    managedUser.mobileNumber = trimmedPhone;
+    managedUser.subscriptionPlan = 'monthly';
+    managedUser.subscriptionStatus = 'active';
+    managedUser.subscriptionStartDate = new Date();
+
+    console.log('Creating managed user with payload:', {
+      email: managedUser.email,
+      role: managedUser.role,
+      createdByAdmin: managedUser.createdByAdmin
+    });
+
+    const validationError = managedUser.validateSync();
+    if (validationError) {
+      return res.status(400).json({
+        message: Object.values(validationError.errors).map((err) => err.message).join(', ')
+      });
+    }
+
+    await managedUser.save();
+
+    res.status(201).json({
+      _id: managedUser._id,
+      email: managedUser.email,
+      role: managedUser.role,
+      createdByAdmin: managedUser.createdByAdmin,
+      message: 'User created successfully'
+    });
+  } catch (error) {
+    console.error('❌ Create managed user error:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        message: Object.values(error.errors).map((err) => err.message).join(', ')
+      });
+    }
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'Email already registered' });
+    }
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const updateProfilePicture = async (req, res) => {
   try {
     const { profilePicture } = req.body;
@@ -427,6 +516,66 @@ const verifyToken = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Get all users managed by this admin (or all for superadmin)
+ * @route   GET /api/auth/users
+ * @access  Private (admin / superadmin)
+ */
+const getAllUsers = async (req, res) => {
+  try {
+    let users;
+    if (req.user.role === 'superadmin') {
+      // Superadmin sees everyone except other superadmins
+      users = await User.find({ role: { $ne: 'superadmin' } }).select('-password -otp -otpExpiry');
+    } else {
+      // Admin sees only the users they created
+      users = await User.find({ createdByAdmin: req.user._id }).select('-password -otp -otpExpiry');
+    }
+    res.json({ count: users.length, users });
+  } catch (error) {
+    console.error('❌ Get all users error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * @desc    Delete a managed user by ID
+ * @route   DELETE /api/auth/users/:id
+ * @access  Private (admin / superadmin)
+ */
+const deleteUser = async (req, res) => {
+  try {
+    const targetUser = await User.findById(req.params.id);
+
+    if (!targetUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Prevent self-deletion
+    if (targetUser._id.toString() === req.user._id.toString()) {
+      return res.status(400).json({ message: 'You cannot delete your own account' });
+    }
+
+    // Admin can only delete users they created
+    if (req.user.role === 'admin') {
+      if (!targetUser.createdByAdmin || targetUser.createdByAdmin.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to delete this user' });
+      }
+    }
+
+    // Superadmin cannot delete another superadmin
+    if (targetUser.role === 'superadmin') {
+      return res.status(403).json({ message: 'Cannot delete a super admin account' });
+    }
+
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('❌ Delete user error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -436,5 +585,8 @@ module.exports = {
   verifyToken,
   logout,
   upgradeSubscription,
-  updateProfilePicture
+  updateProfilePicture,
+  createManagedUser,
+  getAllUsers,
+  deleteUser
 };

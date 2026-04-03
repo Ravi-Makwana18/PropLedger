@@ -86,14 +86,16 @@ app.use('/api/subscription-payment', require('./routes/subscriptionPaymentRoutes
 /**
  * Health Check Endpoint
  * Returns server status and basic information
- * Used for monitoring and uptime checks
+ * Used for monitoring and uptime checks (UptimeRobot)
  */
 app.get('/api/health', (req, res) => {
   res.json({
-    status: 'OK',
-    message: 'API is running...',
+    status: 'ok',
+    message: 'PropLedger API is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development',
+    database: 'connected'
   });
 });
 

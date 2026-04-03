@@ -1,7 +1,30 @@
 /* ═══════════════════════════════════════════════
-   DealDetails.css – Modern Professional Design
+   DealDetails.css – Optimized (clamp + 4 breakpoints)
 ═══════════════════════════════════════════════ */
 
+:root {
+  --fs-xs:  clamp(0.625rem, 1.5vw, 0.75rem);
+  --fs-sm:  clamp(0.75rem,  2vw,   0.875rem);
+  --fs-md:  clamp(0.875rem, 2.5vw, 1rem);
+  --fs-lg:  clamp(1rem,     3vw,   1.25rem);
+  --fs-xl:  clamp(1.25rem,  4vw,   1.5rem);
+  --fs-2xl: clamp(1.25rem,  5vw,   2rem);
+
+  --pad-xs: clamp(0.5rem,  1.5vw, 0.75rem);
+  --pad-sm: clamp(0.75rem, 2vw,   1rem);
+  --pad-md: clamp(1rem,    3vw,   1.5rem);
+  --pad-lg: clamp(1.5rem,  4vw,   2rem);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --blue-primary: #1a5490;
+  --blue-dark:    #0a3a6a;
+  --blue-mid:     #134070;
+}
+
+/* ── Page Layout ── */
 .dd-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -19,9 +42,9 @@
 
 /* ── Page Header ── */
 .dd-page-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
-  padding: 2.5rem 2rem;
+  background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-dark) 100%);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 3vw, 2rem);
   position: relative;
   overflow: hidden;
 }
@@ -44,9 +67,9 @@
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  padding: 0.625rem 1.25rem;
+  padding: clamp(0.4rem, 1.5vw, 0.625rem) clamp(0.75rem, 2vw, 1.25rem);
   border-radius: 10px;
-  font-size: 0.9375rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -72,21 +95,21 @@
 }
 
 .dd-page-icon {
-  width: 56px;
-  height: 56px;
+  width: clamp(40px, 7vw, 56px);
+  height: clamp(40px, 7vw, 56px);
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.75rem;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
   backdrop-filter: blur(10px);
   flex-shrink: 0;
 }
 
 .dd-page-title {
-  font-size: 2rem;
+  font-size: var(--fs-2xl);
   font-weight: 800;
   color: #fff;
   letter-spacing: -0.02em;
@@ -97,7 +120,7 @@
 }
 
 .dd-page-subtitle {
-  font-size: 1rem;
+  font-size: var(--fs-md);
   color: rgba(255, 255, 255, 0.95);
   margin: 0.25rem 0 0;
   word-break: break-word;
@@ -106,9 +129,9 @@
 
 /* ── Toast Messages ── */
 .dd-toast {
-  padding: 1rem 1.25rem;
-  border-radius: 12px;
-  font-size: 0.9375rem;
+  padding: clamp(0.625rem, 2vw, 1rem) clamp(0.75rem, 2.5vw, 1.25rem);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -117,14 +140,8 @@
 }
 
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .dd-toast--error {
@@ -142,7 +159,7 @@
 /* ── Section ── */
 .dd-section {
   background: white;
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   padding: 2rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border: 1px solid #e5e7eb;
@@ -159,12 +176,12 @@
 }
 
 .dd-section-icon {
-  font-size: 1.5rem;
+  font-size: clamp(1.125rem, 3vw, 1.5rem);
   line-height: 1;
 }
 
 .dd-section-title {
-  font-size: 1.25rem;
+  font-size: clamp(0.9375rem, 2.5vw, 1.25rem);
   font-weight: 700;
   color: #111827;
   margin: 0;
@@ -175,7 +192,7 @@
 }
 
 .dd-payment-count {
-  font-size: 0.875rem;
+  font-size: var(--fs-xs);
   color: #64748b;
   font-weight: 600;
   padding: 0.375rem 0.875rem;
@@ -187,21 +204,22 @@
 /* ── Info Pills ── */
 .dd-info-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: clamp(0.5rem, 2vw, 1rem);
 }
 
 .dd-info-pill {
-  padding: 1rem 1.25rem;
+  padding: clamp(0.625rem, 2vw, 1.25rem) clamp(0.75rem, 2.5vw, 1.5rem);
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.625rem;
   transition: all 0.2s;
   min-width: 0;
-  overflow: hidden;
+  min-height: 90px;
+  justify-content: center;
 }
 
 .dd-info-pill:hover {
@@ -215,175 +233,36 @@
 }
 
 .dd-pill-label {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   line-height: 1.3;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .dd-pill-value {
-  font-size: 1rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   color: #1e293b;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   line-height: 1.4;
-}
-
-/* Responsive breakpoints for info grid */
-@media (max-width: 1400px) {
-  .dd-info-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (max-width: 1200px) {
-  .dd-info-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
-  .dd-info-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.875rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .dd-info-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-  }
-
-  .dd-info-pill {
-    padding: 0.875rem 1rem;
-  }
-
-  .dd-pill-label {
-    font-size: 0.625rem;
-  }
-
-  .dd-pill-value {
-    font-size: 0.875rem;
-  }
-
-  .dd-section-header {
-    cursor: pointer;
-  }
-}
-
-@media (max-width: 600px) {
-  .dd-info-grid {
-    grid-template-columns: 1fr;
-    gap: 0.625rem;
-  }
-
-  .dd-info-pill {
-    padding: 0.75rem 0.875rem;
-  }
-
-  .dd-pill-label {
-    font-size: 0.5625rem;
-  }
-
-  .dd-pill-value {
-    font-size: 0.8125rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .dd-info-grid {
-    grid-template-columns: 1fr;
-    gap: 0.625rem;
-  }
-
-  .dd-info-pill {
-    padding: 0.75rem 0.875rem;
-  }
-
-  .dd-pill-label {
-    font-size: 0.5625rem;
-  }
-
-  .dd-pill-value {
-    font-size: 0.8125rem;
-  }
-}
-
-@media (max-width: 400px) {
-  .dd-info-grid {
-    gap: 0.5rem;
-  }
-
-  .dd-info-pill {
-    padding: 0.625rem 0.75rem;
-  }
-
-  .dd-pill-label {
-    font-size: 0.5rem;
-    letter-spacing: 0.02em;
-  }
-
-  .dd-pill-value {
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .dd-info-grid {
-    gap: 0.5rem;
-  }
-
-  .dd-info-pill {
-    padding: 0.625rem 0.75rem;
-  }
-
-  .dd-pill-label {
-    font-size: 0.5rem;
-  }
-
-  .dd-pill-value {
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 340px) {
-  .dd-info-grid {
-    gap: 0.5rem;
-  }
-
-  .dd-info-pill {
-    padding: 0.5rem 0.625rem;
-  }
-
-  .dd-pill-label {
-    font-size: 0.4375rem;
-    letter-spacing: 0.01em;
-  }
-
-  .dd-pill-value {
-    font-size: 0.6875rem;
-  }
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* ── Stat Cards ── */
 .dd-stat-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
+  gap: clamp(0.5rem, 2vw, 1.25rem);
   margin-bottom: 1.5rem;
 }
 
 .dd-stat-card {
-  padding: 1.5rem;
-  border-radius: 12px;
+  padding: clamp(0.75rem, 2.5vw, 1.5rem);
+  border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -397,7 +276,9 @@
   border-color: #93c5fd;
 }
 
-.dd-stat-card--paid {
+/* paid & cleared share identical styles */
+.dd-stat-card--paid,
+.dd-stat-card--cleared {
   background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
   border-color: #6ee7b7;
 }
@@ -407,182 +288,23 @@
   border-color: #fca5a5;
 }
 
-.dd-stat-card--cleared {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-  border-color: #6ee7b7;
-}
-
 .dd-stat-label {
-  font-size: 0.8125rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #374151;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   line-height: 1.3;
+  word-break: break-word;
 }
 
 .dd-stat-value {
-  font-size: 1.5rem;
+  font-size: var(--fs-xl);
   font-weight: 800;
   color: #111827;
   letter-spacing: -0.02em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   line-height: 1.2;
-}
-
-/* Responsive breakpoints for stat grid */
-@media (max-width: 1024px) {
-  .dd-stat-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-  }
-
-  .dd-stat-card {
-    padding: 1.25rem 1rem;
-  }
-
-  .dd-stat-label {
-    font-size: 0.6875rem;
-  }
-
-  .dd-stat-value {
-    font-size: 1.25rem;
-  }
-}
-
-@media (max-width: 700px) {
-  .dd-stat-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  .dd-stat-card {
-    padding: 1rem 1.25rem;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .dd-stat-label {
-    font-size: 0.75rem;
-    letter-spacing: 0.03em;
-    white-space: normal;
-  }
-
-  .dd-stat-value {
-    font-size: 1.375rem;
-    white-space: normal;
-    word-break: break-word;
-    text-align: left;
-  }
-}
-
-@media (max-width: 600px) {
-  .dd-stat-grid {
-    grid-template-columns: 1fr;
-    gap: 0.625rem;
-  }
-
-  .dd-stat-card {
-    padding: 0.875rem 1rem;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .dd-stat-label {
-    font-size: 0.6875rem;
-  }
-
-  .dd-stat-value {
-    font-size: 1.125rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .dd-stat-grid {
-    grid-template-columns: 1fr;
-    gap: 0.625rem;
-  }
-
-  .dd-stat-card {
-    padding: 0.75rem 0.875rem;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .dd-stat-label {
-    font-size: 0.625rem;
-  }
-
-  .dd-stat-value {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 400px) {
-  .dd-stat-grid {
-    gap: 0.5rem;
-  }
-
-  .dd-stat-card {
-    padding: 0.75rem 0.875rem;
-  }
-
-  .dd-stat-label {
-    font-size: 0.5625rem;
-    letter-spacing: 0.01em;
-  }
-
-  .dd-stat-value {
-    font-size: 0.9375rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .dd-stat-grid {
-    gap: 0.5rem;
-  }
-
-  .dd-stat-card {
-    padding: 0.625rem 0.75rem;
-  }
-
-  .dd-stat-label {
-    font-size: 0.5rem;
-  }
-
-  .dd-stat-value {
-    font-size: 0.875rem;
-  }
-}
-
-@media (max-width: 340px) {
-  .dd-stat-grid {
-    gap: 0.5rem;
-  }
-
-  .dd-stat-card {
-    padding: 0.625rem 0.75rem;
-  }
-
-  .dd-stat-label {
-    font-size: 0.5rem;
-    letter-spacing: 0;
-  }
-
-  .dd-stat-value {
-    font-size: 0.8125rem;
-  }
+  word-break: break-word;
 }
 
 /* ── Progress Bar ── */
@@ -594,22 +316,21 @@
 }
 
 .dd-progress-bar-bg {
-  height: 12px;
+  height: clamp(6px, 1.5vw, 12px);
   background: #e5e7eb;
   border-radius: 99px;
   overflow: hidden;
-  position: relative;
 }
 
 .dd-progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, var(--blue-primary) 0%, var(--blue-mid) 100%);
   border-radius: 99px;
   transition: width 0.5s ease;
 }
 
 .dd-progress-label {
-  font-size: 0.875rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: #64748b;
   display: flex;
@@ -619,188 +340,39 @@
 }
 
 .dd-cleared-badge {
-  padding: 0.25rem 0.75rem;
+  padding: 0.2rem 0.625rem;
   background: #d1fae5;
   color: #065f46;
   border-radius: 50px;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   white-space: nowrap;
-}
-
-/* Responsive breakpoints for progress bar */
-@media (max-width: 768px) {
-  .dd-progress-bar-bg {
-    height: 10px;
-  }
-
-  .dd-progress-label {
-    font-size: 0.8125rem;
-  }
-
-  .dd-cleared-badge {
-    font-size: 0.6875rem;
-    padding: 0.2rem 0.625rem;
-  }
-}
-
-@media (max-width: 600px) {
-  .dd-progress-bar-bg {
-    height: 10px;
-  }
-
-  .dd-progress-label {
-    font-size: 0.75rem;
-  }
-
-  .dd-cleared-badge {
-    font-size: 0.6875rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .dd-progress-bar-bg {
-    height: 8px;
-  }
-
-  .dd-progress-label {
-    font-size: 0.75rem;
-  }
-
-  .dd-cleared-badge {
-    font-size: 0.625rem;
-    padding: 0.2rem 0.5rem;
-  }
-}
-
-@media (max-width: 400px) {
-  .dd-progress-bar-bg {
-    height: 8px;
-  }
-
-  .dd-progress-label {
-    font-size: 0.6875rem;
-  }
-
-  .dd-cleared-badge {
-    font-size: 0.625rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .dd-progress-bar-bg {
-    height: 8px;
-  }
-
-  .dd-progress-label {
-    font-size: 0.6875rem;
-  }
-
-  .dd-cleared-badge {
-    font-size: 0.5625rem;
-    padding: 0.15rem 0.4375rem;
-  }
-}
-
-@media (max-width: 340px) {
-  .dd-progress-bar-bg {
-    height: 6px;
-  }
-
-  .dd-progress-label {
-    font-size: 0.625rem;
-  }
-
-  .dd-cleared-badge {
-    font-size: 0.5rem;
-    padding: 0.15rem 0.375rem;
-  }
 }
 
 /* ── Payment Form Card ── */
 .dd-payment-form-card {
   margin-top: 1.5rem;
-  padding: 1.5rem;
+  padding: clamp(0.75rem, 3vw, 1.5rem);
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
 .dd-form-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-}
-
-@media (max-width: 900px) {
-  .dd-form-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.875rem;
-  }
-}
-
-@media (max-width: 650px) {
-  .dd-form-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  .dd-payment-form-card {
-    padding: 1.25rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .dd-form-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  .dd-payment-form-card {
-    padding: 1rem;
-  }
-}
-
-@media (max-width: 400px) {
-  .dd-payment-form-card {
-    padding: 1rem;
-    margin-top: 1rem;
-  }
-
-  .dd-form-grid {
-    gap: 0.625rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .dd-payment-form-card {
-    padding: 0.875rem;
-  }
-
-  .dd-form-grid {
-    gap: 0.625rem;
-  }
-}
-
-@media (max-width: 340px) {
-  .dd-payment-form-card {
-    padding: 0.75rem;
-  }
-
-  .dd-form-grid {
-    gap: 0.5rem;
-  }
+  gap: clamp(0.5rem, 2vw, 1rem);
 }
 
 .dd-field {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: clamp(0.375rem, 1vw, 0.5rem);
 }
 
 .dd-label {
-  font-size: 0.875rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: #374151;
   display: flex;
@@ -815,10 +387,10 @@
 
 .dd-input {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.625rem, 2vw, 1rem);
   border: 1.5px solid #e2e8f0;
   border-radius: 10px;
-  font-size: 0.9375rem;
+  font-size: var(--fs-md);
   color: #1e293b;
   outline: none;
   transition: all 0.2s;
@@ -826,8 +398,8 @@
 }
 
 .dd-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--blue-primary);
+  box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
 }
 
 .dd-textarea {
@@ -844,8 +416,8 @@
 
 .dd-input-prefix {
   position: absolute;
-  left: 1rem;
-  font-size: 0.9375rem;
+  left: clamp(0.625rem, 2vw, 1rem);
+  font-size: var(--fs-md);
   font-weight: 600;
   color: #64748b;
   pointer-events: none;
@@ -864,9 +436,9 @@
 
 /* ── Buttons ── */
 .dd-btn {
-  padding: 0.75rem 1.5rem;
+  padding: clamp(0.625rem, 2vw, 0.75rem) clamp(0.875rem, 3vw, 1.5rem);
   border-radius: 10px;
-  font-size: 0.9375rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -879,57 +451,30 @@
 
 .dd-btn--sm {
   padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  font-size: var(--fs-sm);
   margin-left: auto;
   white-space: nowrap;
 }
 
-.dd-btn--ghost {
-  background: #f3f4f6;
-  color: #374151;
-}
+.dd-btn--ghost          { background: #f3f4f6; color: #374151; }
+.dd-btn--ghost:hover    { background: #e5e7eb; }
 
-.dd-btn--ghost:hover {
-  background: #e5e7eb;
-}
+.dd-btn--submit         { background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-mid) 100%); color: white; }
+.dd-btn--submit:hover   { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26, 84, 144, 0.4); }
 
-.dd-btn--submit {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.dd-btn--submit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-.dd-btn--add-payment {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-}
-
-.dd-btn--add-payment:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-}
+.dd-btn--add-payment       { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
+.dd-btn--add-payment:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
 
 .dd-btn--pdf {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-mid) 100%);
   color: white;
-  padding: 1rem 2rem;
-  font-size: 1rem;
+  padding: clamp(0.625rem, 2vw, 1rem) clamp(1rem, 4vw, 2rem);
+  font-size: var(--fs-md);
   white-space: nowrap;
 }
+.dd-btn--pdf:hover  { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3); }
 
-.dd-btn--pdf:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-}
-
-.dd-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+.dd-btn:disabled    { opacity: 0.6; cursor: not-allowed; }
 
 .dd-spinner {
   width: 16px;
@@ -939,6 +484,8 @@
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
+
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Payment Cards List ── */
 .dd-payments-list {
@@ -950,7 +497,7 @@
 .dd-payment-card {
   background: white;
   border: 1.5px solid #e5e7eb;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 1.25rem;
   display: flex;
   gap: 1rem;
@@ -975,18 +522,10 @@
   padding: 0.5rem;
   transition: color 0.2s;
 }
+.dd-payment-drag-handle:hover  { color: #94a3b8; }
+.dd-payment-drag-handle:active { cursor: grabbing; }
 
-.dd-payment-drag-handle:hover {
-  color: #94a3b8;
-}
-
-.dd-payment-drag-handle:active {
-  cursor: grabbing;
-}
-
-.dd-payment-card[draggable="true"] .dd-payment-info {
-  margin-left: 2rem;
-}
+.dd-payment-card[draggable="true"] .dd-payment-info { margin-left: 2rem; }
 
 .dd-payment-info {
   flex: 1;
@@ -1007,20 +546,17 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: #475569;
   flex-wrap: wrap;
 }
-
-.dd-payment-date svg {
-  flex-shrink: 0;
-}
+.dd-payment-date svg { flex-shrink: 0; }
 
 .dd-mode-badge {
-  padding: 0.375rem 0.875rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 50px;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -1029,7 +565,7 @@
 }
 
 .dd-payment-amount-large {
-  font-size: 1.5rem;
+  font-size: var(--fs-xl);
   font-weight: 800;
   color: #111827;
   letter-spacing: -0.02em;
@@ -1041,18 +577,14 @@
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--fs-sm);
   color: #64748b;
   font-style: italic;
   line-height: 1.5;
   word-break: break-word;
   overflow-wrap: break-word;
 }
-
-.dd-payment-remarks svg {
-  flex-shrink: 0;
-  margin-top: 0.125rem;
-}
+.dd-payment-remarks svg { flex-shrink: 0; margin-top: 0.125rem; }
 
 .dd-payment-actions {
   display: flex;
@@ -1066,79 +598,61 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: none;
-  font-size: 0.875rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
 }
+.dd-payment-btn svg { flex-shrink: 0; }
 
-.dd-payment-btn svg {
-  flex-shrink: 0;
-}
-
-.dd-payment-btn--edit {
-  background: #eff6ff;
-  color: #1d4ed8;
-}
-
-.dd-payment-btn--edit:hover {
-  background: #dbeafe;
-}
-
-.dd-payment-btn--delete {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.dd-payment-btn--delete:hover {
-  background: #fee2e2;
-}
+.dd-payment-btn--edit        { background: #eff6ff; color: #1d4ed8; }
+.dd-payment-btn--edit:hover  { background: #dbeafe; }
+.dd-payment-btn--delete      { background: #fef2f2; color: #dc2626; }
+.dd-payment-btn--delete:hover{ background: #fee2e2; }
 
 .dd-payment-total-card {
   background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
   border: 1.5px solid #6ee7b7;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 1rem 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin: 0.5rem auto 0;
   max-width: 350px;
-  margin-left: auto;
-  margin-right: auto;
   text-align: center;
 }
 
 .dd-payment-total-label {
-  font-size: 0.8125rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #065f46;
-  text-align: center;
 }
 
 .dd-payment-total-amount {
-  font-size: 1.375rem;
+  font-size: clamp(1rem, 3vw, 1.375rem);
   font-weight: 800;
   color: #065f46;
   letter-spacing: -0.02em;
+  word-break: break-word;
 }
 
 /* ── Empty State ── */
 .dd-empty-state {
   text-align: center;
-  padding: 3rem 2rem;
+  padding: clamp(2rem, 5vw, 3rem) 2rem;
   color: #94a3b8;
 }
 
 .dd-empty-icon {
-  font-size: 3rem;
+  font-size: clamp(2rem, 5vw, 3rem);
   line-height: 1;
   display: block;
   margin-bottom: 1rem;
@@ -1160,19 +674,14 @@
   border-radius: 6px;
 }
 
-.dd-sk-pill {
-  padding: 1rem 1.25rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-}
-
+.dd-sk-pill,
 .dd-sk-stat {
-  padding: 1.5rem;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
+.dd-sk-pill { padding: 1rem 1.25rem; }
+.dd-sk-stat { padding: 1.5rem; }
 
 .dd-sk-row {
   display: flex;
@@ -1182,90 +691,61 @@
 }
 
 @keyframes dd-shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
+  0%   { background-position:  200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* ── Deal Type Badge ── */
 .deal-type-badge {
-  padding: 0.375rem 0.875rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 50px;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   display: inline-block;
 }
+.deal-type-badge--buy   { background: #dbeafe; color: #1e40af; }
+.deal-type-badge--sell  { background: #fee2e2; color: #991b1b; }
+.deal-type-badge--other { background: #d1fae5; color: #065f46; }
 
-.deal-type-badge--buy {
-  background: #dbeafe;
-  color: #1e40af;
-}
 
-.deal-type-badge--sell {
-  background: #fee2e2;
-  color: #991b1b;
-}
+/* ════════════════════════════════════════════
+   RESPONSIVE — 4 consolidated breakpoints
+════════════════════════════════════════════ */
 
-.deal-type-badge--other {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-@media (max-width: 1400px) {
-  .dd-info-grid {
-    grid-template-columns: repeat(4, 1fr);
+/* ── Tablet-ish: 2-col form grid (≤ 900px) ── */
+@media (max-width: 900px) {
+  .dd-form-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 1200px) {
-  .dd-info-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
+/* ── Mobile Accordion (≤ 768px) ── */
 @media (max-width: 768px) {
-  .dd-page-header {
-    padding: 2rem 1.5rem;
-    border-radius: 16px;
-  }
+  /* Info & data grids */
+  .dd-info-grid  { grid-template-columns: repeat(2, 1fr); }
+  .dd-stat-grid  { grid-template-columns: 1fr; }
+  .dd-form-grid  { grid-template-columns: 1fr; }
 
-  .dd-back-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-  }
-
-  .dd-page-title {
-    font-size: 1.5rem;
-  }
-
-  .dd-page-subtitle {
-    font-size: 0.9375rem;
-  }
-
-  /* Mobile Accordion */
+  /* Accordion shell */
   .dd-section {
     padding: 0;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
 
   .dd-section-header {
     margin-bottom: 0;
     padding: 1rem 3rem 1rem 1.5rem;
     border-bottom: none;
-    transition: all 0.2s;
+    transition: background 0.2s;
     background: white;
     position: relative;
+    cursor: pointer;
   }
 
-  .dd-section-header:hover {
-    background: #f8fafc;
-  }
+  .dd-section-header:hover { background: #f8fafc; }
 
   .dd-section-header::after {
     content: '';
@@ -1273,11 +753,10 @@
     right: 1.5rem;
     top: 50%;
     transform: translateY(-50%) rotate(0deg);
-    width: 0;
-    height: 0;
+    width: 0; height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    border-top: 6px solid #667eea;
+    border-top: 6px solid var(--blue-primary);
     transition: transform 0.3s ease;
     pointer-events: none;
   }
@@ -1294,178 +773,57 @@
   }
 
   .dd-section--expanded .dd-section-content {
-    max-height: 3000px;
+    max-height: 5000px;
     padding: 0 1.5rem 1.5rem;
   }
 
-  .dd-info-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  /* Action bar */
+  .dd-action-bar { bottom: 1rem; right: 1rem; left: 1rem; }
 
-  .dd-stat-grid {
-    grid-template-columns: 1fr;
-  }
+  /* Buttons */
+  .dd-btn { width: 100%; }
+  .dd-btn--pdf { width: 100%; }
+  .dd-btn--sm { margin-left: auto; }
 
-  .dd-form-grid {
-    grid-template-columns: 1fr;
-  }
+  .dd-form-actions { flex-direction: column; gap: 0.625rem; }
+  .dd-payment-count { margin-left: 0; }
 
-  .dd-action-bar {
-    bottom: 1rem;
-    right: 1rem;
-    left: 1rem;
-  }
-
-  .dd-btn--pdf {
-    width: 100%;
-    padding: 0.875rem 1.5rem;
-    font-size: 0.9375rem;
-  }
-
-  .dd-payment-count {
-    margin-left: 0;
-  }
-
-  .dd-btn--sm {
-    padding: 0.5rem 0.875rem;
-    font-size: 0.8125rem;
-    margin-left: auto;
-  }
-
-  .dd-form-actions {
-    flex-direction: column;
-    gap: 0.625rem;
-  }
-
-  .dd-btn {
-    width: 100%;
-  }
-
-  /* Payment Cards Mobile */
+  /* Payment cards */
   .dd-payment-card {
     flex-direction: column;
     padding: 1rem;
   }
+  .dd-payment-card[draggable="true"] .dd-payment-info { margin-left: 0; }
+  .dd-payment-drag-handle { display: none; }
 
-  .dd-payment-card[draggable="true"] .dd-payment-info {
-    margin-left: 0;
-  }
+  .dd-payment-actions { flex-direction: row; align-self: stretch; }
+  .dd-payment-btn { flex: 1; justify-content: center; }
+  .dd-payment-btn span { display: none; }
 
-  .dd-payment-drag-handle {
-    display: none;
-  }
-
-  .dd-payment-actions {
-    flex-direction: row;
-    align-self: stretch;
-  }
-
-  .dd-payment-btn {
-    flex: 1;
-    justify-content: center;
-    padding: 0.75rem 0.875rem;
-  }
-
-  .dd-payment-btn span {
-    display: none;
-  }
-
-  .dd-payment-amount-large {
-    font-size: 1.375rem;
-  }
-
-  .dd-payment-total-card {
-    flex-direction: column;
-    gap: 0.5rem;
-    text-align: center;
-    max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    padding: 1rem;
-  }
-
-  .dd-payment-total-label {
-    text-align: center;
-  }
-
-  .dd-payment-total-amount {
-    font-size: 1.25rem;
-    text-align: center;
-  }
+  .dd-payment-total-card { max-width: 100%; margin-left: 0; margin-right: 0; }
 }
 
+/* ── Small Mobile (≤ 480px) ── */
 @media (max-width: 480px) {
-  .dd-page-header {
-    padding: 1.5rem 1rem;
-  }
+  .dd-info-grid { grid-template-columns: 1fr; }
+  .dd-page-title-block { gap: 0.75rem; }
 
-  .dd-back-btn {
-    padding: 0.5rem 0.875rem;
-    font-size: 0.8125rem;
-  }
+  /* Section gets padding back at very small screens (accordion content handles its own padding) */
+  .dd-section { padding: 1rem; }
 
-  .dd-page-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 1.5rem;
-  }
-
-  .dd-page-title {
-    font-size: 1.25rem;
-  }
-
-  .dd-page-subtitle {
-    font-size: 0.875rem;
-  }
-
-  .dd-section {
-    padding: 1rem;
-  }
-
-  .dd-page-title-block {
-    gap: 0.75rem;
-  }
-
-  .dd-btn--pdf {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.875rem;
-  }
-
-  .dd-btn--sm {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
-  }
-
-  .dd-section-title {
-    font-size: 1.125rem;
-  }
-
-  .dd-payment-count {
-    font-size: 0.75rem;
-    padding: 0.3125rem 0.75rem;
-  }
+  .dd-action-bar { bottom: 0.625rem; right: 0.625rem; left: 0.625rem; }
 }
 
-@media (max-width: 360px) {
+/* ── Tiny Mobile (≤ 350px) ── */
+@media (max-width: 350px) {
   .dd-page {
     padding: 0 0.5rem;
     padding-bottom: 4rem;
   }
 
-  .dd-wrapper {
-    max-width: 100%;
-    overflow-x: hidden;
-  }
+  .dd-wrapper { max-width: 100%; overflow-x: hidden; }
 
-  .dd-page-header {
-    padding: 1.25rem 0.875rem;
-    border-radius: 12px;
-  }
-
-  .dd-back-btn {
-    padding: 0.4375rem 0.75rem;
-    font-size: 0.75rem;
-  }
+  .dd-page-header { border-radius: var(--radius-md); }
 
   .dd-page-title-block {
     flex-direction: column;
@@ -1473,25 +831,9 @@
     gap: 0.5rem;
   }
 
-  .dd-page-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 1.25rem;
-  }
-
-  .dd-page-title {
-    font-size: 1rem;
-    line-height: 1.3;
-  }
-
-  .dd-page-subtitle {
-    font-size: 0.75rem;
-    line-height: 1.4;
-  }
-
   .dd-section {
     padding: 0;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     margin-bottom: 1rem;
   }
 
@@ -1500,181 +842,32 @@
     flex-wrap: wrap;
   }
 
-  .dd-section-icon {
-    font-size: 1.125rem;
-  }
+  .dd-section-content { padding: 0 1rem; }
+  .dd-section--expanded .dd-section-content { padding: 0 1rem 1rem; }
 
-  .dd-section-title {
-    font-size: 0.9375rem;
-  }
-
-  .dd-section-content {
-    padding: 0 1rem;
-  }
-
-  .dd-section--expanded .dd-section-content {
-    padding: 0 1rem 1rem;
-  }
-
-  .dd-payment-count {
-    font-size: 0.625rem;
-    padding: 0.25rem 0.5rem;
-    width: 100%;
-    margin-top: 0.5rem;
-    text-align: center;
-  }
+  .dd-payment-count { width: 100%; margin-top: 0.5rem; text-align: center; }
 
   .dd-info-grid,
-  .dd-stat-grid {
-    grid-template-columns: 1fr;
-    gap: 0.625rem;
-  }
+  .dd-stat-grid { grid-template-columns: 1fr; }
 
-  .dd-info-pill,
-  .dd-stat-card {
-    padding: 0.75rem 0.875rem;
-  }
+  .dd-payment-header { flex-direction: column; align-items: flex-start; }
+  .dd-payment-actions { flex-direction: row; gap: 0.375rem; width: 100%; }
+  .dd-payment-btn { flex: 1; }
 
-  .dd-pill-label,
-  .dd-stat-label {
-    font-size: 0.625rem;
-  }
+  .dd-payment-total-card { max-width: 100%; margin: 0; }
 
-  .dd-pill-value {
-    font-size: 0.875rem;
-    word-break: break-word;
-  }
+  .dd-textarea { min-height: 50px; }
 
-  .dd-stat-value {
-    font-size: 1.125rem;
-  }
+  .dd-action-bar { bottom: 0.625rem; right: 0.625rem; left: 0.625rem; }
 
-  .dd-btn--pdf {
-    padding: 0.625rem 1rem;
-    font-size: 0.8125rem;
-  }
-
-  .dd-btn--sm {
-    padding: 0.375rem 0.625rem;
-    font-size: 0.625rem;
-    white-space: nowrap;
-  }
-
-  .dd-form-grid {
-    gap: 0.75rem;
-  }
-
-  .dd-label {
-    font-size: 0.75rem;
-  }
-
-  .dd-input {
-    padding: 0.625rem 0.75rem;
-    font-size: 0.8125rem;
-  }
-
-  .dd-input--prefixed {
-    padding-left: 2rem;
-  }
-
-  .dd-input-prefix {
-    left: 0.75rem;
-    font-size: 0.875rem;
-  }
-
-  .dd-payment-card {
-    padding: 0.75rem;
-  }
-
-  .dd-payment-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .dd-payment-date {
-    font-size: 0.75rem;
-  }
-
-  .dd-mode-badge {
-    font-size: 0.625rem;
-    padding: 0.25rem 0.5rem;
-  }
-
-  .dd-payment-amount-large {
-    font-size: 1.125rem;
-  }
-
-  .dd-payment-remarks {
-    font-size: 0.75rem;
-  }
-
-  .dd-payment-btn {
-    padding: 0.625rem 0.75rem;
-    font-size: 0.75rem;
-  }
-
-  .dd-payment-total-card {
-    padding: 0.75rem 1rem;
-    flex-direction: column;
-  }
-
-  .dd-payment-total-label {
-    font-size: 0.6875rem;
-    text-align: center;
-  }
-
-  .dd-payment-total-amount {
-    font-size: 1rem;
-    text-align: center;
-  }
-
-  .dd-action-bar {
-    bottom: 0.625rem;
-    right: 0.625rem;
-    left: 0.625rem;
-  }
-
-  .dd-toast {
-    padding: 0.75rem 0.875rem;
-    font-size: 0.8125rem;
-  }
-
-  .dd-payment-form-card {
-    padding: 1rem;
-    margin-top: 1rem;
-  }
-
-  .dd-progress-bar-bg {
-    height: 8px;
-  }
-
-  .dd-progress-label {
-    font-size: 0.75rem;
-    flex-wrap: wrap;
-  }
-
-  .dd-cleared-badge {
-    font-size: 0.625rem;
-    padding: 0.2rem 0.5rem;
-  }
-
-  .deal-type-badge {
-    font-size: 0.625rem;
-    padding: 0.25rem 0.5rem;
-  }
-
-  .dd-form-actions {
-    gap: 0.5rem;
-  }
-
-  .dd-btn {
-    padding: 0.75rem 1rem;
-    font-size: 0.8125rem;
-  }
+  .dd-form-actions { gap: 0.5rem; margin-top: 0.75rem; }
 }
 
-/* ── Edit Payment Modal (matching Dashboard styles) ── */
+
+/* ════════════════════════════════════════════
+   Edit Payment Modal
+════════════════════════════════════════════ */
+
 .dashboard-modal--large {
   max-width: 600px;
   text-align: left;
@@ -1685,13 +878,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
+  padding: clamp(1rem, 3vw, 1.5rem) clamp(1.25rem, 4vw, 2rem);
   border-bottom: 1px solid #e5e7eb;
 }
 
 .dashboard-modal-header .dashboard-modal-title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: clamp(1.125rem, 3vw, 1.5rem);
   text-align: left;
   font-weight: 700;
   color: #111827;
@@ -1704,16 +897,12 @@
   padding: 0.5rem;
   color: #6b7280;
   transition: all 0.2s;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
-
-.dashboard-modal-close:hover {
-  background: #f3f4f6;
-  color: #111827;
-}
+.dashboard-modal-close:hover { background: #f3f4f6; color: #111827; }
 
 .dashboard-modal-body {
-  padding: 2rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
   max-height: 60vh;
   overflow-y: auto;
 }
@@ -1753,14 +942,13 @@
   background: #fff;
   width: 100%;
 }
-
 .dashboard-form-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--blue-primary);
+  box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
 }
 
 .dashboard-modal--large .dashboard-modal-actions {
-  padding: 1.5rem 2rem;
+  padding: clamp(1rem, 3vw, 1.5rem) clamp(1.25rem, 4vw, 2rem);
   border-top: 1px solid #e5e7eb;
   margin: 0;
   display: flex;
@@ -1770,7 +958,7 @@
 .dashboard-modal-btn {
   flex: 1;
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -1782,28 +970,16 @@
   gap: 0.5rem;
 }
 
-.dashboard-modal-btn--cancel {
-  background: #f3f4f6;
-  color: #374151;
-}
+.dashboard-modal-btn--cancel       { background: #f3f4f6; color: #374151; }
+.dashboard-modal-btn--cancel:hover { background: #e5e7eb; }
 
-.dashboard-modal-btn--cancel:hover {
-  background: #e5e7eb;
-}
+.dashboard-modal-btn--confirm       { background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-mid) 100%); color: white; }
+.dashboard-modal-btn--confirm:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3); }
 
-.dashboard-modal-btn--confirm {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.dashboard-modal-btn--confirm:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-}
-
+/* ── Delete Confirm Modal ── */
 .dashboard-modal {
   background: white;
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   padding: 2.5rem;
   max-width: 450px;
   width: 100%;
@@ -1813,22 +989,14 @@
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
+/* ── Delete / Logout Overlay ── */
 .logout-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   display: flex;
@@ -1839,19 +1007,12 @@
   animation: fadeIn 0.2s ease;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .logout-modal {
   background: white;
-  border-radius: 20px;
-  padding: 2.5rem;
+  border-radius: var(--radius-lg);
+  padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1rem, 4vw, 2.5rem);
   max-width: 450px;
   width: 100%;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -1860,8 +1021,8 @@
 }
 
 .logout-modal-icon {
-  width: 80px;
-  height: 80px;
+  width: clamp(56px, 10vw, 80px);
+  height: clamp(56px, 10vw, 80px);
   margin: 0 auto 1.5rem;
   border-radius: 50%;
   display: flex;
@@ -1872,23 +1033,19 @@
 }
 
 .logout-modal-title {
-  font-size: 1.75rem;
+  font-size: clamp(1.125rem, 4vw, 1.75rem);
   font-weight: 800;
   color: #111827;
   margin: 0 0 1rem 0;
 }
 
 .logout-modal-desc {
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
   color: #6b7280;
   line-height: 1.6;
   margin: 0 0 1.5rem 0;
 }
-
-.logout-modal-desc strong {
-  color: #111827;
-  font-weight: 700;
-}
+.logout-modal-desc strong { color: #111827; font-weight: 700; }
 
 .logout-modal-actions {
   display: flex;
@@ -1897,9 +1054,9 @@
 
 .logout-modal-btn {
   flex: 1;
-  padding: 1rem;
-  border-radius: 12px;
-  font-size: 1rem;
+  padding: clamp(0.75rem, 2.5vw, 1rem);
+  border-radius: var(--radius-md);
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1910,29 +1067,13 @@
   gap: 0.5rem;
 }
 
-.logout-modal-btn--cancel {
-  background: #f3f4f6;
-  color: #374151;
-}
+.logout-modal-btn--cancel       { background: #f3f4f6; color: #374151; }
+.logout-modal-btn--cancel:hover { background: #e5e7eb; }
 
-.logout-modal-btn--cancel:hover {
-  background: #e5e7eb;
-}
+.logout-modal-btn--confirm       { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; }
+.logout-modal-btn--confirm:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3); }
 
-.logout-modal-btn--confirm {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  color: white;
-}
-
-.logout-modal-btn--confirm:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
-}
-
-.logout-modal-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+.logout-modal-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .modal-spinner {
   width: 16px;
@@ -1943,383 +1084,18 @@
   animation: spin 0.6s linear infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
+/* Modal responsive */
 @media (max-width: 768px) {
-  .dashboard-modal--large {
-    max-width: calc(100% - 2rem);
-  }
-
-  .dashboard-modal-header {
-    padding: 1.25rem 1.5rem;
-  }
-
-  .dashboard-modal-body {
-    padding: 1.5rem;
-    max-height: 50vh;
-  }
-
-  .dashboard-form-row {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .dashboard-modal--large .dashboard-modal-actions {
-    padding: 1.25rem 1.5rem;
-    flex-direction: row;
-    gap: 1rem;
-  }
-
-  .dashboard-modal--large .dashboard-modal-btn {
-    flex: 1;
-  }
-
-  .logout-modal {
-    padding: 1.75rem 1.25rem;
-    max-width: calc(100% - 2rem);
-  }
-
-  .logout-modal-icon {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 1rem;
-  }
-
-  .logout-modal-icon svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .logout-modal-title {
-    font-size: 1.25rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .logout-modal-desc {
-    font-size: 0.875rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .logout-modal-actions {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .logout-modal-btn {
-    width: 100%;
-    padding: 0.875rem;
-    font-size: 0.9375rem;
-  }
+  .dashboard-modal--large { max-width: calc(100% - 2rem); }
+  .dashboard-form-row { grid-template-columns: 1fr; }
+  .dashboard-modal--large .dashboard-modal-actions { flex-direction: row; }
+  .dashboard-modal--large .dashboard-modal-btn { flex: 1; }
+  .logout-modal-actions { flex-direction: column; }
+  .logout-modal-btn { width: 100%; }
 }
 
 @media (max-width: 480px) {
-  .dashboard-modal-header {
-    padding: 1rem 1.25rem;
-  }
-
-  .dashboard-modal-header .dashboard-modal-title {
-    font-size: 1.125rem;
-  }
-
-  .dashboard-modal-body {
-    padding: 1.25rem;
-  }
-
-  .dashboard-modal--large .dashboard-modal-actions {
-    padding: 1rem 1.25rem;
-    flex-direction: column;
-  }
-
-  .dashboard-modal--large .dashboard-modal-btn {
-    width: 100%;
-  }
-
-  .logout-modal {
-    padding: 1.5rem 1rem;
-  }
-
-  .logout-modal-icon {
-    width: 56px;
-    height: 56px;
-    margin-bottom: 0.875rem;
-  }
-
-  .logout-modal-icon svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  .logout-modal-title {
-    font-size: 1.125rem;
-    margin-bottom: 0.625rem;
-  }
-
-  .logout-modal-desc {
-    font-size: 0.8125rem;
-    margin-bottom: 1rem;
-  }
-
-  .logout-modal-btn {
-    padding: 0.75rem;
-    font-size: 0.875rem;
-  }
-}
-
-
-@media (max-width: 340px) {
-  .dd-page {
-    padding: 0 0.375rem;
-  }
-
-  .dd-page-header {
-    padding: 1rem 0.75rem;
-  }
-
-  .dd-back-btn {
-    padding: 0.375rem 0.625rem;
-    font-size: 0.6875rem;
-  }
-
-  .dd-page-icon {
-    width: 36px;
-    height: 36px;
-    font-size: 1.125rem;
-  }
-
-  .dd-page-title {
-    font-size: 0.9375rem;
-  }
-
-  .dd-page-subtitle {
-    font-size: 0.6875rem;
-  }
-
-  .dd-section-header {
-    padding: 0.75rem 2.25rem 0.75rem 0.875rem;
-  }
-
-  .dd-section-icon {
-    font-size: 1rem;
-  }
-
-  .dd-section-title {
-    font-size: 0.875rem;
-  }
-
-  .dd-section-content {
-    padding: 0 0.875rem;
-  }
-
-  .dd-section--expanded .dd-section-content {
-    padding: 0 0.875rem 0.875rem;
-  }
-
-  .dd-info-pill,
-  .dd-stat-card {
-    padding: 0.625rem 0.75rem;
-  }
-
-  .dd-pill-label,
-  .dd-stat-label {
-    font-size: 0.5625rem;
-  }
-
-  .dd-pill-value {
-    font-size: 0.8125rem;
-  }
-
-  .dd-stat-value {
-    font-size: 1rem;
-    word-break: break-word;
-  }
-
-  .dd-payment-count {
-    font-size: 0.5625rem;
-    padding: 0.2rem 0.4375rem;
-  }
-
-  .dd-btn--sm {
-    padding: 0.3125rem 0.5rem;
-    font-size: 0.5625rem;
-  }
-
-  .dd-btn--pdf {
-    padding: 0.5rem 0.875rem;
-    font-size: 0.75rem;
-  }
-
-  .dd-label {
-    font-size: 0.6875rem;
-  }
-
-  .dd-input {
-    padding: 0.5rem 0.625rem;
-    font-size: 0.75rem;
-  }
-
-  /* Payment Card Responsive */
-  .dd-payment-card {
-    padding: 0.625rem;
-    gap: 0.625rem;
-  }
-
-  .dd-payment-info {
-    gap: 0.5rem;
-  }
-
-  .dd-payment-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.375rem;
-  }
-
-  .dd-payment-date {
-    font-size: 0.6875rem;
-    gap: 0.375rem;
-  }
-
-  .dd-payment-date svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  .dd-mode-badge {
-    font-size: 0.5625rem;
-    padding: 0.2rem 0.4375rem;
-    letter-spacing: 0.02em;
-  }
-
-  .dd-payment-amount-large {
-    font-size: 1rem;
-    word-break: break-word;
-    line-height: 1.3;
-  }
-
-  .dd-payment-remarks {
-    font-size: 0.6875rem;
-    gap: 0.375rem;
-    line-height: 1.4;
-  }
-
-  .dd-payment-remarks svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  .dd-payment-actions {
-    flex-direction: row;
-    gap: 0.375rem;
-    width: 100%;
-  }
-
-  .dd-payment-btn {
-    padding: 0.5rem 0.625rem;
-    font-size: 0.6875rem;
-    flex: 1;
-    gap: 0.25rem;
-  }
-
-  .dd-payment-btn svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .dd-payment-btn span {
-    display: none;
-  }
-
-  /* Payment Total Card */
-  .dd-payment-total-card {
-    padding: 0.625rem 0.875rem;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.5rem;
-    text-align: center;
-  }
-
-  .dd-payment-total-label {
-    font-size: 0.625rem;
-    letter-spacing: 0.03em;
-    text-align: center;
-  }
-
-  .dd-payment-total-amount {
-    font-size: 0.9375rem;
-    word-break: break-word;
-    text-align: center;
-  }
-
-  /* Empty State */
-  .dd-empty-state {
-    padding: 2rem 1rem;
-  }
-
-  .dd-empty-icon {
-    font-size: 2rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .dd-empty-state p {
-    font-size: 0.8125rem;
-  }
-
-  .dd-toast {
-    padding: 0.625rem 0.75rem;
-    font-size: 0.75rem;
-  }
-
-  .dd-progress-label {
-    font-size: 0.6875rem;
-  }
-
-  .dd-cleared-badge {
-    font-size: 0.5625rem;
-    padding: 0.15rem 0.4375rem;
-  }
-
-  .deal-type-badge {
-    font-size: 0.5625rem;
-    padding: 0.2rem 0.4375rem;
-  }
-
-  .dd-btn {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.75rem;
-  }
-
-  /* Payment Form Card */
-  .dd-payment-form-card {
-    padding: 0.75rem;
-    margin-top: 0.75rem;
-  }
-
-  .dd-form-grid {
-    gap: 0.5rem;
-  }
-
-  .dd-field {
-    gap: 0.375rem;
-  }
-
-  .dd-input-prefix {
-    left: 0.625rem;
-    font-size: 0.8125rem;
-  }
-
-  .dd-input--prefixed {
-    padding-left: 1.875rem;
-  }
-
-  .dd-textarea {
-    min-height: 50px;
-  }
-
-  .dd-form-actions {
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-  }
+  .dashboard-modal-body { max-height: 50vh; }
+  .dashboard-modal--large .dashboard-modal-actions { flex-direction: column; }
+  .dashboard-modal--large .dashboard-modal-btn { width: 100%; }
 }

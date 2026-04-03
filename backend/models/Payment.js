@@ -28,7 +28,7 @@ const paymentSchema = new mongoose.Schema({
   modeOfPayment: {
     type: String,
     enum: {
-      values: ['NEFT', 'RTGS', 'CASH', 'CHEQUE', 'UPI', 'ANGADIA'],
+      values: ['Bank', 'Other'],
       message: '{VALUE} is not a valid payment mode'
     },
     required: [true, 'Payment mode is required']
@@ -37,6 +37,13 @@ const paymentSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Payment amount is required'],
     min: [0, 'Amount cannot be negative']
+  },
+  paymentType: {
+    type: String,
+    enum: ['white', 'total'],
+    default: function() {
+      return this.modeOfPayment === 'Bank' ? 'white' : 'total';
+    }
   },
   remarks: {
     type: String,

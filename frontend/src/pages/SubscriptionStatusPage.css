@@ -10,7 +10,7 @@
 
 /* Hero Section */
 .subscription-hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #0a3a6a 100%);
   border-radius: 20px;
   padding: 3rem 2rem;
   margin-bottom: 2rem;
@@ -83,7 +83,7 @@
 .subscription-card-icon {
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -122,11 +122,7 @@
 .subscription-plan-name {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #1a5490;
 }
 
 .subscription-status-badge {
@@ -174,7 +170,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #667eea;
+  color: #1a5490;
   flex-shrink: 0;
 }
 
@@ -206,7 +202,7 @@
   max-width: 350px;
   margin: 0 auto;
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -218,7 +214,7 @@
 
 .subscription-upgrade-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3);
 }
 
 /* Payment History Section */
@@ -343,7 +339,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -355,7 +351,7 @@
 
 .subscription-empty-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3);
 }
 
 /* Payment Cards Grid */
@@ -412,12 +408,8 @@
 .subscription-payment-amount {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #111827;
+  color: #1a5490;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .subscription-payment-status {
@@ -448,7 +440,7 @@
 }
 
 .subscription-payment-detail-item svg {
-  color: #667eea;
+  color: #1a5490;
   flex-shrink: 0;
   margin-top: 0.125rem;
 }
@@ -610,7 +602,7 @@
 .subscription-modal-btn {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -622,7 +614,7 @@
 
 .subscription-modal-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3);
 }
 
 /* Responsive Design */

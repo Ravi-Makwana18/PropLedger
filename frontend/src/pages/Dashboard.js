@@ -21,8 +21,11 @@ const Dashboard = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [editFormData, setEditFormData] = useState({
+    district: '',
+    subDistrict: '',
     villageName: '',
-    surveyNumber: '',
+    oldSurveyNo: '',
+    newSurveyNo: '',
     dealType: 'Buy',
     pricePerSqYard: '',
     totalSqYard: '',
@@ -47,8 +50,8 @@ const Dashboard = () => {
 
   // Toggle deal expansion for mobile
   const toggleDeal = (dealId) => {
-    setExpandedDeals(prev => 
-      prev.includes(dealId) 
+    setExpandedDeals(prev =>
+      prev.includes(dealId)
         ? prev.filter(id => id !== dealId)
         : [...prev, dealId]
     );
@@ -72,9 +75,11 @@ const Dashboard = () => {
 
   // ── API: fetch all deals from the server ──────────────────────────────────
   const fetchDeals = async () => {
+    setLoading(true);
     try {
       const { data } = await API.get('/api/deals');
       setDeals(data);
+      setError('');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch deals');
     } finally {
@@ -116,8 +121,11 @@ const Dashboard = () => {
   const handleEdit = (deal) => {
     setEditingId(deal._id);
     setEditFormData({
+      district: deal.district || '',
+      subDistrict: deal.subDistrict || '',
       villageName: deal.villageName,
-      surveyNumber: deal.surveyNumber,
+      oldSurveyNo: deal.oldSurveyNo || '',
+      newSurveyNo: deal.newSurveyNo || deal.surveyNumber || '',
       dealType: deal.dealType || 'Buy',
       pricePerSqYard: deal.pricePerSqYard,
       totalSqYard: deal.totalSqYard,
@@ -130,7 +138,7 @@ const Dashboard = () => {
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setEditFormData({ villageName: '', surveyNumber: '', dealType: 'Buy', pricePerSqYard: '', totalSqYard: '', totalSqMeter: '', jantri: '', totalAmount: '', paymentDeadlineMonth: '' });
+    setEditFormData({ district: '', subDistrict: '', villageName: '', oldSurveyNo: '', newSurveyNo: '', dealType: 'Buy', pricePerSqYard: '', totalSqYard: '', totalSqMeter: '', jantri: '', totalAmount: '', paymentDeadlineMonth: '' });
   };
 
   // Auto-calculate totalAmount when unit price or area changes
@@ -152,8 +160,11 @@ const Dashboard = () => {
     try {
       // Prepare payload with correct field names
       const payload = {
+        district: editFormData.district,
+        subDistrict: editFormData.subDistrict,
         villageName: editFormData.villageName,
-        surveyNumber: editFormData.surveyNumber,
+        oldSurveyNo: editFormData.oldSurveyNo || undefined,
+        newSurveyNo: editFormData.newSurveyNo,
         dealType: editFormData.dealType,
         pricePerSqYard: parseFloat(editFormData.pricePerSqYard),
         totalSqYard: parseFloat(editFormData.totalSqYard),
@@ -161,11 +172,11 @@ const Dashboard = () => {
         jantri: editFormData.jantri ? parseFloat(editFormData.jantri) : undefined,
         deadlineEndDate: editFormData.paymentDeadlineMonth || undefined
       };
-      
+
       const { data } = await API.put(`/api/deals/${dealId}`, payload);
       setDeals(deals.map(deal => deal._id === dealId ? data : deal));
       setEditingId(null);
-      setEditFormData({ villageName: '', surveyNumber: '', dealType: 'Buy', pricePerSqYard: '', totalSqYard: '', totalSqMeter: '', jantri: '', totalAmount: '', paymentDeadlineMonth: '' });
+      setEditFormData({ district: '', subDistrict: '', villageName: '', oldSurveyNo: '', newSurveyNo: '', dealType: 'Buy', pricePerSqYard: '', totalSqYard: '', totalSqMeter: '', jantri: '', totalAmount: '', paymentDeadlineMonth: '' });
       alert('Deal updated successfully');
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to update deal');
@@ -227,7 +238,10 @@ const Dashboard = () => {
     if (searchTerm.trim()) {
       filtered = filtered.filter(deal =>
         deal.villageName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        deal.surveyNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+        deal.district?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        deal.subDistrict?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(deal.newSurveyNo || deal.surveyNumber || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(deal.oldSurveyNo || '').toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     return filtered;
@@ -282,14 +296,14 @@ const Dashboard = () => {
       <div className="dashboard-hero">
         <div className="dashboard-hero-inner">
           <div className="dashboard-hero-top">
-            <div className="dashboard-hero-icon">
+            {/* <div className="dashboard-hero-icon">
               <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
-            </div>
+            </div> */}
             <div>
-              <h1 className="dashboard-hero-title">Land Deals</h1>
+              <h1 className="dashboard-hero-title">Dashboard</h1>
               <p className="dashboard-hero-subtitle">Manage and track all your property transactions</p>
             </div>
           </div>
@@ -334,9 +348,9 @@ const Dashboard = () => {
           </div>
 
           <button onClick={handleSearch} className="dashboard-search-btn">
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.9" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
               <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <line x1="24" y1="24" x2="16.65" y2="16.65" />
             </svg>
             <span className="dashboard-search-btn-text">Search</span>
           </button>
@@ -347,7 +361,7 @@ const Dashboard = () => {
               className="dashboard-sort-btn"
               onClick={() => setSortOpen((v) => !v)}
             >
-              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" viewBox="0 0 24 24">
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <line x1="6" y1="12" x2="18" y2="12" />
                 <line x1="9" y1="18" x2="15" y2="18" />
@@ -371,29 +385,13 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Deal Type Filter Pills */}
-      <div className="dashboard-type-pills">
-        {['All', 'Buy', 'Sell', 'Other'].map(type => (
-          <button
-            key={type}
-            className={`dashboard-type-pill${dealTypeFilter === type ? ' dashboard-type-pill--active' : ''}`}
-            onClick={() => setDealTypeFilter(type)}
-          >
-            {type === 'Buy' && <span className="dashboard-type-pill-dot dashboard-type-pill-dot--buy" />}
-            {type === 'Sell' && <span className="dashboard-type-pill-dot dashboard-type-pill-dot--sell" />}
-            {type === 'Other' && <span className="dashboard-type-pill-dot dashboard-type-pill-dot--other" />}
-            {type === 'All' ? 'All Deals' : `${type} Deals`}
-          </button>
-        ))}
-      </div>
-
-      {isAdmin && (
+      {isAdmin && dealTypeFilter === 'All' && (
         <div className="dashboard-toolbar">
           <div className="dashboard-count-badge">
             {filteredCount} of {totalDeals} deals
           </div>
           <Link to="/add-deal" className="dashboard-add-btn">
-            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
+            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" viewBox="0 0 24 24">
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
@@ -416,7 +414,7 @@ const Dashboard = () => {
                 <div className="dashboard-deal-header-left">
                   <h3 className="dashboard-deal-title">{deal.villageName}</h3>
                   <div className="dashboard-deal-survey">
-                    <span className="dashboard-deal-survey-text">Survey #</span>{deal.surveyNumber}
+                    <span className="dashboard-deal-survey-text">New Survey #</span>{deal.newSurveyNo || deal.surveyNumber}
                   </div>
                 </div>
                 <span className={`dashboard-deal-type-badge dashboard-deal-type-badge--${(deal.dealType || 'Buy').toLowerCase()}`}>
@@ -426,54 +424,58 @@ const Dashboard = () => {
 
               <div className="dashboard-deal-content">
 
-              <div className="dashboard-deal-details">
-                <div className="dashboard-deal-detail">
-                  <span className="dashboard-deal-detail-label">Unit Price</span>
-                  <span className="dashboard-deal-detail-value">{formatCurrency(deal.pricePerSqYard)}</span>
+                <div className="dashboard-deal-details">
+                  <div className="dashboard-deal-detail">
+                    <span className="dashboard-deal-detail-label">District</span>
+                    <span className="dashboard-deal-detail-value">{deal.district || 'N/A'}</span>
+                  </div>
+                  <div className="dashboard-deal-detail">
+                    <span className="dashboard-deal-detail-label">Sub-District</span>
+                    <span className="dashboard-deal-detail-value">{deal.subDistrict || 'N/A'}</span>
+                  </div>
+                  <div className="dashboard-deal-detail">
+                    <span className="dashboard-deal-detail-label">Unit Price</span>
+                    <span className="dashboard-deal-detail-value">{formatCurrency(deal.pricePerSqYard)}</span>
+                  </div>
+                  <div className="dashboard-deal-detail">
+                    <span className="dashboard-deal-detail-label">Total Area</span>
+                    <span className="dashboard-deal-detail-value">{deal.totalSqYard.toLocaleString('en-IN')} sq.yd</span>
+                  </div>
+                  <div className="dashboard-deal-detail">
+                    <span className="dashboard-deal-detail-label">Sq. Meter</span>
+                    <span className="dashboard-deal-detail-value">{deal.totalSqMeter ? deal.totalSqMeter.toLocaleString('en-IN') : 0}</span>
+                  </div>
+                  <div className="dashboard-deal-detail">
+                    <span className="dashboard-deal-detail-label">Jantri</span>
+                    <span className="dashboard-deal-detail-value">{deal.jantri ? formatCurrency(deal.jantri) : '₹0'}</span>
+                  </div>
+                  <div className="dashboard-deal-detail">
+                    <span className="dashboard-deal-detail-label">Total Amount</span>
+                    <span className="dashboard-deal-amount">{formatCurrency(deal.totalAmount)}</span>
+                  </div>
                 </div>
-                <div className="dashboard-deal-detail">
-                  <span className="dashboard-deal-detail-label">Total Area</span>
-                  <span className="dashboard-deal-detail-value">{deal.totalSqYard.toLocaleString('en-IN')} sq.yd</span>
-                </div>
-                <div className="dashboard-deal-detail">
-                  <span className="dashboard-deal-detail-label">Sq. Meter</span>
-                  <span className="dashboard-deal-detail-value">{deal.totalSqMeter ? deal.totalSqMeter.toLocaleString('en-IN') : 0}</span>
-                </div>
-                <div className="dashboard-deal-detail">
-                  <span className="dashboard-deal-detail-label">Jantri</span>
-                  <span className="dashboard-deal-detail-value">{deal.jantri ? formatCurrency(deal.jantri) : '₹0'}</span>
-                </div>
-                <div className="dashboard-deal-detail">
-                  <span className="dashboard-deal-detail-label">Deadline</span>
-                  <span className="dashboard-deal-detail-value">{deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : formatDate(deal.paymentDeadlineMonth)}</span>
-                </div>
-                <div className="dashboard-deal-detail">
-                  <span className="dashboard-deal-detail-label">Total Amount</span>
-                  <span className="dashboard-deal-amount">{formatCurrency(deal.totalAmount)}</span>
-                </div>
-              </div>
 
-              <div className="dashboard-deal-actions">
-                <Link to={`/deals/${deal._id}`} className="dashboard-action-btn dashboard-action-btn--view">
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                  <span className="dashboard-action-btn-text">View Details</span>
-                </Link>
-                {isAdmin && (
-                  <>
-                    <button onClick={() => handleEdit(deal)} className="dashboard-action-btn dashboard-action-btn--edit">
-                      <EditIconSvg />
-                      <span className="dashboard-action-btn-text">Edit</span>
-                    </button>
-                    <button onClick={() => setConfirmDeleteId(deal._id)} className="dashboard-action-btn dashboard-action-btn--delete">
-                      <DeleteIconSvg />
-                      <span className="dashboard-action-btn-text">Delete</span>
-                    </button>
-                  </>
-                )}
-              </div>
+                <div className="dashboard-deal-actions">
+                  <Link to={`/deals/${deal._id}`} className="dashboard-action-btn dashboard-action-btn--view">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <span className="dashboard-action-btn-text">View Details</span>
+                  </Link>
+                  {isAdmin && (
+                    <>
+                      <button onClick={() => handleEdit(deal)} className="dashboard-action-btn dashboard-action-btn--edit">
+                        <EditIconSvg />
+                        <span className="dashboard-action-btn-text">Edit</span>
+                      </button>
+                      <button onClick={() => setConfirmDeleteId(deal._id)} className="dashboard-action-btn dashboard-action-btn--delete">
+                        <DeleteIconSvg />
+                        <span className="dashboard-action-btn-text">Delete</span>
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -499,22 +501,56 @@ const Dashboard = () => {
                 <div className="dashboard-edit-form">
                   <div className="dashboard-form-row">
                     <div className="dashboard-form-group">
-                      <label className="dashboard-form-label">Village Name</label>
+                      <label className="dashboard-form-label">District</label>
                       <input
                         type="text"
-                        name="villageName"
+                        name="district"
                         className="dashboard-form-input"
-                        value={editFormData.villageName}
+                        value={editFormData.district}
                         onChange={handleEditFormChange}
                       />
                     </div>
                     <div className="dashboard-form-group">
-                      <label className="dashboard-form-label">Survey Number</label>
+                      <label className="dashboard-form-label">Sub-District</label>
                       <input
                         type="text"
-                        name="surveyNumber"
+                        name="subDistrict"
                         className="dashboard-form-input"
-                        value={editFormData.surveyNumber}
+                        value={editFormData.subDistrict}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">Village Name</label>
+                    <input
+                      type="text"
+                      name="villageName"
+                      className="dashboard-form-input"
+                      value={editFormData.villageName}
+                      onChange={handleEditFormChange}
+                    />
+                  </div>
+
+                  <div className="dashboard-form-row">
+                    <div className="dashboard-form-group">
+                      <label className="dashboard-form-label">Old Survey No.</label>
+                      <input
+                        type="text"
+                        name="oldSurveyNo"
+                        className="dashboard-form-input"
+                        value={editFormData.oldSurveyNo}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                    <div className="dashboard-form-group">
+                      <label className="dashboard-form-label">New Survey No.</label>
+                      <input
+                        type="text"
+                        name="newSurveyNo"
+                        className="dashboard-form-input"
+                        value={editFormData.newSurveyNo}
                         onChange={handleEditFormChange}
                       />
                     </div>
@@ -640,7 +676,7 @@ const Dashboard = () => {
               <h3 className="dashboard-modal-title">Delete Deal?</h3>
               <p className="dashboard-modal-desc">
                 Are you sure you want to delete<br />
-                <strong>{deal?.villageName}</strong> (Survey #{deal?.surveyNumber})?<br />
+                <strong>{deal?.villageName}</strong> (New Survey #{deal?.newSurveyNo || deal?.surveyNumber})?<br />
                 <span style={{ color: '#e53e3e', fontSize: '0.82rem' }}>This action cannot be undone.</span>
               </p>
               <div className="dashboard-modal-actions">

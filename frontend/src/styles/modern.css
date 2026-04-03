@@ -4,9 +4,9 @@
    ============================================ */
 
 :root {
-  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --primary-color: #667eea;
-  --primary-dark: #764ba2;
+  --primary-gradient: linear-gradient(135deg, #1a5490 0%, #134070 100%);
+  --primary-color: #1a5490;
+  --primary-dark: #134070;
   --success-color: #10b981;
   --warning-color: #f59e0b;
   --danger-color: #ef4444;
@@ -186,7 +186,7 @@
 
 .modern-btn--primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3);
 }
 
 .modern-btn--full {

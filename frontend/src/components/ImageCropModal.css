@@ -127,7 +127,7 @@
 }
 
 .crop-control-label svg {
-  color: #667eea;
+  color: #1a5490;
 }
 
 .crop-slider {
@@ -146,31 +146,31 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 2px 8px rgba(26, 84, 144, 0.4);
   transition: all 0.2s;
 }
 
 .crop-slider::-webkit-slider-thumb:hover {
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+  box-shadow: 0 4px 12px rgba(26, 84, 144, 0.6);
 }
 
 .crop-slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 2px 8px rgba(26, 84, 144, 0.4);
   transition: all 0.2s;
 }
 
 .crop-slider::-moz-range-thumb:hover {
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+  box-shadow: 0 4px 12px rgba(26, 84, 144, 0.6);
 }
 
 /* ── Footer ── */
@@ -206,13 +206,13 @@
 }
 
 .crop-btn--crop {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   color: white;
 }
 
 .crop-btn--crop:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3);
 }
 
 .crop-btn:disabled {

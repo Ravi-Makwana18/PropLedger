@@ -130,7 +130,7 @@ const getPaymentHistory = async (req, res) => {
         .skip((page - 1) * limit)
         .limit(limit)
         .populate('dealId', 'villageName surveyNumber dealType _id')
-        .populate('createdBy', 'name')
+        .populate('createdBy', 'name contactPersonName companyName')
         .lean(),
       Payment.countDocuments(filter)
     ]);

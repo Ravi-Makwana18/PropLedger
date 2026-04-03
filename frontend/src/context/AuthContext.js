@@ -46,7 +46,6 @@ export const AuthProvider = ({ children }) => {
    */
   useEffect(() => {
     const verifyAuth = async () => {
-      setLoading(true);
       const storedToken = localStorage.getItem('token');
       
       // No token stored - user is not logged in
@@ -63,8 +62,9 @@ export const AuthProvider = ({ children }) => {
         // Token is invalid or expired - clear it
         localStorage.removeItem('token');
         setUser(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     verifyAuth();
   }, []);
@@ -144,7 +144,7 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     refreshUser,
-    isAdmin: user?.role === 'admin' || user?.role === 'superadmin',
+    isAdmin: user?.role === 'admin' || user?.role === 'manager' || user?.role === 'superadmin',
     isSuperAdmin: user?.role === 'superadmin'
   };
 

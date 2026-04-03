@@ -11,7 +11,7 @@
 
 /* ── Left Branding Panel ── */
 .auth-left-panel {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #0a3a6a 100%);
   padding: 3rem;
   display: flex;
   flex-direction: column;
@@ -155,10 +155,7 @@
 .auth-mobile-brand {
   font-size: 1.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #1a5490;
 }
 
 .auth-form-container {
@@ -175,8 +172,8 @@
   display: inline-flex;
   align-items: center;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  color: #1e40af;
+  background: linear-gradient(135deg, #e3f0fa 0%, #c7ddf5 100%);
+  color: #1a5490;
   border-radius: 50px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -262,8 +259,8 @@
 }
 
 .auth-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #1a5490;
+  box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
   background: white;
 }
 
@@ -286,14 +283,14 @@
 }
 
 .auth-password-toggle:hover {
-  color: #667eea;
+  color: #1a5490;
 }
 
 /* ── Submit Button ── */
 .auth-submit-btn {
   width: 100%;
   padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -310,7 +307,7 @@
 
 .auth-submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3);
 }
 
 .auth-submit-btn:disabled {
@@ -377,7 +374,7 @@
 .auth-secondary-btn:hover {
   background: #f8fafc;
   border-color: #cbd5e1;
-  color: #667eea;
+  color: #1a5490;
 }
 
 /* ── Responsive ── */
@@ -536,7 +533,7 @@
 }
 
 .auth-section-header svg {
-  color: #667eea;
+  color: #1a5490;
   flex-shrink: 0;
 }
 
@@ -589,15 +586,15 @@
 }
 
 .auth-plan-card:hover {
-  border-color: #667eea;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  border-color: #1a5490;
+  box-shadow: 0 4px 12px rgba(26, 84, 144, 0.15);
   transform: translateY(-2px);
 }
 
 .auth-plan-card--active {
-  border-color: #667eea;
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  border-color: #1a5490;
+  background: linear-gradient(135deg, #e3f0fa 0%, #c7ddf5 100%);
+  box-shadow: 0 4px 12px rgba(26, 84, 144, 0.2);
 }
 
 .auth-plan-card--popular {
@@ -656,7 +653,7 @@
 .auth-plan-price {
   font-size: 1.75rem;
   font-weight: 800;
-  color: #667eea;
+  color: #1a5490;
   margin-bottom: 0.5rem;
   line-height: 1.2;
 }

@@ -232,7 +232,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
           {/* Admin section */}
           {isAdmin && (
             <div className="sidebar-nav-section">
-              {!collapsed && <span className="sidebar-nav-label">Admin</span>}
+              {!collapsed && <span className="sidebar-nav-label">Manage</span>}
               {ADMIN_ITEMS.map(item => {
                 const isActive =
                   location.pathname + location.search === item.to ||

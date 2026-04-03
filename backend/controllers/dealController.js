@@ -10,6 +10,20 @@
 
 const Deal = require('../models/Deal');
 const Payment = require('../models/Payment');
+const User = require('../models/User');
+
+const getAccessibleUserIds = async (user) => {
+  if (user.role === 'manager' && user.createdByAdmin) {
+    return [user._id, user.createdByAdmin];
+  }
+
+  if (user.role === 'admin' || user.role === 'superadmin') {
+    const managedUsers = await User.find({ createdByAdmin: user._id }).select('_id').lean();
+    return [user._id, ...managedUsers.map((managedUser) => managedUser._id)];
+  }
+
+  return [user._id];
+};
 
 /**
  * @desc    Create new land deal
@@ -21,9 +35,11 @@ const createDeal = async (req, res) => {
   session.startTransaction();
   
   try {
+    const accessibleUserIds = await getAccessibleUserIds(req.user);
+
     // Check if user is on 7-day trial and has reached limit
     if (req.user.subscriptionPlan === '7-day-trial') {
-      const dealCount = await Deal.countDocuments({ createdBy: req.user._id }).session(session);
+      const dealCount = await Deal.countDocuments({ createdBy: { $in: accessibleUserIds } }).session(session);
       
       if (dealCount >= 9) {
         await session.abortTransaction();
@@ -35,28 +51,40 @@ const createDeal = async (req, res) => {
     }
 
     const {
+      district,
+      subDistrict,
       villageName,
-      surveyNumber,
+      oldSurveyNo,
+      newSurveyNo,
       dealType,
       pricePerSqYard,
       totalSqYard,
       totalSqMeter,
       jantri,
+      notes,
       deadlineStartDate,
       deadlineEndDate
     } = req.body;
 
+    const ownerId = req.user.role === 'manager' && req.user.createdByAdmin
+      ? req.user.createdByAdmin
+      : req.user._id;
+
     const [deal] = await Deal.create([{
+      district,
+      subDistrict,
       villageName,
-      surveyNumber,
+      ...(oldSurveyNo !== undefined && { oldSurveyNo }),
+      newSurveyNo,
       dealType: dealType || 'Buy',
       pricePerSqYard,
       totalSqYard,
       ...(totalSqMeter !== undefined && { totalSqMeter }),
       ...(jantri !== undefined && { jantri }),
+      ...(notes !== undefined && { notes }),
       deadlineStartDate,
       deadlineEndDate,
-      createdBy: req.user._id
+      createdBy: ownerId
     }], { session });
 
     await session.commitTransaction();
@@ -77,8 +105,10 @@ const createDeal = async (req, res) => {
  */
 const getDeals = async (req, res) => {
   try {
-    const deals = await Deal.find({ createdBy: req.user._id })
-      .populate('createdBy', 'name mobileNumber')
+    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const deals = await Deal.find({ createdBy: { $in: accessibleUserIds } })
+      .select('district subDistrict villageName oldSurveyNo newSurveyNo surveyNumber dealType pricePerSqYard totalSqYard totalSqMeter jantri totalAmount notes deadlineEndDate createdAt')
+      .sort({ createdAt: -1 })
       .lean();
     res.json(deals);
   } catch (error) {
@@ -93,7 +123,8 @@ const getDeals = async (req, res) => {
  */
 const getDealById = async (req, res) => {
   try {
-    const deal = await Deal.findOne({ _id: req.params.id, createdBy: req.user._id })
+    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const deal = await Deal.findOne({ _id: req.params.id, createdBy: { $in: accessibleUserIds } })
       .populate('createdBy', 'name mobileNumber')
       .lean();
 
@@ -102,20 +133,32 @@ const getDealById = async (req, res) => {
     }
 
     // Get all payments for this deal
-    const payments = await Payment.find({ dealId: deal._id, createdBy: req.user._id })
+    const payments = await Payment.find({ dealId: deal._id, createdBy: { $in: accessibleUserIds } })
       .sort({ date: -1 })
       .populate('createdBy', 'name')
       .lean();
 
-    // Calculate total paid
-    const totalPaid = payments.reduce((sum, payment) => sum + payment.amount, 0);
+    // Calculate separate totals for white payment and total amount
+    // White payment uses the after-TDS amount for tracking
+    const whitePaid = payments
+      .filter(p => p.modeOfPayment === 'Bank')
+      .reduce((sum, payment) => sum + payment.amount, 0);
+    
+    const totalPaid = payments
+      .filter(p => p.modeOfPayment === 'Other')
+      .reduce((sum, payment) => sum + payment.amount, 0);
+    
+    // Use whitePayment (after TDS) for remaining calculation
+    const whiteRemaining = (deal.whitePayment || 0) - whitePaid;
     const remainingAmount = deal.totalAmount - totalPaid;
 
     res.json({
       deal,
       payments,
       totalPaid,
-      remainingAmount
+      remainingAmount,
+      whitePaid,
+      whiteRemaining
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -135,14 +178,18 @@ const searchDeals = async (req, res) => {
       return res.status(400).json({ message: 'Search term required' });
     }
 
+    const accessibleUserIds = await getAccessibleUserIds(req.user);
     const deals = await Deal.find({
-      createdBy: req.user._id,
+      createdBy: { $in: accessibleUserIds },
       $or: [
         { villageName: { $regex: searchTerm, $options: 'i' } },
+        { district: { $regex: searchTerm, $options: 'i' } },
+        { subDistrict: { $regex: searchTerm, $options: 'i' } },
         { surveyNumber: { $regex: searchTerm, $options: 'i' } }
       ]
     })
-      .populate('createdBy', 'name mobileNumber')
+      .select('district subDistrict villageName oldSurveyNo newSurveyNo surveyNumber dealType pricePerSqYard totalSqYard totalSqMeter jantri totalAmount notes deadlineEndDate createdAt')
+      .sort({ createdAt: -1 })
       .lean();
 
     res.json(deals);
@@ -161,7 +208,8 @@ const updateDeal = async (req, res) => {
   session.startTransaction();
   
   try {
-    const deal = await Deal.findOne({ _id: req.params.id, createdBy: req.user._id }).session(session);
+    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const deal = await Deal.findOne({ _id: req.params.id, createdBy: { $in: accessibleUserIds } }).session(session);
 
     if (!deal) {
       await session.abortTransaction();
@@ -192,7 +240,8 @@ const deleteDeal = async (req, res) => {
   session.startTransaction();
   
   try {
-    const deal = await Deal.findOne({ _id: req.params.id, createdBy: req.user._id }).session(session);
+    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const deal = await Deal.findOne({ _id: req.params.id, createdBy: { $in: accessibleUserIds } }).session(session);
 
     if (!deal) {
       await session.abortTransaction();
@@ -200,7 +249,7 @@ const deleteDeal = async (req, res) => {
     }
 
     // Delete all payments associated with this deal (within transaction)
-    await Payment.deleteMany({ dealId: deal._id }).session(session);
+    await Payment.deleteMany({ dealId: deal._id, createdBy: { $in: accessibleUserIds } }).session(session);
     
     // Delete the deal (within transaction)
     await Deal.findByIdAndDelete(deal._id).session(session);

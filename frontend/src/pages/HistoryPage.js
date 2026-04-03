@@ -5,16 +5,11 @@ import './HistoryPage.css';
 
 /* ── Mode badge colours (matching DealDetails) ── */
 const MODE_COLORS = {
-    NEFT: { bg: '#eff6ff', color: '#1d4ed8', icon: '⇄' },
-    RTGS: { bg: '#f5f3ff', color: '#6d28d9', icon: '↗' },
-    CASH: { bg: '#f0fdf4', color: '#15803d', icon: '₹' },
-    CHEQUE: { bg: '#fff7ed', color: '#c2410c', icon: '✎' },
-    UPI: { bg: '#fdf4ff', color: '#9333ea', icon: '⟳' },
-    ANGADIA: { bg: '#fef9c3', color: '#92400e', icon: '✿' },
-    OTHER: { bg: '#f8fafc', color: '#475569', icon: '•' },
+    Bank: { bg: '#dbeafe', color: '#1e40af', icon: '' },
+    Other: { bg: '#f8fafc', color: '#475569', icon: '' },
 };
 
-const MODES = ['ALL', 'NEFT', 'RTGS', 'CASH', 'CHEQUE', 'UPI', 'ANGADIA', 'OTHER'];
+const MODES = ['ALL', 'Bank', 'Other'];
 
 const formatCurrency = (amount) =>
     new Intl.NumberFormat('en-IN', {
@@ -49,20 +44,12 @@ const SkeletonList = () => (
 /* ── Single transaction card ── */
 const TransactionCard = ({ payment, onClick }) => {
     const deal = payment.dealId || {};
-    const modeStyle = MODE_COLORS[payment.modeOfPayment] || MODE_COLORS.OTHER;
-    const byName = payment.createdBy?.name || 'Unknown';
+    const modeStyle = MODE_COLORS[payment.modeOfPayment] || MODE_COLORS.Other;
+    const byName = payment.createdBy?.contactPersonName || payment.createdBy?.name || payment.createdBy?.companyName || 'Unknown';
 
     return (
         <div className="hp-card" onClick={() => onClick(deal._id)} role="button" tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && onClick(deal._id)}>
-
-            {/* Left: mode icon circle */}
-            <div
-                className="hp-card-icon"
-                style={{ background: modeStyle.bg, color: modeStyle.color }}
-            >
-                {modeStyle.icon}
-            </div>
 
             {/* Middle: deal info */}
             <div className="hp-card-body">
@@ -224,12 +211,12 @@ const HistoryPage = () => {
             <div className="hp-hero">
                 <div className="hp-hero-inner">
                     <div className="hp-hero-top">
-                        <div className="hp-hero-icon">
+                        {/* <div className="hp-hero-icon">
                             <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"
                                 strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                             </svg>
-                        </div>
+                        </div> */}
                         <div>
                             <h1 className="hp-hero-title">Transaction History</h1>
                             <p className="hp-hero-subtitle">Complete ledger of all payment records across deals</p>
