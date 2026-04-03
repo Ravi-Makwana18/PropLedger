@@ -46,7 +46,8 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
   "https://prop-ledger-opal.vercel.app",
-  process.env.FRONTEND_URL, // Add your Render frontend URL here via env var
+  "https://prop-ledger-xi.vercel.app", // <-- Add this line
+  process.env.FRONTEND_URL,
 ].filter(Boolean);
 
 app.use(cors({
