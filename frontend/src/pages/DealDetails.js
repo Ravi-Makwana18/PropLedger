@@ -373,7 +373,7 @@ const DealDetails = () => {
       yPos += 8;
 
       // Jantri and Total Sq. mtr
-      printRow('Jantri:', deal.jantri > 0 ? formatPDFCurrency(deal.jantri) : 'N/A', 'Total Area (sq. mtr):', deal.totalSqMeter > 0 ? `${deal.totalSqMeter} sq.m` : 'N/A', yPos);
+      printRow('Jantri (per sq. mtr):', deal.jantri > 0 ? formatPDFCurrency(deal.jantri) : 'N/A', 'Total Area (sq. mtr):', deal.totalSqMeter > 0 ? `${deal.totalSqMeter} sq.m` : 'N/A', yPos);
       yPos += 8;
 
       // White amount calculation with TDS from database
