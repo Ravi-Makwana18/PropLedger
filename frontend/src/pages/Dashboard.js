@@ -189,10 +189,7 @@ const Dashboard = () => {
   const formatCurrency = (amount) =>
     new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
-  };
+
 
   // ── Inline SVG icon components ──────────────────────────────────────────
   const EditIconSvg = () => (

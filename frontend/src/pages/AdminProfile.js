@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import PaymentModal from '../components/PaymentModal';
 import ImageCropModal from '../components/ImageCropModal';
 import API from '../api/axios';
@@ -8,7 +8,7 @@ import './AdminProfile.css';
 
 const AdminProfile = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
+
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // User management state
@@ -105,19 +105,7 @@ const AdminProfile = () => {
     );
   };
 
-  // Format date
-  const formatDate = (date) => {
-    if (!date) return 'Not available';
-    try {
-      return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    } catch (error) {
-      return 'Invalid date';
-    }
-  };
+
 
   // Calculate days remaining
   const getDaysRemaining = (endDate) => {
@@ -146,7 +134,7 @@ const AdminProfile = () => {
     }
   };
 
-  const subscriptionBadge = getSubscriptionBadge(user?.subscriptionPlan);
+
 
   const handleUpgrade = async () => {
     if (!selectedPlan) {
