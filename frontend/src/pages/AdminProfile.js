@@ -120,19 +120,7 @@ const AdminProfile = () => {
   const isExpiringSoon = daysRemaining !== null && daysRemaining <= 7 && daysRemaining > 0 && user?.subscriptionStatus === 'active';
   const isExpired = user?.subscriptionStatus === 'expired' || (user?.subscriptionStatus === 'active' && daysRemaining !== null && daysRemaining <= 0);
 
-  // Get subscription badge color
-  const getSubscriptionBadge = (plan) => {
-    switch(plan) {
-      case '7-day-trial':
-        return { label: '7 Day Trial', color: '#10b981', bg: '#d1fae5' };
-      case 'monthly':
-        return { label: 'Monthly Plan', color: '#f59e0b', bg: '#fef3c7' };
-      case 'yearly':
-        return { label: 'Yearly Plan', color: '#8b5cf6', bg: '#ede9fe' };
-      default:
-        return { label: 'Unknown', color: '#6b7280', bg: '#f3f4f6' };
-    }
-  };
+
 
 
 
