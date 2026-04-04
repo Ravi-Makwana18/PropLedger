@@ -132,7 +132,7 @@ const AddDeal = () => {
           {/* ── Section 1: Property Details ── */}
           <div className="ad-section">
             <div className="ad-section-header">
-              <span className="ad-section-icon">📍</span>
+              {/* <span className="ad-section-icon">📍</span> */}
               <h2 className="ad-section-title">Property Details</h2>
             </div>
             <div className="ad-grid-2">
@@ -141,7 +141,7 @@ const AddDeal = () => {
                   type="text"
                   className="ad-input"
                   name="district"
-                  placeholder="e.g. Ahmedabad"
+                  placeholder="e.g. Bhavnagar"
                   value={formData.district}
                   onChange={handleChange}
                   required
@@ -152,31 +152,33 @@ const AddDeal = () => {
                   type="text"
                   className="ad-input"
                   name="subDistrict"
-                  placeholder="e.g. Dholka"
+                  placeholder="e.g. Bhavnagar"
                   value={formData.subDistrict}
                   onChange={handleChange}
                   required
                 />
               </Field>
             </div>
+            <div className="ad-grid-2">
             <Field label="Village" required>
               <input
                 type="text"
                 className="ad-input"
                 name="villageName"
-                placeholder="e.g. Navagam"
+                placeholder="e.g. Bhangadh"
                 value={formData.villageName}
                 onChange={handleChange}
                 required
               />
             </Field>
+            </div>
             <div className="ad-grid-2">
               <Field label="Old Survey No.">
                 <input
                   type="text"
                   className="ad-input"
                   name="oldSurveyNo"
-                  placeholder="e.g. 123"
+                  placeholder="e.g. 201"
                   value={formData.oldSurveyNo}
                   onChange={handleChange}
                 />
@@ -186,7 +188,7 @@ const AddDeal = () => {
                   type="text"
                   className="ad-input"
                   name="newSurveyNo"
-                  placeholder="e.g. 123/4"
+                  placeholder="e.g. 151/A"
                   value={formData.newSurveyNo}
                   onChange={handleChange}
                   required
@@ -204,12 +206,12 @@ const AddDeal = () => {
                     onChange={handleChange}
                     required
                   >
-                    <option value="Buy">Buy</option>
+                    <option value="Buy">Purchase</option>
                     <option value="Sell">Sell</option>
                     <option value="Other">Other</option>
                   </select>
                   <span className={`ad-deal-type-badge ad-deal-type-badge--${formData.dealType.toLowerCase()}`}>
-                    {formData.dealType === 'Buy' ? 'Purchase Deal' : formData.dealType === 'Sell' ? 'Sale Deal' : 'Other Deal'}
+                    {formData.dealType === 'Buy' ? 'Purchase Deal' : formData.dealType === 'Sell' ? 'Sell Deal' : 'Other Deal'}
                   </span>
                 </div>
               </Field>
@@ -219,11 +221,11 @@ const AddDeal = () => {
           {/* ── Section 2: Pricing ── */}
           <div className="ad-section">
             <div className="ad-section-header">
-              <span className="ad-section-icon">💰</span>
+              {/* <span className="ad-section-icon">💰</span> */}
               <h2 className="ad-section-title">Pricing & Area</h2>
             </div>
             <div className="ad-grid-2">
-              <Field label="Unit Price (₹ per Sq. Yard)" required hint="Enter amount in Indian Rupees">
+              <Field label="Unit Price (₹ per sq. yard)" required hint="Enter amount in Indian Rupees">
                 <div className="ad-input-prefix-wrap">
                   <span className="ad-input-prefix">₹</span>
                   <input
@@ -239,7 +241,7 @@ const AddDeal = () => {
                   />
                 </div>
               </Field>
-              <Field label="Total Area (Sq. Yards)" required hint="Enter total land area">
+              <Field label="Total Area (sq. yds)" required hint="Enter total land area">
                 <div className="ad-input-suffix-wrap">
                   <input
                     type="number"
@@ -270,7 +272,7 @@ const AddDeal = () => {
                   <span className="ad-input-suffix">sq.m</span>
                 </div>
               </Field>
-              <Field label="Jantri (₹/sq.m)" hint="Government valuation rate">
+              <Field label="Jantri (₹ per sq.m)" hint="Government valuation rate">
                 <div className="ad-input-prefix-wrap">
                   <span className="ad-input-prefix">₹</span>
                   <input
@@ -338,7 +340,7 @@ const AddDeal = () => {
           {/* ── Section 3: Notes ── */}
           <div className="ad-section">
             <div className="ad-section-header">
-              <span className="ad-section-icon">📝</span>
+              {/* <span className="ad-section-icon">📝</span> */}
               <h2 className="ad-section-title">Notes</h2>
             </div>
             <Field label="Additional Notes" hint="Add any additional information or remarks">
@@ -357,7 +359,7 @@ const AddDeal = () => {
           {/* ── Section 4: Deadline ── */}
           <div className="ad-section">
             <div className="ad-section-header">
-              <span className="ad-section-icon">📅</span>
+              {/* <span className="ad-section-icon">📅</span> */}
               <h2 className="ad-section-title">Payment Deadlines</h2>
             </div>
             <div className="ad-grid-2">

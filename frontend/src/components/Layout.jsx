@@ -32,7 +32,16 @@ const PAGE_TITLES = {
  * @param {string} pathname - Current route pathname
  * @returns {string} Page title
  */
-const getPageTitle = (pathname) => {
+const getPageTitle = (pathname, search) => {
+  const params = new URLSearchParams(search);
+  const type = params.get('type');
+  
+  if (pathname === '/dashboard') {
+    if (type === 'Buy') return 'Purchase Deals';
+    if (type === 'Sell') return 'Sell Deals';
+    if (type === 'Other') return 'Other Deals';
+  }
+  
   if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
   if (pathname.startsWith('/deals/')) return 'Deal Details';
   return 'Dashboard';
@@ -91,7 +100,7 @@ const AdminLayout = ({ children }) => {
    */
   const handleClose = () => setMobileOpen(false);
 
-  const pageTitle = getPageTitle(location.pathname);
+  const pageTitle = getPageTitle(location.pathname, location.search);
   const sidebarCollapsedProp = !isMobile && sidebarCollapsed;
 
   // Debug logging

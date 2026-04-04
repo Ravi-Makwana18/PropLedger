@@ -32,8 +32,11 @@ const register = async (req, res) => {
       subscriptionPlan 
     } = req.body;
     
+    // Normalize email to lowercase
+    const normalizedEmail = email ? email.toLowerCase().trim() : email;
+    
     // Check if user already exists
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: normalizedEmail });
     if (userExists) {
       return res.status(400).json({ message: 'Email already registered' });
     }
@@ -102,9 +105,13 @@ const login = async (req, res) => {
     // Support both email and mobile number login for backward compatibility
     let user;
     if (email) {
-      user = await User.findOne({ email }).select('+password');
+      // Normalize email to lowercase for case-insensitive login
+      const normalizedEmail = email.toLowerCase().trim();
+      user = await User.findOne({ email: normalizedEmail }).select('+password');
     } else if (mobileNumber) {
-      user = await User.findOne({ mobileNumber }).select('+password');
+      // Normalize mobile number
+      const normalizedMobile = mobileNumber.trim();
+      user = await User.findOne({ mobileNumber: normalizedMobile }).select('+password');
     } else {
       return res.status(400).json({ message: 'Please provide email or mobile number' });
     }

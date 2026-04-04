@@ -58,7 +58,7 @@ const NAV_ITEMS = [
 const ADMIN_ITEMS = [
   {
     to: '/add-deal',
-    label: 'Add Deal',
+    label: 'Add New Deal',
     icon: (
       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="10" />
@@ -69,7 +69,7 @@ const ADMIN_ITEMS = [
   },
   {
     to: '/dashboard?type=Buy',
-    label: 'Buy Deals',
+    label: 'Purchase',
     icon: (
       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
         <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
@@ -79,7 +79,7 @@ const ADMIN_ITEMS = [
   },
   {
     to: '/dashboard?type=Sell',
-    label: 'Sell Deals',
+    label: 'Sell',
     icon: (
       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
         <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
@@ -89,7 +89,7 @@ const ADMIN_ITEMS = [
   },
   {
     to: '/dashboard?type=Other',
-    label: 'Other Deals',
+    label: 'Other',
     icon: (
       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
         <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />

@@ -435,7 +435,7 @@ const DealDetails = () => {
         head: [['Description', 'Amount']],
         body: [
           ['Total Amount', formatPDFCurrency(deal.totalAmount)],
-          ['Total Paid (Other)', formatPDFCurrency(totalPaid)],
+          ['Total Paid', formatPDFCurrency(totalPaid)],
           ['Remaining Amount', formatPDFCurrency(remainingAmount)]
         ],
         theme: 'grid',

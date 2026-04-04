@@ -158,13 +158,13 @@ const Topbar = ({ onMenuClick, pageTitle }) => {
                   </svg>
                   <span>My Profile</span>
                 </Link>
-                <Link to="/subscription-status" className="topbar-dropdown-item">
+                {/* <Link to="/subscription-status" className="topbar-dropdown-item">
                   <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                     <rect x="2" y="5" width="20" height="14" rx="2" />
                     <line x1="2" y1="10" x2="22" y2="10" />
                   </svg>
                   <span>Subscription</span>
-                </Link>
+                </Link> */}
                 <div className="topbar-dropdown-divider" />
                 <button className="topbar-dropdown-item topbar-dropdown-item--danger" onClick={openLogoutModal}>
                   <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
