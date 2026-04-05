@@ -1,3 +1,4 @@
+// ...existing code...
 /**
  * ============================================
  * PropLedger - Deal Model
@@ -16,6 +17,10 @@ const mongoose = require('mongoose');
  * Stores land deal information with automatic amount calculations
  */
 const dealSchema = new mongoose.Schema({
+    dealDate: {
+      type: Date,
+      required: false
+    },
   district: {
     type: String,
     required: [true, 'Please provide district name'],
@@ -54,6 +59,16 @@ const dealSchema = new mongoose.Schema({
     enum: ['Buy', 'Sell', 'Other'],
     required: [true, 'Please specify deal type (Buy, Sell or Other)'],
     default: 'Buy'
+  },
+  brokerName: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  naType: {
+    type: String,
+    enum: ['Residential', 'Industrial', 'Multi-purpose', ''],
+    default: ''
   },
   pricePerSqYard: {
     type: Number,

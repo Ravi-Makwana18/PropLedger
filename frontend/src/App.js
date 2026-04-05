@@ -21,7 +21,8 @@ import AddDeal from './pages/AddDeal';
 import AdminNotificationsPage from './pages/AdminNotificationsPage';
 import HistoryPage from './pages/HistoryPage';
 import AdminProfile from './pages/AdminProfile';
-import AdminPaymentsPage from './pages/AdminPaymentsPage';
+import CreateUser from './pages/CreateUser';
+import ManageUsers from './pages/ManageUsers';
 import SubscriptionExpiredPage from './pages/SubscriptionExpiredPage';
 import SubscriptionStatusPage from './pages/SubscriptionStatusPage';
 
@@ -80,11 +81,11 @@ function AppContent() {
         }
       />
       
-      {/* Add Deal (Admin Only) */}
+      {/* Add Deal (Admin + Manager) */}
       <Route
         path="/add-deal"
         element={
-          <PrivateRoute adminOnly={true}>
+          <PrivateRoute>
             <AdminLayout>
               <AddDeal />
             </AdminLayout>
@@ -92,11 +93,11 @@ function AppContent() {
         }
       />
       
-      {/* Admin Add Deal (Admin Only) */}
+      {/* Admin Add Deal (Admin + Manager) */}
       <Route
         path="/admin/add-deal"
         element={
-          <PrivateRoute adminOnly={true}>
+          <PrivateRoute>
             <AdminLayout>
               <AddDeal />
             </AdminLayout>
@@ -116,11 +117,11 @@ function AppContent() {
         }
       />
       
-      {/* Payment History (Admin Only) */}
+      {/* Payment History */}
       <Route
         path="/history"
         element={
-          <PrivateRoute adminOnly={true}>
+          <PrivateRoute>
             <AdminLayout>
               <HistoryPage />
             </AdminLayout>
@@ -139,13 +140,27 @@ function AppContent() {
           </PrivateRoute>
         }
       />
-      
-      {/* Admin Payments (Super Admin Only) */}
+
+      {/* Create User (Admin Only) */}
       <Route
-        path="/admin/payments"
+        path="/create-user"
         element={
-          <PrivateRoute superAdminOnly={true}>
-            <AdminPaymentsPage />
+          <PrivateRoute adminOnly={true}>
+            <AdminLayout>
+              <CreateUser />
+            </AdminLayout>
+          </PrivateRoute>
+        }
+      />
+
+      {/* Manage Users (Admin Only) */}
+      <Route
+        path="/manage-users"
+        element={
+          <PrivateRoute adminOnly={true}>
+            <AdminLayout>
+              <ManageUsers />
+            </AdminLayout>
           </PrivateRoute>
         }
       />

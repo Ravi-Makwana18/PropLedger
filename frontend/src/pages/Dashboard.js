@@ -62,6 +62,17 @@ const Dashboard = () => {
     fetchDeals();
   }, []);
 
+  // Close sort dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (sortOpen && !e.target.closest('.dashboard-sort-btn') && !e.target.closest('.dashboard-sort-dropdown')) {
+        setSortOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [sortOpen]);
+
   // ── Sync deal-type filter with the ?type= URL query parameter ────────────
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -232,14 +243,22 @@ const Dashboard = () => {
       filtered = filtered.filter(deal => (deal.dealType || 'Buy') === dealTypeFilter);
     }
     // Apply search term filter
-    if (searchTerm.trim()) {
-      filtered = filtered.filter(deal =>
-        deal.villageName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        deal.district?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        deal.subDistrict?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        String(deal.newSurveyNo || deal.surveyNumber || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        String(deal.oldSurveyNo || '').toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    const trimmedTerm = searchTerm.trim();
+    if (trimmedTerm) {
+      const term = trimmedTerm.toLowerCase();
+      filtered = filtered.filter(deal => {
+        const village = deal.villageName?.trim().toLowerCase() || '';
+        const district = deal.district?.trim().toLowerCase() || '';
+        const subDistrict = deal.subDistrict?.trim().toLowerCase() || '';
+        const newSurvey = String(deal.newSurveyNo || deal.surveyNumber || '').trim().toLowerCase();
+        const oldSurvey = String(deal.oldSurveyNo || '').trim().toLowerCase();
+        
+        return village.includes(term) || 
+               district.includes(term) || 
+               subDistrict.includes(term) || 
+               newSurvey.includes(term) || 
+               oldSurvey.includes(term);
+      });
     }
     return filtered;
   };
@@ -415,7 +434,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <span className={`dashboard-deal-type-badge dashboard-deal-type-badge--${(deal.dealType || 'Buy').toLowerCase()}`}>
-                  <span className="dashboard-deal-type-badge-text">{deal.dealType || 'Buy'}</span>
+                  <span className="dashboard-deal-type-badge-text">{deal.dealType === 'Buy' ? 'Purchase' : deal.dealType || 'Buy'}</span>
                 </span>
               </div>
 
@@ -562,7 +581,7 @@ const Dashboard = () => {
                         value={editFormData.dealType}
                         onChange={handleEditFormChange}
                       >
-                        <option value="Buy">Buy</option>
+                        <option value="Buy">Purchase</option>
                         <option value="Sell">Sell</option>
                         <option value="Other">Other</option>
                       </select>

@@ -10,6 +10,7 @@
 
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const mongoose = require('mongoose');
 
 /**
  * Protect Middleware
@@ -63,6 +64,18 @@ const admin = (req, res, next) => {
 };
 
 /**
+ * Admin or Manager Middleware
+ * Allows both admin and manager roles to perform deal/payment operations
+ */
+const adminOrManager = (req, res, next) => {
+  if (req.user && (req.user.role === 'admin' || req.user.role === 'manager')) {
+    next();
+  } else {
+    res.status(403).json({ message: 'Not authorized' });
+  }
+};
+
+/**
  * Super Admin Middleware
  * Ensures user has superadmin role
  */
@@ -77,25 +90,39 @@ const superadmin = (req, res, next) => {
 /**
  * Require Premium Middleware
  * Ensures user has active subscription (including active trial)
+ * For manager users, checks the admin's subscription instead of their own
  */
-const requirePremium = (req, res, next) => {
-  const user = req.user;
-  
-  // Check if subscription is active and not expired
-  const isActive =
-    user.subscriptionStatus === 'active' &&
-    user.subscriptionEndDate &&
-    new Date(user.subscriptionEndDate) > new Date();
+const requirePremium = async (req, res, next) => {
+  try {
+    const user = req.user;
+    let checkUser = user;
 
-  if (isActive) {
-    return next();
+    // Managers inherit their admin's subscription
+    if (user.role === 'manager' && user.createdByAdmin) {
+      const adminUser = await User.findById(user.createdByAdmin).select('subscriptionStatus subscriptionEndDate');
+      if (adminUser) {
+        checkUser = adminUser;
+      }
+    }
+
+    // Check if subscription is active and not expired
+    const isActive =
+      checkUser.subscriptionStatus === 'active' &&
+      checkUser.subscriptionEndDate &&
+      new Date(checkUser.subscriptionEndDate) > new Date();
+
+    if (isActive) {
+      return next();
+    }
+
+    // Return appropriate error message
+    res.status(403).json({ 
+      message: 'Premium subscription required',
+      subscriptionExpired: true
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error in premium check' });
   }
-  
-  // Return appropriate error message
-  res.status(403).json({ 
-    message: 'Premium subscription required',
-    subscriptionExpired: true
-  });
 };
 
-module.exports = { protect, admin, superadmin, requirePremium };
+module.exports = { protect, admin, adminOrManager, superadmin, requirePremium };

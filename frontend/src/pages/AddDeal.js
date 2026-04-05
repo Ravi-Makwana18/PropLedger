@@ -24,6 +24,8 @@ const Field = ({ label, required, children, hint }) => (
 const AddDeal = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    brokerName: '',
+    naType: '',
     district: '',
     subDistrict: '',
     villageName: '',
@@ -35,6 +37,7 @@ const AddDeal = () => {
     totalSqMeter: '',
     jantri: '',
     notes: '',
+    dealDate: '',
     deadlineStartDate: '',
     deadlineEndDate: '',
   });
@@ -52,6 +55,8 @@ const AddDeal = () => {
 
     try {
       const payload = {
+        brokerName: formData.brokerName,
+        naType: formData.naType,
         district: formData.district,
         subDistrict: formData.subDistrict,
         villageName: formData.villageName,
@@ -63,6 +68,7 @@ const AddDeal = () => {
         ...(formData.totalSqMeter !== '' && { totalSqMeter: parseFloat(formData.totalSqMeter) }),
         ...(formData.jantri !== '' && { jantri: parseFloat(formData.jantri) }),
         ...(formData.notes !== '' && { notes: formData.notes }),
+        dealDate: formData.dealDate,
         deadlineStartDate: formData.deadlineStartDate,
         deadlineEndDate: formData.deadlineEndDate,
       };
@@ -129,7 +135,24 @@ const AddDeal = () => {
 
         <form onSubmit={handleSubmit} className="ad-form" noValidate>
 
-          {/* ── Section 1: Property Details ── */}
+          {/* ── Section 1: Broker Details ── */}
+          <div className="ad-section">
+            <div className="ad-section-header">
+              <h2 className="ad-section-title">Broker Details</h2>
+            </div>
+            <Field label="Broker Name">
+              <input
+                type="text"
+                className="ad-input"
+                name="brokerName"
+                placeholder="e.g. Premji"
+                value={formData.brokerName}
+                onChange={handleChange}
+              />
+            </Field>
+          </div>
+
+          {/* ── Section 2: Property Details ── */}
           <div className="ad-section">
             <div className="ad-section-header">
               {/* <span className="ad-section-icon">📍</span> */}
@@ -170,6 +193,19 @@ const AddDeal = () => {
                 onChange={handleChange}
                 required
               />
+            </Field>
+            <Field label="NA Type">
+              <select
+                className="ad-input"
+                name="naType"
+                value={formData.naType}
+                onChange={handleChange}
+              >
+                <option value="">Select NA Type</option>
+                <option value="Residential">Residential</option>
+                <option value="Industrial">Industrial</option>
+                <option value="Multi-purpose">Multi-purpose</option>
+              </select>
             </Field>
             </div>
             <div className="ad-grid-2">
@@ -218,7 +254,7 @@ const AddDeal = () => {
             </div>
           </div>
 
-          {/* ── Section 2: Pricing ── */}
+          {/* ── Section 3: Pricing & Area ── */}
           <div className="ad-section">
             <div className="ad-section-header">
               {/* <span className="ad-section-icon">💰</span> */}
@@ -337,7 +373,7 @@ const AddDeal = () => {
             )}
           </div>
 
-          {/* ── Section 3: Notes ── */}
+          {/* ── Section 4: Notes ── */}
           <div className="ad-section">
             <div className="ad-section-header">
               {/* <span className="ad-section-icon">📝</span> */}
@@ -356,13 +392,22 @@ const AddDeal = () => {
             </Field>
           </div>
 
-          {/* ── Section 4: Deadline ── */}
+          {/* ── Section 5: Deadline ── */}
           <div className="ad-section">
             <div className="ad-section-header">
               {/* <span className="ad-section-icon">📅</span> */}
               <h2 className="ad-section-title">Payment Deadlines</h2>
             </div>
-            <div className="ad-grid-2">
+            <div className="ad-grid-3">
+              <Field label="Deal Date:">
+                <input
+                  type="date"
+                  className="ad-input"
+                  name="dealDate"
+                  value={formData.dealDate}
+                  onChange={handleChange}
+                />
+              </Field>
               <Field label="25% Deadline">
                 <input
                   type="date"

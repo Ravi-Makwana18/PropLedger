@@ -262,13 +262,53 @@
 
 .dd-stat-card {
   padding: clamp(0.75rem, 2.5vw, 1.5rem);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
   border: 1px solid;
   min-width: 0;
   overflow: hidden;
+}
+
+.dd-stat-card--total {
+  background: linear-gradient(180deg, #f0f7ff 0%, #e0effe 100%);
+  border-color: #b8d4f0;
+}
+
+.dd-stat-card--paid,
+.dd-stat-card--cleared {
+  background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+  border-color: #a7f3d0;
+}
+
+.dd-stat-card--remaining {
+  background: linear-gradient(180deg, #fef2f2 0%, #fee2e2 100%);
+  border-color: #fecaca;
+}
+
+.dd-stat-card--remaining {
+  background: linear-gradient(180deg, #fef2f2 0%, #fee2e2 100%);
+  border-color: #fecaca;
+}
+
+.dd-stat-label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #64748b;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.dd-stat-value {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  word-break: break-word;
 }
 
 .dd-stat-card--total {
@@ -279,8 +319,13 @@
 /* paid & cleared share identical styles */
 .dd-stat-card--paid,
 .dd-stat-card--cleared {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-  border-color: #6ee7b7;
+  background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+  border-color: #a7f3d0;
+}
+
+.dd-stat-card--paid-purple {
+  background: linear-gradient(180deg, #f3e8ff 0%, #ede9fe 100%);
+  border-color: #d8b4fe;
 }
 
 .dd-stat-card--remaining {
@@ -293,18 +338,31 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #374151;
+  color: #64748b;
   line-height: 1.3;
   word-break: break-word;
+}
+
+.dd-stat-card--total .dd-stat-label,
+.dd-stat-card--paid-purple .dd-stat-label {
+  color: #475569;
 }
 
 .dd-stat-value {
   font-size: var(--fs-xl);
   font-weight: 800;
-  color: #111827;
+  color: #1e293b;
   letter-spacing: -0.02em;
   line-height: 1.2;
   word-break: break-word;
+}
+
+.dd-stat-card--total .dd-stat-value {
+  color: #134070;
+}
+
+.dd-stat-card--paid-purple .dd-stat-value {
+  color: #7c3aed;
 }
 
 /* ── Progress Bar ── */
@@ -466,13 +524,27 @@
 .dd-btn--add-payment:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
 
 .dd-btn--pdf {
-  background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-mid) 100%);
+  background: #1a5490;
   color: white;
   padding: clamp(0.625rem, 2vw, 1rem) clamp(1rem, 4vw, 2rem);
   font-size: var(--fs-md);
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
 }
-.dd-btn--pdf:hover  { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3); }
+.dd-btn--pdf:hover  { 
+  background: #134070;
+  box-shadow: 0 4px 12px rgba(26, 84, 144, 0.25); 
+}
+.dd-btn--pdf:active {
+  transform: scale(0.98);
+}
 
 .dd-btn:disabled    { opacity: 0.6; cursor: not-allowed; }
 
@@ -705,7 +777,7 @@
   letter-spacing: 0.04em;
   display: inline-block;
 }
-.deal-type-badge--buy   { background: #dbeafe; color: #1e40af; }
+.deal-type-badge--buy   { background: #f3e8ff; color: #7c3aed; }
 .deal-type-badge--sell  { background: #fee2e2; color: #991b1b; }
 .deal-type-badge--other { background: #d1fae5; color: #065f46; }
 

@@ -50,6 +50,16 @@ const NAV_ITEMS = [
       </svg>
     )
   },
+  {
+    to: '/history',
+    label: 'History',
+    icon: (
+      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <polyline points="12 8 12 12 14 14" />
+        <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
+      </svg>
+    )
+  },
 ];
 
 /**
@@ -96,13 +106,33 @@ const ADMIN_ITEMS = [
       </svg>
     )
   },
+];
+
+/**
+ * User Management navigation links (Admin/SuperAdmin only)
+ */
+const USER_MANAGEMENT_ITEMS = [
   {
-    to: '/history',
-    label: 'History',
+    to: '/create-user',
+    label: 'Create User',
     icon: (
       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-        <polyline points="12 8 12 12 14 14" />
-        <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
+        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="8.5" cy="7" r="4" />
+        <line x1="20" y1="8" x2="20" y2="14" />
+        <line x1="23" y1="11" x2="17" y2="11" />
+      </svg>
+    )
+  },
+  {
+    to: '/manage-users',
+    label: 'Manage Users',
+    icon: (
+      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
     )
   },
@@ -239,6 +269,9 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
                   (item.to === '/dashboard?type=Buy' && location.pathname === '/dashboard' && new URLSearchParams(location.search).get('type') === 'Buy') ||
                   (item.to === '/dashboard?type=Sell' && location.pathname === '/dashboard' && new URLSearchParams(location.search).get('type') === 'Sell') ||
                   (item.to === '/dashboard?type=Other' && location.pathname === '/dashboard' && new URLSearchParams(location.search).get('type') === 'Other');
+                const isUserManagement = item.to === '/create-user' || item.to === '/manage-users';
+                const showUserManagement = isUserManagement && (user?.role === 'admin' || user?.role === 'superadmin');
+                if (isUserManagement && !showUserManagement) return null;
                 return (
                   <NavLink
                     key={item.to}
@@ -249,9 +282,6 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
                   >
                     <span className="sidebar-nav-icon">{item.icon}</span>
                     {!collapsed && <span className="sidebar-nav-text">{item.label}</span>}
-                    {!collapsed && item.label === 'Buy Deals' && <span className="sidebar-deal-badge sidebar-deal-badge--buy">Buy</span>}
-                    {!collapsed && item.label === 'Sell Deals' && <span className="sidebar-deal-badge sidebar-deal-badge--sell">Sell</span>}
-                    {!collapsed && item.label === 'Other Deals' && <span className="sidebar-deal-badge sidebar-deal-badge--other">Other</span>}
                   </NavLink>
                 );
               })}
@@ -263,6 +293,25 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
             <div className="sidebar-nav-section">
               {!collapsed && <span className="sidebar-nav-label">Super Admin</span>}
               {SUPERADMIN_ITEMS.map(item => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) => `sidebar-nav-item${isActive ? ' sidebar-nav-item--active' : ''}`}
+                  onClick={() => onClose && onClose()}
+                  title={collapsed ? item.label : undefined}
+                >
+                  <span className="sidebar-nav-icon">{item.icon}</span>
+                  {!collapsed && <span className="sidebar-nav-text">{item.label}</span>}
+                </NavLink>
+              ))}
+            </div>
+          )}
+
+          {/* User Management section - Admin/SuperAdmin only */}
+          {(user?.role === 'admin' || user?.role === 'superadmin') && (
+            <div className="sidebar-nav-section">
+              {!collapsed && <span className="sidebar-nav-label">User Management</span>}
+              {USER_MANAGEMENT_ITEMS.map(item => (
                 <NavLink
                   key={item.to}
                   to={item.to}

@@ -10,6 +10,20 @@
 
 const Payment = require('../models/Payment');
 const Deal = require('../models/Deal');
+const User = require('../models/User');
+
+const getAccessibleUserIds = async (user) => {
+  if (user.role === 'manager' && user.createdByAdmin) {
+    return [user._id, user.createdByAdmin];
+  }
+
+  if (user.role === 'admin' || user.role === 'superadmin') {
+    const managedUsers = await User.find({ createdByAdmin: user._id }).select('_id').lean();
+    return [user._id, ...managedUsers.map((managedUser) => managedUser._id)];
+  }
+
+  return [user._id];
+};
 
 /**
  * @desc    Add new payment to a deal
@@ -23,8 +37,12 @@ const addPayment = async (req, res) => {
   try {
     const { dealId, date, modeOfPayment, amount, remarks } = req.body;
 
-    // Verify deal exists and belongs to user (within transaction)
-    const deal = await Deal.findOne({ _id: dealId, createdBy: req.user._id }).session(session);
+    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    
+    const deal = await Deal.findOne({ 
+      _id: dealId, 
+      createdBy: { $in: accessibleUserIds } 
+    }).session(session);
     if (!deal) {
       await session.abortTransaction();
       return res.status(404).json({ message: 'Deal not found or access denied' });
@@ -59,13 +77,20 @@ const addPayment = async (req, res) => {
  */
 const getPaymentsByDeal = async (req, res) => {
   try {
-    // Verify the deal belongs to the user
-    const deal = await Deal.findOne({ _id: req.params.dealId, createdBy: req.user._id });
+    const accessibleUserIds = await getAccessibleUserIds(req.user);
+
+    const deal = await Deal.findOne({ 
+      _id: req.params.dealId, 
+      createdBy: { $in: accessibleUserIds } 
+    });
     if (!deal) {
       return res.status(404).json({ message: 'Deal not found' });
     }
 
-    const payments = await Payment.find({ dealId: req.params.dealId, createdBy: req.user._id })
+    const payments = await Payment.find({ 
+      dealId: req.params.dealId, 
+      createdBy: { $in: accessibleUserIds } 
+    })
       .sort({ date: -1 })
       .populate('createdBy', 'name')
       .lean();
@@ -85,7 +110,12 @@ const getPaymentsByDeal = async (req, res) => {
  */
 const getAllPayments = async (req, res) => {
   try {
-    const payments = await Payment.find({ createdBy: req.user._id })
+    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    
+    const accessibleDeals = await Deal.find({ createdBy: { $in: accessibleUserIds } }).select('_id').lean();
+    const dealIds = accessibleDeals.map(d => d._id);
+    
+    const payments = await Payment.find({ dealId: { $in: dealIds } })
       .sort({ date: -1 })
       .populate('dealId', 'villageName surveyNumber')
       .populate('createdBy', 'name');
@@ -108,18 +138,22 @@ const getPaymentHistory = async (req, res) => {
     const search = (req.query.search || '').trim();
     const mode = req.query.mode || '';
 
-    let filter = { createdBy: req.user._id };
+    const accessibleUserIds = await getAccessibleUserIds(req.user);
 
-    // Village name search — resolve matching deal IDs first
+    let dealFilter = { createdBy: { $in: accessibleUserIds } };
     if (search) {
-      const matchingDeals = await Deal.find({
-        createdBy: req.user._id,
-        villageName: { $regex: search, $options: 'i' }
-      }).select('_id').lean();
-      filter.dealId = { $in: matchingDeals.map(d => d._id) };
+      dealFilter.$or = [
+        { villageName: { $regex: search, $options: 'i' } },
+        { district: { $regex: search, $options: 'i' } },
+        { subDistrict: { $regex: search, $options: 'i' } }
+      ];
     }
 
-    // Mode of payment filter
+    const accessibleDeals = await Deal.find(dealFilter).select('_id').lean();
+    const dealIds = accessibleDeals.map(d => d._id);
+
+    let filter = { dealId: { $in: dealIds } };
+
     if (mode && mode !== 'ALL') {
       filter.modeOfPayment = mode;
     }
@@ -154,8 +188,10 @@ const getPaymentHistory = async (req, res) => {
  */
 const updatePayment = async (req, res) => {
   try {
+    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    
     const updatedPayment = await Payment.findOneAndUpdate(
-      { _id: req.params.id, createdBy: req.user._id },
+      { _id: req.params.id, createdBy: { $in: accessibleUserIds } },
       req.body,
       { new: true, runValidators: true, returnDocument: 'after' }
     ).populate('createdBy', 'name');
@@ -180,7 +216,9 @@ const deletePayment = async (req, res) => {
   session.startTransaction();
   
   try {
-    const payment = await Payment.findOne({ _id: req.params.id, createdBy: req.user._id }).session(session);
+    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    
+    const payment = await Payment.findOne({ _id: req.params.id, createdBy: { $in: accessibleUserIds } }).session(session);
 
     if (!payment) {
       await session.abortTransaction();

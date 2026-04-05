@@ -5759,61 +5759,63 @@ code {
 }
 
 .dd-stat-card {
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
   text-align: center;
 }
 
 .dd-stat-card--total {
-  background: #e3f0fa;
-  border: 1px solid #5ba3d0;
+  background: linear-gradient(180deg, #f0f7ff 0%, #e0effe 100%);
+  border: 1px solid #b8d4f0;
 }
 
 .dd-stat-card--paid {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 1px solid #a7f3d0;
 }
 
 .dd-stat-card--remaining {
-  background: #fef2f2;
+  background: linear-gradient(180deg, #fef2f2 0%, #fee2e2 100%);
   border: 1px solid #fecaca;
 }
 
 .dd-stat-card--cleared {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 1px solid #a7f3d0;
 }
 
 .dd-stat-label {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.7px;
+  letter-spacing: 0.6px;
+  color: #64748b;
 }
 
 .dd-stat-card--total .dd-stat-label {
-  color: #1a5490;
+  color: #475569;
 }
 
 .dd-stat-card--paid .dd-stat-label {
-  color: #16a34a;
+  color: #475569;
 }
 
 .dd-stat-card--remaining .dd-stat-label {
-  color: #dc2626;
+  color: #475569;
 }
 
 .dd-stat-card--cleared .dd-stat-label {
-  color: #16a34a;
+  color: #475569;
 }
 
 .dd-stat-value {
   font-size: 1.35rem;
   font-weight: 800;
   letter-spacing: -0.5px;
+  color: #1e293b;
 }
 
 .dd-stat-card--total .dd-stat-value {
@@ -6411,9 +6413,9 @@ code {
 }
 
 .deal-type-badge--buy {
-  background: #dcfce7;
-  color: #15803d;
-  border: 1px solid #86efac;
+  background: #f3e8ff;
+  color: #7c3aed;
+  border: 1px solid #d8b4fe;
 }
 
 .deal-type-badge--sell {

@@ -51,6 +51,8 @@ const createDeal = async (req, res) => {
     }
 
     const {
+      brokerName,
+      naType,
       district,
       subDistrict,
       villageName,
@@ -62,15 +64,16 @@ const createDeal = async (req, res) => {
       totalSqMeter,
       jantri,
       notes,
+      dealDate,
       deadlineStartDate,
       deadlineEndDate
     } = req.body;
 
-    const ownerId = req.user.role === 'manager' && req.user.createdByAdmin
-      ? req.user.createdByAdmin
-      : req.user._id;
+    const ownerId = req.user._id;
 
     const [deal] = await Deal.create([{
+      brokerName,
+      naType,
       district,
       subDistrict,
       villageName,
@@ -82,6 +85,7 @@ const createDeal = async (req, res) => {
       ...(totalSqMeter !== undefined && { totalSqMeter }),
       ...(jantri !== undefined && { jantri }),
       ...(notes !== undefined && { notes }),
+      dealDate,
       deadlineStartDate,
       deadlineEndDate,
       createdBy: ownerId
@@ -107,7 +111,7 @@ const getDeals = async (req, res) => {
   try {
     const accessibleUserIds = await getAccessibleUserIds(req.user);
     const deals = await Deal.find({ createdBy: { $in: accessibleUserIds } })
-      .select('district subDistrict villageName oldSurveyNo newSurveyNo surveyNumber dealType pricePerSqYard totalSqYard totalSqMeter jantri totalAmount notes deadlineEndDate createdAt')
+      .select('brokerName naType district subDistrict villageName oldSurveyNo newSurveyNo surveyNumber dealType pricePerSqYard totalSqYard totalSqMeter jantri totalAmount notes dealDate deadlineEndDate createdAt')
       .sort({ createdAt: -1 })
       .lean();
     res.json(deals);
@@ -133,32 +137,43 @@ const getDealById = async (req, res) => {
     }
 
     // Get all payments for this deal
-    const payments = await Payment.find({ dealId: deal._id, createdBy: { $in: accessibleUserIds } })
+    const payments = await Payment.find({ dealId: deal._id })
       .sort({ date: -1 })
       .populate('createdBy', 'name')
       .lean();
 
-    // Calculate separate totals for white payment and total amount
-    // White payment uses the after-TDS amount for tracking
-    const whitePaid = payments
-      .filter(p => p.modeOfPayment === 'Bank')
-      .reduce((sum, payment) => sum + payment.amount, 0);
-    
-    const totalPaid = payments
-      .filter(p => p.modeOfPayment === 'Other')
-      .reduce((sum, payment) => sum + payment.amount, 0);
-    
-    // Use whitePayment (after TDS) for remaining calculation
-    const whiteRemaining = (deal.whitePayment || 0) - whitePaid;
+    // Total Paid = ALL payments combined (Bank + Other)
+    const totalPaid = payments.reduce((sum, payment) => sum + payment.amount, 0);
     const remainingAmount = deal.totalAmount - totalPaid;
+
+    // Split payments by mode
+    const bankPaid = payments
+      .filter(p => p.modeOfPayment === 'Bank')
+      .reduce((sum, p) => sum + p.amount, 0);
+    const otherPaid = payments
+      .filter(p => p.modeOfPayment === 'Other')
+      .reduce((sum, p) => sum + p.amount, 0);
+
+    // Jantri Amount = Jantri Rate × Total sq. mtr (no TDS deduction)
+    const jantriAmount = (deal.jantri || 0) * (deal.totalSqMeter || 0);
+    // Other Amount = Total Amount - Jantri Amount
+    const otherAmount = deal.totalAmount - jantriAmount;
+
+    // Remaining per category
+    const jantriRemaining = jantriAmount - bankPaid;
+    const otherRemaining = otherAmount - otherPaid;
 
     res.json({
       deal,
       payments,
       totalPaid,
       remainingAmount,
-      whitePaid,
-      whiteRemaining
+      bankPaid,
+      otherPaid,
+      jantriAmount,
+      otherAmount,
+      jantriRemaining,
+      otherRemaining
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -188,7 +203,7 @@ const searchDeals = async (req, res) => {
         { surveyNumber: { $regex: searchTerm, $options: 'i' } }
       ]
     })
-      .select('district subDistrict villageName oldSurveyNo newSurveyNo surveyNumber dealType pricePerSqYard totalSqYard totalSqMeter jantri totalAmount notes deadlineEndDate createdAt')
+      .select('brokerName naType district subDistrict villageName oldSurveyNo newSurveyNo surveyNumber dealType pricePerSqYard totalSqYard totalSqMeter jantri totalAmount notes dealDate deadlineEndDate createdAt')
       .sort({ createdAt: -1 })
       .lean();
 

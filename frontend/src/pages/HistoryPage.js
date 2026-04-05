@@ -66,7 +66,7 @@ const TransactionCard = ({ payment, onClick }) => {
                                 color: (DEAL_TYPE_STYLES[deal.dealType] || DEAL_TYPE_STYLES.Other).color
                             }}
                         >
-                            {deal.dealType}
+                            {deal.dealType === 'Buy' ? 'Purchase' : deal.dealType}
                         </span>
                     )}
                     {/* amount shown on mobile inside body */}

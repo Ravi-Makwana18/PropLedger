@@ -24,7 +24,9 @@ const PAGE_TITLES = {
   '/admin/notifications': 'Notifications',
   '/history': 'Payment History',
   '/profile': 'My Profile',
-  '/subscription-status': 'Subscription Status'
+  '/subscription-status': 'Subscription Status',
+  '/create-user': 'Create User',
+  '/manage-users': 'Manage Users'
 };
 
 /**

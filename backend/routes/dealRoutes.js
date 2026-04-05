@@ -18,7 +18,7 @@ const {
   updateDeal,
   deleteDeal
 } = require('../controllers/dealController');
-const { protect, admin, requirePremium } = require('../middleware/auth');
+const { protect, admin, adminOrManager, requirePremium } = require('../middleware/auth');
 const asyncHandler = require('../middleware/asyncHandler');
 
 // ============================================
@@ -26,7 +26,7 @@ const asyncHandler = require('../middleware/asyncHandler');
 // ============================================
 router.route('/')
   .get(protect, asyncHandler(getDeals))                              // Get all deals
-  .post(protect, admin, requirePremium, asyncHandler(createDeal));   // Create deal (admin + premium)
+  .post(protect, adminOrManager, requirePremium, asyncHandler(createDeal));   // Create deal (admin/manager + premium)
 
 // ============================================
 // Search Route
@@ -38,7 +38,7 @@ router.get('/search', protect, asyncHandler(searchDeals));  // Search deals by v
 // ============================================
 router.route('/:id')
   .get(protect, asyncHandler(getDealById))                          // Get deal by ID
-  .put(protect, admin, requirePremium, asyncHandler(updateDeal))    // Update deal (admin + premium)
-  .delete(protect, admin, requirePremium, asyncHandler(deleteDeal)); // Delete deal (admin + premium)
+  .put(protect, adminOrManager, requirePremium, asyncHandler(updateDeal))    // Update deal (admin/manager + premium)
+  .delete(protect, adminOrManager, requirePremium, asyncHandler(deleteDeal)); // Delete deal (admin/manager + premium)
 
 module.exports = router;

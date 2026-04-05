@@ -18,7 +18,7 @@ const {
   updatePayment,
   deletePayment
 } = require('../controllers/paymentController');
-const { protect, admin, requirePremium } = require('../middleware/auth');
+const { protect, admin, adminOrManager, requirePremium } = require('../middleware/auth');
 const asyncHandler = require('../middleware/asyncHandler');
 
 // ============================================
@@ -38,7 +38,7 @@ router.get('/deal/:dealId', protect, asyncHandler(getPaymentsByDeal));   // Get 
 // Individual Payment Routes: /api/payments/:id
 // ============================================
 router.route('/:id')
-  .put(protect, admin, requirePremium, asyncHandler(updatePayment))    // Update payment (admin + premium)
-  .delete(protect, admin, requirePremium, asyncHandler(deletePayment)); // Delete payment (admin + premium)
+  .put(protect, adminOrManager, requirePremium, asyncHandler(updatePayment))    // Update payment (admin/manager + premium)
+  .delete(protect, adminOrManager, requirePremium, asyncHandler(deletePayment)); // Delete payment (admin/manager + premium)
 
 module.exports = router;

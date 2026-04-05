@@ -43,7 +43,7 @@ const PaymentModeBadge = ({ mode }) => {
 const DealDetails = () => {
   const { id } = useParams();
 
-  const { isAdmin, user } = useAuth();
+  const { isAdmin } = useAuth();
 
   // ── State ────────────────────────────────────────────────────────────────
   const [dealData, setDealData] = useState(null);
@@ -111,20 +111,19 @@ const DealDetails = () => {
         ...paymentForm,
         amount: parseFloat(paymentForm.amount)
       });
-      // Update local state based on payment mode
+      // Update local state — all payments count toward totalPaid
       const newAmount = parseFloat(paymentForm.amount);
-      const isBank = paymentForm.modeOfPayment === 'Bank';
+      const newMode = paymentForm.modeOfPayment;
 
       setDealData(prev => ({
         ...prev,
         payments: [newPayment, ...prev.payments],
-        ...(isBank ? {
-          whitePaid: prev.whitePaid + newAmount,
-          whiteRemaining: prev.whiteRemaining - newAmount
-        } : {
-          totalPaid: prev.totalPaid + newAmount,
-          remainingAmount: prev.remainingAmount - newAmount
-        })
+        totalPaid: prev.totalPaid + newAmount,
+        remainingAmount: prev.remainingAmount - newAmount,
+        bankPaid: newMode === 'Bank' ? (prev.bankPaid || 0) + newAmount : (prev.bankPaid || 0),
+        otherPaid: newMode === 'Other' ? (prev.otherPaid || 0) + newAmount : (prev.otherPaid || 0),
+        jantriRemaining: newMode === 'Bank' ? (prev.jantriRemaining || 0) - newAmount : (prev.jantriRemaining || 0),
+        otherRemaining: newMode === 'Other' ? (prev.otherRemaining || 0) - newAmount : (prev.otherRemaining || 0)
       }));
       setSuccess('Payment added successfully');
       setShowPaymentForm(false);
@@ -151,18 +150,17 @@ const DealDetails = () => {
         await API.delete(`/api/payments/${paymentId}`);
         const deleted = dealData.payments.find(p => p._id === paymentId);
         const deletedAmount = deleted ? deleted.amount : 0;
-        const isBank = deleted?.modeOfPayment === 'Bank';
+        const deletedMode = deleted ? deleted.modeOfPayment : null;
 
         setDealData(prev => ({
           ...prev,
           payments: prev.payments.filter(p => p._id !== paymentId),
-          ...(isBank ? {
-            whitePaid: prev.whitePaid - deletedAmount,
-            whiteRemaining: prev.whiteRemaining + deletedAmount
-          } : {
-            totalPaid: prev.totalPaid - deletedAmount,
-            remainingAmount: prev.remainingAmount + deletedAmount
-          })
+          totalPaid: prev.totalPaid - deletedAmount,
+          remainingAmount: prev.remainingAmount + deletedAmount,
+          bankPaid: deletedMode === 'Bank' ? (prev.bankPaid || 0) - deletedAmount : (prev.bankPaid || 0),
+          otherPaid: deletedMode === 'Other' ? (prev.otherPaid || 0) - deletedAmount : (prev.otherPaid || 0),
+          jantriRemaining: deletedMode === 'Bank' ? (prev.jantriRemaining || 0) + deletedAmount : (prev.jantriRemaining || 0),
+          otherRemaining: deletedMode === 'Other' ? (prev.otherRemaining || 0) + deletedAmount : (prev.otherRemaining || 0)
         }));
         setConfirmDeletePaymentId(null);
         setSuccess('Payment deleted successfully');
@@ -203,38 +201,32 @@ const DealDetails = () => {
         ...editPaymentForm,
         amount: parseFloat(editPaymentForm.amount)
       });
-      // Update local state based on old and new payment modes
+      // Update local state — all payments count toward totalPaid
       const oldPayment = dealData.payments.find(p => p._id === paymentId);
       const oldAmount = oldPayment ? oldPayment.amount : 0;
-      const oldIsBank = oldPayment?.modeOfPayment === 'Bank';
+      const oldMode = oldPayment ? oldPayment.modeOfPayment : null;
       const newAmount = updatedPayment.amount;
-      const newIsBank = updatedPayment.modeOfPayment === 'Bank';
+      const newMode = updatedPayment.modeOfPayment;
 
-      setDealData(prev => {
-        let updates = {
-          payments: prev.payments.map(p => p._id === paymentId ? updatedPayment : p)
-        };
-
-        // Revert old payment
-        if (oldIsBank) {
-          updates.whitePaid = prev.whitePaid - oldAmount;
-          updates.whiteRemaining = prev.whiteRemaining + oldAmount;
-        } else {
-          updates.totalPaid = prev.totalPaid - oldAmount;
-          updates.remainingAmount = prev.remainingAmount + oldAmount;
-        }
-
-        // Apply new payment
-        if (newIsBank) {
-          updates.whitePaid = (updates.whitePaid !== undefined ? updates.whitePaid : prev.whitePaid) + newAmount;
-          updates.whiteRemaining = (updates.whiteRemaining !== undefined ? updates.whiteRemaining : prev.whiteRemaining) - newAmount;
-        } else {
-          updates.totalPaid = (updates.totalPaid !== undefined ? updates.totalPaid : prev.totalPaid) + newAmount;
-          updates.remainingAmount = (updates.remainingAmount !== undefined ? updates.remainingAmount : prev.remainingAmount) - newAmount;
-        }
-
-        return { ...prev, ...updates };
-      });
+      setDealData(prev => ({
+        ...prev,
+        payments: prev.payments.map(p => p._id === paymentId ? updatedPayment : p),
+        totalPaid: prev.totalPaid - oldAmount + newAmount,
+        remainingAmount: prev.remainingAmount + oldAmount - newAmount,
+        // Reverse old mode contribution, apply new mode contribution
+        bankPaid: (prev.bankPaid || 0)
+          - (oldMode === 'Bank' ? oldAmount : 0)
+          + (newMode === 'Bank' ? newAmount : 0),
+        otherPaid: (prev.otherPaid || 0)
+          - (oldMode === 'Other' ? oldAmount : 0)
+          + (newMode === 'Other' ? newAmount : 0),
+        jantriRemaining: (prev.jantriRemaining || 0)
+          + (oldMode === 'Bank' ? oldAmount : 0)
+          - (newMode === 'Bank' ? newAmount : 0),
+        otherRemaining: (prev.otherRemaining || 0)
+          + (oldMode === 'Other' ? oldAmount : 0)
+          - (newMode === 'Other' ? newAmount : 0)
+      }));
 
       setSuccess('Payment updated successfully');
       setEditingPaymentId(null);
@@ -267,13 +259,7 @@ const DealDetails = () => {
   const formatDate = (date) =>
     new Date(date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
-  const formatDeadlinePeriod = (startDate, endDate) => {
-    if (!startDate || !endDate) return 'N/A';
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    if (start.getFullYear() === 1970 && end.getFullYear() === 1970) return 'N/A';
-    return `${formatDate(startDate)} – ${formatDate(endDate)}`;
-  };
+
 
   const generatePDF = () => {
     setIsGeneratingPDF(true);
@@ -310,26 +296,30 @@ const DealDetails = () => {
         const pw = doc.internal.pageSize.width;
         const ph = doc.internal.pageSize.height;
         const margin = 5;
-        
+
         doc.setDrawColor(120, 120, 120);
         doc.setLineWidth(0.6);
         doc.roundedRect(margin, margin, pw - 2 * margin, ph - 2 * margin, 2, 2);
       };
 
+      // Village name and survey number
       doc.setFontSize(20);
       doc.setTextColor(0);
       doc.setFont("helvetica", "bold");
-      doc.text(user?.companyName || 'PropLedger', pageWidth / 2, 14, { align: 'center' });
+      doc.text(`${deal.villageName} - ${'Survey No.'}${deal.newSurveyNo || deal.surveyNumber}`, pageWidth / 2, 20, { align: 'center' });
 
-      // Village name and survey number
+      // Broker Name
       doc.setFontSize(14);
-      doc.setTextColor(204, 150, 30);
-      doc.text(`${deal.villageName} - ${'Survey No.'}${deal.newSurveyNo || deal.surveyNumber}`, pageWidth / 2, 25, { align: 'center' });
+      doc.setTextColor(200, 160, 40);
+      doc.setFont("helvetica", "bold");
+      doc.text('Broker Name: ' + deal.brokerName, pageWidth / 2, 28, { align: 'center' });
+
+
 
       doc.setFontSize(14);
       doc.setTextColor(79, 70, 229);
       doc.setFont('helvetica', 'bold');
-      doc.text('Deal Details', pageWidth / 2, 40, {align : 'center'});
+      doc.text('Deal Details', pageWidth / 2, 40, { align: 'center' });
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
       let yPos = 50;
@@ -353,9 +343,31 @@ const DealDetails = () => {
       printRow('District:', deal.district || 'N/A', 'Sub-District:', deal.subDistrict || 'N/A', yPos);
       yPos += 8;
 
+      // // Broker Name (if exists)
+      // if (deal.brokerName) {
+      //   doc.setFont('helvetica', 'bold');
+      //   doc.text('Broker Name:', 14, yPos);
+      //   doc.setFont('helvetica', 'normal');
+      //   doc.text(deal.brokerName, 55, yPos);
+      //   yPos += 8;
+      // }
+
+
       // Village and deal type
       printRow('Village:', deal.villageName, 'Deal Type:', deal.dealType || 'Buy', yPos);
       yPos += 8;
+
+
+      // NA Type (if exists)
+      printRow('NA Type:', deal.naType || 'N/A', 'Deal Date:', deal.dealDate ? formatDate(deal.dealDate) : 'N/A', yPos);
+      yPos += 8;
+      // if (deal.naType) {
+      //   doc.setFont('helvetica', 'bold');
+      //   doc.text('NA Type:', 14, yPos);
+      //   doc.setFont('helvetica', 'normal');
+      //   doc.text(deal.naType, 55, yPos);
+      //   yPos += 8;
+      // }
 
       // Old Survey No. and New Survey No.
       printRow('Old Survey No.:', deal.oldSurveyNo || 'N/A', 'New Survey No.:', deal.newSurveyNo || deal.surveyNumber || 'N/A', yPos);
@@ -373,14 +385,14 @@ const DealDetails = () => {
       yPos += 8;
 
       // Jantri and Total Sq. mtr
-      printRow('Jantri (per sq. mtr):', deal.jantri > 0 ? formatPDFCurrency(deal.jantri) : 'N/A', 'Total Area (sq. mtr):', deal.totalSqMeter > 0 ? `${deal.totalSqMeter} sq.m` : 'N/A', yPos);
+      printRow('Jantri (per sq. mtr):', deal.jantri > 0 ? formatPDFCurrency(deal.jantri) : 'N/A', 'Total Area (sq. mtr):', deal.totalSqMeter > 0 ? formatNumber(deal.totalSqMeter) : 'N/A', yPos);
       yPos += 8;
 
       // White amount calculation with TDS from database
       if (deal.tdsAmount > 0) {
         // Show white payment before TDS
         doc.setFont('helvetica', 'bold');
-        doc.text('Bank Amount (Before):', 14, yPos);
+        doc.text('JR Amount (Before):', 14, yPos);
         doc.setFont('helvetica', 'normal');
         doc.text(formatPDFCurrency(deal.whitePaymentBeforeTDS || 0), 55, yPos);
         yPos += 8;
@@ -394,14 +406,14 @@ const DealDetails = () => {
 
         // Show white payment after TDS
         doc.setFont('helvetica', 'bold');
-        doc.text('Bank Amount (After):', 14, yPos);
+        doc.text('JR Amount (After):', 14, yPos);
         doc.setFont('helvetica', 'normal');
         doc.text(formatPDFCurrency(deal.whitePayment || 0), 55, yPos);
         yPos += 8;
       } else {
         // Show white amount (no TDS)
         doc.setFont('helvetica', 'bold');
-        doc.text('Bank Amount:', 14, yPos);
+        doc.text('JR Amount:', 14, yPos);
         doc.setFont('helvetica', 'normal');
         doc.text(deal.whitePayment > 0 ? formatPDFCurrency(deal.whitePayment) : 'N/A', 55, yPos);
         yPos += 8;
@@ -411,67 +423,88 @@ const DealDetails = () => {
       const amount75 = deal.totalAmount * 0.75;
       printRow('25% Amount:', formatPDFCurrency(amount25), '75% Amount:', formatPDFCurrency(amount75), yPos);
       yPos += 8;
-      
+
       // 25% Deadline and 75% Deadline
       printRow('25% Deadline:', deal.deadlineStartDate ? formatDate(deal.deadlineStartDate) : 'N/A', '75% Deadline:', deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : 'N/A', yPos);
       yPos += 8;
 
-      yPos += 10;
+      yPos += 8;
       doc.setFontSize(14);
       doc.setTextColor(79, 70, 229);
       doc.setFont('helvetica', 'bold');
-      doc.text('Payment Summary', pageWidth / 2, yPos, {align: 'center'});
-      yPos += 10;
+      doc.text('Payment Summary', pageWidth / 2, yPos, { align: 'center' });
+      yPos += 3;
 
       // Total Amount Summary Table
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
       doc.setFont('helvetica', 'normal');
-      doc.text('Total Amount Summary:', 14, yPos);
-      yPos += 5;
+      // doc.text('Total Amount Summary:', 14, yPos);
+      yPos += 2;
 
+      const { bankPaid: bPaid, otherPaid: oPaid, jantriRemaining: jRem, otherRemaining: oRem } = dealData;
       autoTable(doc, {
         startY: yPos,
-        head: [['Description', 'Amount']],
+        head: [['Description', 'Total Amount', 'JR Amount', 'Other Amount']],
         body: [
-          ['Total Amount', formatPDFCurrency(deal.totalAmount)],
-          ['Total Paid', formatPDFCurrency(totalPaid)],
-          ['Remaining Amount', formatPDFCurrency(remainingAmount)]
+          ['Target Amount', formatPDFCurrency(deal.totalAmount), formatPDFCurrency(jantriAmount || 0), formatPDFCurrency(otherAmount || 0)],
+          ['Total Paid', formatPDFCurrency(totalPaid), formatPDFCurrency(bPaid || 0), formatPDFCurrency(oPaid || 0)],
+          ['Remaining', formatPDFCurrency(remainingAmount), formatPDFCurrency(jRem), formatPDFCurrency(oRem)]
         ],
         theme: 'grid',
         headStyles: { fillColor: [79, 70, 229], textColor: 255 },
         margin: { left: 14, right: 14 },
         tableWidth: 'auto',
         columnStyles: {
-          0: { cellWidth: 60 },
-          1: { cellWidth: 60 }
+          0: { cellWidth: 50 },
+          1: { cellWidth: 42 },
+          2: { cellWidth: 42 },
+          3: { cellWidth: 42 }
+        },
+        didParseCell: (data) => {
+          // Highlight the Remaining row (index 2) in yellow
+          if (data.section === 'body' && data.row.index === 2) {
+            data.cell.styles.fillColor = [255, 240, 100];
+            data.cell.styles.textColor = [60, 40, 0];
+            data.cell.styles.fontStyle = 'bold';
+          }
         }
       });
 
-      // White Payment Summary Table
-      yPos = doc.lastAutoTable.finalY + 10;
-      doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0);
-      doc.text('Bank Payment Summary:', 14, yPos);
-      yPos += 5;
+      // Notes section — below payment summary
+      if (deal.notes) {
+        const notesStartY = doc.lastAutoTable.finalY + 12;
+        const notesX = 14;
+        const notesWidth = pageWidth - 28;
 
-      autoTable(doc, {
-        startY: yPos,
-        head: [['Description', 'Amount']],
-        body: [
-          ['Bank Payment', formatPDFCurrency(deal.whitePayment || 0)],
-          ['Bank Paid', formatPDFCurrency(whitePaid || 0)],
-          ['Bank Remaining', formatPDFCurrency(whiteRemaining || 0)]
-        ],
-        theme: 'grid',
-        headStyles: { fillColor: [16, 185, 129], textColor: 255 },
-        margin: { left: 14, right: 14 },
-        tableWidth: 'auto',
-        columnStyles: {
-          0: { cellWidth: 60 },
-          1: { cellWidth: 60 }
-        }
-      });
+        // Label
+        doc.setFontSize(11);
+        doc.setTextColor(0);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Notes:', notesX, notesStartY);
+
+        // Box
+        const noteLines = doc.splitTextToSize(deal.notes, notesWidth - 8);
+        const lineHeight = 6;
+        const boxHeight = noteLines.length * lineHeight + 10;
+        doc.setDrawColor(200, 200, 200);
+        doc.setFillColor(250, 250, 245);
+        doc.roundedRect(notesX, notesStartY + 4, notesWidth, boxHeight, 2, 2, 'FD');
+
+        // Text inside box
+        doc.setFontSize(10);
+        doc.setTextColor(50, 50, 50);
+        doc.setFont('helvetica', 'normal');
+        doc.text(noteLines, notesX + 4, notesStartY + 4 + lineHeight);
+      }
+
+      // // Jantri / Other Amount Summary Table
+      // yPos = doc.lastAutoTable.finalY + 10;
+      // doc.setFontSize(12);
+      // doc.setTextColor(0, 0, 0);
+      // doc.text('Amount Breakdown:', 14, yPos);
+      // yPos += 5;
+
 
       if (payments && payments.length > 0) {
         // Start payment history on a new page
@@ -481,35 +514,53 @@ const DealDetails = () => {
         doc.setFontSize(14);
         doc.setTextColor(79, 70, 229);
         doc.setFont('helvetica', 'bold');
-        doc.text('Payment History', pageWidth / 2, yPos, {align: 'center'});
+        doc.text('Payment History', pageWidth / 2, yPos, { align: 'center' });
         yPos += 5;
 
-        const paymentRows = payments.map(payment => [
-          formatDate(payment.date),
-          payment.modeOfPayment,
-          formatPDFCurrency(payment.amount),
-          payment.remarks || '-'
+        const formatShortDate = (date) => {
+          const d = new Date(date);
+          const dd = String(d.getDate()).padStart(2, '0');
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const yyyy = d.getFullYear();
+          return `${dd}/${mm}/${yyyy}`;
+        };
+
+        const paymentRows = payments.map((payment, index) => [
+          index + 1,
+          formatShortDate(payment.date),
+          payment.modeOfPayment === 'Bank' ? formatPDFCurrency(payment.amount) : ' ',
+          payment.modeOfPayment === 'Other' ? formatPDFCurrency(payment.amount) : ' ',
+          payment.remarks || ' '
         ]);
 
         autoTable(doc, {
           startY: yPos,
-          head: [['Date', 'Mode', 'Amount', 'Remarks']],
+          head: [['Sr.', 'Date', 'Bank', 'Other', 'Remarks']],
           body: paymentRows,
           theme: 'grid',
           headStyles: { fillColor: [79, 70, 229], textColor: 255 },
-          margin: { left: 14, right: 14 }
+          margin: { left: 14, right: 14 },
+          tableWidth: 182,
+          columnStyles: {
+            0: { cellWidth: 10, halign: 'center' },
+            1: { cellWidth: 28 },
+            2: { cellWidth: 40, halign: 'right' },
+            3: { cellWidth: 40, halign: 'right' },
+            4: { cellWidth: 64, overflow: 'linebreak' }
+          },
+          styles: { overflow: 'linebreak', cellPadding: 3, fontSize: 9 }
         });
 
-        // Show totals for both Bank and Other payments
+        // Show totals
         autoTable(doc, {
           startY: doc.lastAutoTable.finalY + 10,
           body: [
-            ['Total Amount Paid:', '', formatPDFCurrency(totalPaid), ''],
-            ['Total Amount Paid (Bank):', '', formatPDFCurrency(whitePaid || 0), '']
+            ['PAID AMOUNT', '', formatPDFCurrency(totalPaid), ''],
+            ['PENDING AMOUNT', '', formatPDFCurrency(remainingAmount), '']
           ],
           theme: 'plain',
-          styles: { fontStyle: 'bold', fillColor: [209, 250, 229] },
-          margin: { left: 24, right: 24 }
+          styles: { fontStyle: 'bold', fillColor: [210, 250, 230] },
+          margin: { left: 30, right: 30 }
         });
       }
 
@@ -545,8 +596,8 @@ const DealDetails = () => {
       setIsGeneratingPDF(false);
     }, 800);
   };
-  
-  
+
+
 
   /* ── Loading / Error States ── */
   if (loading) {
@@ -617,10 +668,8 @@ const DealDetails = () => {
     );
   }
 
-  const { deal, payments, totalPaid, remainingAmount, whitePaid, whiteRemaining } = dealData;
+  const { deal, payments, totalPaid, remainingAmount, bankPaid, otherPaid, jantriAmount, otherAmount, jantriRemaining, otherRemaining } = dealData;
   const paidPercent = deal.totalAmount > 0 ? Math.min(100, (totalPaid / deal.totalAmount) * 100) : 0;
-  // Use whitePayment (after TDS) for progress calculation
-  const whitePaidPercent = (deal.whitePayment || 0) > 0 ? Math.min(100, (whitePaid / (deal.whitePayment || 1)) * 100) : 0;
   const banakhatAmount = deal.banakhatAmount || deal.totalAmount * 0.25;
 
   return (
@@ -652,16 +701,24 @@ const DealDetails = () => {
           </div>
           <div className="dd-section-content">
             <div className="dd-info-grid">
+              {deal.brokerName && (
+                <InfoPill label="Broker Name" value={deal.brokerName} />
+              )}
               <InfoPill label="Deal Type" value={
                 <span className={`deal-type-badge deal-type-badge--${(deal.dealType || 'Buy').toLowerCase()}`}>
                   {deal.dealType || 'Buy'}
                 </span>
               } />
+              {deal.naType && (
+                <InfoPill label="NA Type" value={deal.naType} />
+              )}
+              <InfoPill label="Deal Date" value={deal.dealDate ? formatDate(deal.dealDate) : 'N/A'} />
               <InfoPill label="Unit Price" value={formatCurrency(deal.pricePerSqYard)} />
               <InfoPill label="Total Area" value={`${deal.totalSqYard.toLocaleString('en-IN')}`} />
-              <InfoPill label="Banakhat Amount (25%)" value={formatCurrency(banakhatAmount)} accent />
+              <InfoPill label="25% Amount" value={formatCurrency(banakhatAmount)} accent />
               <InfoPill label="75% Amount" value={formatCurrency(deal.totalAmount * 0.75)} accent />
-              <InfoPill label="Timeline" value={formatDeadlinePeriod(deal.deadlineStartDate, deal.deadlineEndDate)} />
+              <InfoPill label="25% Deadline" value={deal.deadlineStartDate ? formatDate(deal.deadlineStartDate) : 'N/A'} />
+              <InfoPill label="75% Deadline" value={deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : 'N/A'} />
             </div>
           </div>
         </div>
@@ -676,60 +733,64 @@ const DealDetails = () => {
           </div>
           <div className="dd-section-content">
 
-            <div className="dd-stat-grid">
-              <StatCard label="Bank Amount" value={formatCurrency(deal.whitePaymentBeforeTDS || deal.whitePayment || 0)} variant="total" />
-              <StatCard label="Bank Paid" value={formatCurrency(whitePaid || 0)} variant="paid" />
-              <StatCard
-                label="Bank Remaining"
-                value={formatCurrency(whiteRemaining || 0)}
-                variant={whiteRemaining > 0 ? 'remaining' : 'cleared'}
-              />
-            </div>
 
-            {/* TDS Note */}
-            {deal.tdsAmount > 0 && (
-              <div style={{
-                background: '#fef3c7',
-                padding: '0.75rem 1rem',
-                borderRadius: '8px',
-                marginTop: '1rem',
-                fontSize: '0.875rem',
-                color: '#92400e',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}>
-                <span style={{ fontSize: '1rem' }}>ℹ️</span>
-                <span>
-                  <strong>Note:</strong> 1% TDS ({formatCurrency(deal.tdsAmount)}) has been deducted from the original white payment of {formatCurrency(deal.whitePaymentBeforeTDS)}.
-                  Final Bank payment: {formatCurrency(deal.whitePayment)}
-                </span>
-              </div>
-            )}
 
-            {/* White Payment Progress bar */}
-            <div className="dd-progress-wrap">
-              <div className="dd-progress-bar-bg">
-                <div
-                  className="dd-progress-bar-fill"
-                  style={{ width: `${whitePaidPercent}%` }}
-                />
-              </div>
-              <span className="dd-progress-label">
-                {whitePaidPercent.toFixed(1)}% paid (Bank Payment)
-                {whiteRemaining <= 0 && <span className="dd-cleared-badge">✔ Cleared</span>}
-              </span>
-            </div>
-
+            {/* Row 2: Payment Status (overall) */}
             <div className="dd-stat-grid" style={{ marginTop: '1.5rem' }}>
               <StatCard label="Total Amount" value={formatCurrency(deal.totalAmount)} variant="total" />
               <StatCard label="Total Paid" value={formatCurrency(totalPaid)} variant="paid" />
               <StatCard
-                label="Remaining Amount"
+                label="Total Remaining"
                 value={formatCurrency(remainingAmount)}
                 variant={remainingAmount > 0 ? 'remaining' : 'cleared'}
               />
             </div>
+
+            {/* Jantri calculation note */}
+            {(deal.jantri > 0 && deal.totalSqMeter > 0) && (
+              <div style={{
+                background: '#eff6ff',
+                padding: '0.65rem 1rem',
+                borderRadius: '8px',
+                marginTop: '1rem',
+                fontSize: '0.8rem',
+                color: '#1e40af',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                <span style={{ fontSize: '0.95rem' }}>ℹ️</span>
+                <span>
+                  <strong>Jantri Amount</strong> = {formatCurrency(deal.jantri)} × {deal.totalSqMeter.toLocaleString('en-IN')}  sq.mtr = {formatCurrency(jantriAmount || 0)}
+                </span>
+              </div>
+            )}
+            {/* Row 3: Per-mode breakdown (Bank → Jantri | Other → Other) */}
+            {(jantriAmount > 0 || otherAmount > 0) && (
+              <>
+                <div style={{ marginTop: '1.25rem', marginBottom: '0.5rem', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted, #6b7280)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                  Mode-wise Tracking
+                </div>
+                <div className="dd-stat-grid">
+                  <StatCard label="Jantri Amount" value={formatCurrency(jantriAmount || 0)} variant="total" />
+                  <StatCard label="Jantri Paid" value={formatCurrency(bankPaid || 0)} variant="paid" />
+                  <StatCard
+                    label="Jantri Remaining"
+                    value={formatCurrency(jantriRemaining)}
+                    variant={jantriRemaining > 0 ? 'remaining' : 'cleared'}
+                  />
+                </div>
+                <div className="dd-stat-grid" style={{ marginTop: '0.75rem' }}>
+                  <StatCard label="Other Amount" value={formatCurrency(otherAmount || 0)} variant="total" />
+                  <StatCard label="Other Paid" value={formatCurrency(otherPaid || 0)} variant="paid" />
+                  <StatCard
+                    label="Other Remaining"
+                    value={formatCurrency(otherRemaining)}
+                    variant={otherRemaining > 0 ? 'remaining' : 'cleared'}
+                  />
+                </div>
+              </>
+            )}
 
             {/* Total Amount Progress bar */}
             <div className="dd-progress-wrap">
@@ -740,7 +801,7 @@ const DealDetails = () => {
                 />
               </div>
               <span className="dd-progress-label">
-                {paidPercent.toFixed(1)}% paid (Total Amount)
+                {paidPercent.toFixed(1)}% paid
                 {remainingAmount <= 0 && <span className="dd-cleared-badge">✔ Cleared</span>}
               </span>
             </div>
@@ -934,13 +995,13 @@ const DealDetails = () => {
                 {/* Total Summary Cards */}
                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '0.5rem', flexWrap: 'wrap' }}>
                   <div className="dd-payment-total-card" style={{ background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', borderColor: '#93c5fd', margin: 0 }}>
-                    <div className="dd-payment-total-label" style={{ color: '#1e40af' }}>Bank Paid</div>
-                    <div className="dd-payment-total-amount" style={{ color: '#1e40af' }}>{formatCurrency(whitePaid || 0)}</div>
+                    <div className="dd-payment-total-label" style={{ color: '#1e40af' }}>Total Paid</div>
+                    <div className="dd-payment-total-amount" style={{ color: '#1e40af' }}>{formatCurrency(totalPaid)}</div>
                   </div>
 
-                  <div className="dd-payment-total-card" style={{ margin: 0 }}>
-                    <div className="dd-payment-total-label">Total Paid</div>
-                    <div className="dd-payment-total-amount">{formatCurrency(totalPaid)}</div>
+                  <div className="dd-payment-total-card" style={{ margin: 0, background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', borderColor: '#fbbf24' }}>
+                    <div className="dd-payment-total-label" style={{ color: '#92400e' }}>Total Remaining</div>
+                    <div className="dd-payment-total-amount" style={{ color: '#92400e' }}>{formatCurrency(remainingAmount)}</div>
                   </div>
                 </div>
               </div>
