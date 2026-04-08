@@ -4,13 +4,14 @@
  * ============================================
  * Top navigation bar with user menu and page title
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AppButton from './ui/AppButton';
 
 /**
  * Topbar Component
@@ -166,14 +167,14 @@ const Topbar = ({ onMenuClick, pageTitle }) => {
                   <span>Subscription</span>
                 </Link> */}
                 <div className="topbar-dropdown-divider" />
-                <button className="topbar-dropdown-item topbar-dropdown-item--danger" onClick={openLogoutModal}>
+                <AppButton className="topbar-dropdown-item topbar-dropdown-item--danger" onClick={openLogoutModal}>
                   <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                     <polyline points="16 17 21 12 16 7" />
                     <line x1="21" y1="12" x2="9" y2="12" />
                   </svg>
                   <span>Sign Out</span>
-                </button>
+                </AppButton>
               </div>
             )}
           </div>
@@ -194,10 +195,10 @@ const Topbar = ({ onMenuClick, pageTitle }) => {
             <h3 className="logout-modal-title">Sign Out?</h3>
             <p className="logout-modal-desc">Are you sure you want to sign out of your account?</p>
             <div className="logout-modal-actions">
-              <button className="logout-modal-btn logout-modal-btn--cancel" onClick={() => setShowLogoutModal(false)} disabled={isLoggingOut}>Cancel</button>
-              <button className="logout-modal-btn logout-modal-btn--confirm" onClick={handleLogout} disabled={isLoggingOut}>
+              <AppButton className="logout-modal-btn logout-modal-btn--cancel" onClick={() => setShowLogoutModal(false)} disabled={isLoggingOut}>Cancel</AppButton>
+              <AppButton className="logout-modal-btn logout-modal-btn--confirm" onClick={handleLogout} disabled={isLoggingOut}>
                 {isLoggingOut ? <><span className="modal-spinner" /> Signing out…</> : 'Yes, Sign Out'}
-              </button>
+              </AppButton>
             </div>
           </div>
         </div>

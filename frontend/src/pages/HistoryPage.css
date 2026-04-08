@@ -61,7 +61,7 @@
 }
 
 .hp-hero-title {
-    font-size: 2rem;
+    font-size: var(--type-display-lg);
     font-weight: 800;
     color: #fff;
     letter-spacing: -0.02em;
@@ -70,7 +70,7 @@
 }
 
 .hp-hero-subtitle {
-    font-size: 1rem;
+    font-size: var(--type-body-lg);
     color: rgba(255, 255, 255, 0.95);
     margin: 0.2rem 0 0;
 }
@@ -124,13 +124,13 @@
 .hp-filters {
     background: #fff;
     border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
     padding: 1.25rem 1.5rem;
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
     align-items: center;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e9eff5;
 }
 
 .hp-search-wrap {
@@ -150,8 +150,9 @@
 
 .hp-search-input {
     width: 100%;
+    min-height: 46px;
     padding: 0.75rem 0.9rem 0.75rem 2.5rem;
-    border: 1.5px solid #e2e8f0;
+    border: 1.5px solid #dbe4ee;
     border-radius: 10px;
     font-size: 0.9375rem;
     color: #1e293b;
@@ -167,8 +168,9 @@
 }
 
 .hp-select {
+    min-height: 46px;
     padding: 0.75rem 2.5rem 0.75rem 1rem;
-    border: 1.5px solid #e2e8f0;
+    border: 1.5px solid #dbe4ee;
     border-radius: 10px;
     font-size: 0.9375rem;
     color: #1e293b;
@@ -207,7 +209,7 @@
 .hp-card {
     background: #fff;
     border-radius: 16px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e9eff5;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     padding: 1.25rem 1.5rem;
     cursor: pointer;

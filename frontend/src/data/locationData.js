@@ -4,7 +4,7 @@
  * ============================================
  * Comprehensive list of countries, states, and cities
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 

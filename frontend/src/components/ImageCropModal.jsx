@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import Cropper from 'react-easy-crop';
+import AppButton from './ui/AppButton';
 import './ImageCropModal.css';
 
 const ImageCropModal = ({ image, onCropComplete, onCancel }) => {
@@ -127,10 +128,10 @@ const ImageCropModal = ({ image, onCropComplete, onCancel }) => {
         </div>
 
         <div className="crop-modal-footer">
-          <button className="crop-btn crop-btn--cancel" onClick={onCancel} disabled={isCropping}>
+          <AppButton className="crop-btn crop-btn--cancel" onClick={onCancel} disabled={isCropping}>
             Cancel
-          </button>
-          <button className="crop-btn crop-btn--crop" onClick={handleCrop} disabled={isCropping}>
+          </AppButton>
+          <AppButton className="crop-btn crop-btn--crop" onClick={handleCrop} disabled={isCropping}>
             {isCropping ? (
               <>
                 <span className="crop-spinner" />
@@ -144,7 +145,7 @@ const ImageCropModal = ({ image, onCropComplete, onCancel }) => {
                 Apply Crop
               </>
             )}
-          </button>
+          </AppButton>
         </div>
       </div>
     </div>

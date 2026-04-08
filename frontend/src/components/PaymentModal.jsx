@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import API from '../api/axios';
 import PAYMENT_CONFIG from '../config/paymentConfig';
 import { useAuth } from '../context/AuthContext';
+import AppInput from './ui/AppInput';
+import AppButton from './ui/AppButton';
 
 const PaymentModal = ({ isOpen, onClose, selectedPlan, onSuccess }) => {
   useAuth();
@@ -85,7 +87,7 @@ const PaymentModal = ({ isOpen, onClose, selectedPlan, onSuccess }) => {
         {step === 1 && (
           <>
             <div className="payment-modal-header">
-              <div className="payment-modal-icon" style={{ background: '#ede9fe' }}>
+              <div className="payment-modal-icon payment-modal-icon--qr">
                 <svg width="28" height="28" fill="#8b5cf6" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2v1h1V5h-1z" clipRule="evenodd" />
                   <path d="M11 4a1 1 0 10-2 0v1a1 1 0 002 0V4zM10 7a1 1 0 011 1v1h2a1 1 0 110 2h-3a1 1 0 01-1-1V8a1 1 0 011-1zM16 9a1 1 0 100 2 1 1 0 000-2zM9 13a1 1 0 011-1h1a1 1 0 110 2v2a1 1 0 11-2 0v-3zM7 11a1 1 0 100-2H4a1 1 0 100 2h3zM17 13a1 1 0 01-1 1h-2a1 1 0 110-2h2a1 1 0 011 1zM16 17a1 1 0 100-2h-3a1 1 0 100 2h3z" />
@@ -102,22 +104,22 @@ const PaymentModal = ({ isOpen, onClose, selectedPlan, onSuccess }) => {
               </div>
               <div className="payment-plan-row payment-plan-total">
                 <span>Amount to Pay</span>
-                <strong style={{ fontSize: '1.5rem', color: '#8b5cf6' }}>₹{currentPlan?.amount}</strong>
+                <strong className="payment-plan-amount">₹{currentPlan?.amount}</strong>
               </div>
             </div>
 
-            <div style={{ textAlign: 'center', margin: '1.5rem 0' }}>
-              <img src="/upi-qr-code.png" alt="UPI QR Code" style={{ maxWidth: '250px', border: '2px solid #e5e7eb', borderRadius: '12px' }} />
-              <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#f3f4f6', borderRadius: '8px' }}>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Pay to UPI ID</div>
-                <div style={{ fontSize: '1rem', fontWeight: '600', color: '#111827' }}>{upiId}</div>
+            <div className="payment-qr-wrap">
+              <img src="/upi-qr-code.png" alt="UPI QR Code" className="payment-qr-image" />
+              <div className="payment-upi-box">
+                <div className="payment-upi-label">Pay to UPI ID</div>
+                <div className="payment-upi-id">{upiId}</div>
               </div>
             </div>
 
-            <div style={{ background: '#fef3c7', padding: '1rem', borderRadius: '8px', marginBottom: '1rem' }}>
-              <div style={{ fontSize: '0.875rem', color: '#92400e' }}>
+            <div className="payment-note-card">
+              <div className="payment-note-text">
                 <strong>📱 Steps:</strong>
-                <ol style={{ margin: '0.5rem 0 0 1.25rem', paddingLeft: 0 }}>
+                <ol className="payment-note-list">
                   <li>Open any UPI app (PhonePe, GPay, Paytm, etc.)</li>
                   <li>Scan the QR code above</li>
                   <li>Pay ₹{currentPlan?.amount}</li>
@@ -127,16 +129,15 @@ const PaymentModal = ({ isOpen, onClose, selectedPlan, onSuccess }) => {
             </div>
 
             <div className="payment-modal-actions">
-              <button className="payment-modal-btn payment-modal-btn--cancel" onClick={onClose}>
+              <AppButton className="payment-modal-btn payment-modal-btn--cancel" onClick={onClose}>
                 Cancel
-              </button>
-              <button
+              </AppButton>
+              <AppButton
                 className="payment-modal-btn payment-modal-btn--confirm"
                 onClick={() => setStep(2)}
-                style={{ background: '#8b5cf6' }}
               >
                 Next
-              </button>
+              </AppButton>
             </div>
           </>
         )}
@@ -144,7 +145,7 @@ const PaymentModal = ({ isOpen, onClose, selectedPlan, onSuccess }) => {
         {step === 2 && (
           <>
             <div className="payment-modal-header">
-              <div className="payment-modal-icon" style={{ background: '#dbeafe' }}>
+              <div className="payment-modal-icon payment-modal-icon--upload">
                 <svg width="28" height="28" fill="#2563eb" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                 </svg>
@@ -154,52 +155,51 @@ const PaymentModal = ({ isOpen, onClose, selectedPlan, onSuccess }) => {
             </div>
 
             {error && (
-              <div style={{ background: '#fee2e2', color: '#dc2626', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.875rem' }}>
+              <div className="payment-error-banner">
                 {error}
               </div>
             )}
 
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                UPI Transaction ID <span style={{ color: '#dc2626' }}>*</span>
+            <div className="payment-field-group">
+              <label className="payment-field-label">
+                UPI Transaction ID <span className="payment-required">*</span>
               </label>
-              <input
+              <AppInput
+                className="payment-form-input"
                 type="text"
                 placeholder="e.g., 123456789012"
                 value={upiTransactionId}
                 onChange={(e) => setUpiTransactionId(e.target.value)}
-                style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '0.875rem' }}
               />
-              <small style={{ color: '#6b7280', fontSize: '0.75rem' }}>Enter the 12-digit transaction ID from your UPI app</small>
+              <small className="payment-field-help">Enter the 12-digit transaction ID from your UPI app</small>
             </div>
 
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
+            <div className="payment-field-group">
+              <label className="payment-field-label">
                 Payment Screenshot (Optional)
               </label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleFileUpload}
-                style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '0.875rem' }}
+                className="app-input payment-file-input"
               />
               {screenshot && (
-                <img src={screenshot} alt="Preview" style={{ marginTop: '0.5rem', maxWidth: '200px', borderRadius: '8px', border: '1px solid #e5e7eb' }} />
+                <img src={screenshot} alt="Preview" className="payment-screenshot-preview" />
               )}
             </div>
 
             <div className="payment-modal-actions">
-              <button className="payment-modal-btn payment-modal-btn--cancel" onClick={() => setStep(1)} disabled={loading}>
+              <AppButton className="payment-modal-btn payment-modal-btn--cancel" onClick={() => setStep(1)} disabled={loading}>
                 Back
-              </button>
-              <button
-                className="payment-modal-btn payment-modal-btn--confirm"
+              </AppButton>
+              <AppButton
+                className="payment-modal-btn payment-modal-btn--confirm payment-modal-btn--success"
                 onClick={handleSubmitPayment}
                 disabled={loading}
-                style={{ background: '#10b981' }}
               >
                 {loading ? <><span className="modal-spinner" /> Submitting...</> : 'Submit for Approval'}
-              </button>
+              </AppButton>
             </div>
           </>
         )}
@@ -207,7 +207,7 @@ const PaymentModal = ({ isOpen, onClose, selectedPlan, onSuccess }) => {
         {step === 3 && (
           <>
             <div className="payment-modal-header">
-              <div className="payment-modal-icon" style={{ background: '#d1fae5' }}>
+              <div className="payment-modal-icon payment-modal-icon--success">
                 <svg width="28" height="28" fill="#10b981" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
@@ -216,10 +216,10 @@ const PaymentModal = ({ isOpen, onClose, selectedPlan, onSuccess }) => {
               <p className="payment-modal-desc">Waiting for admin approval</p>
             </div>
 
-            <div style={{ background: '#fef3c7', padding: '1rem', borderRadius: '8px', marginBottom: '1rem' }}>
-              <div style={{ fontSize: '0.875rem', color: '#92400e' }}>
+            <div className="payment-note-card">
+              <div className="payment-note-text">
                 <strong>⏳ What's Next?</strong>
-                <p style={{ margin: '0.5rem 0 0 0' }}>
+                <p className="payment-note-paragraph">
                   Your payment is under review. You'll receive access once the admin approves your payment. This usually takes a few minutes.
                 </p>
               </div>
@@ -228,7 +228,7 @@ const PaymentModal = ({ isOpen, onClose, selectedPlan, onSuccess }) => {
             <div className="payment-success-details">
               <div className="payment-success-row">
                 <span>Transaction ID</span>
-                <strong style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>{transactionId}</strong>
+                <strong className="payment-txn-id">{transactionId}</strong>
               </div>
               <div className="payment-success-row">
                 <span>Plan</span>
@@ -236,18 +236,17 @@ const PaymentModal = ({ isOpen, onClose, selectedPlan, onSuccess }) => {
               </div>
               <div className="payment-success-row">
                 <span>Amount</span>
-                <strong style={{ color: '#10b981' }}>₹{currentPlan?.amount}</strong>
+                <strong className="payment-success-amount">₹{currentPlan?.amount}</strong>
               </div>
             </div>
 
             <div className="payment-modal-actions">
-              <button
-                className="payment-modal-btn payment-modal-btn--confirm"
+              <AppButton
+                className="payment-modal-btn payment-modal-btn--confirm payment-modal-btn--success payment-modal-btn--block"
                 onClick={handleDone}
-                style={{ background: '#10b981', width: '100%' }}
               >
                 Done
-              </button>
+              </AppButton>
             </div>
           </>
         )}

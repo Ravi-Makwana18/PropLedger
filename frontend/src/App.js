@@ -4,27 +4,28 @@
  * ============================================
  * Configures routing and authentication for the application
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 import AdminLayout from './components/Layout';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import DealDetails from './pages/DealDetails';
-import AddDeal from './pages/AddDeal';
-import AdminNotificationsPage from './pages/AdminNotificationsPage';
-import HistoryPage from './pages/HistoryPage';
-import AdminProfile from './pages/AdminProfile';
-import CreateUser from './pages/CreateUser';
-import ManageUsers from './pages/ManageUsers';
-import SubscriptionExpiredPage from './pages/SubscriptionExpiredPage';
-import SubscriptionStatusPage from './pages/SubscriptionStatusPage';
+
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const DealDetails = lazy(() => import('./pages/DealDetails'));
+const AddDeal = lazy(() => import('./pages/AddDeal'));
+const AdminNotificationsPage = lazy(() => import('./pages/AdminNotificationsPage'));
+const HistoryPage = lazy(() => import('./pages/HistoryPage'));
+const AdminProfile = lazy(() => import('./pages/AdminProfile'));
+const CreateUser = lazy(() => import('./pages/CreateUser'));
+const ManageUsers = lazy(() => import('./pages/ManageUsers'));
+const AdminPaymentsPage = lazy(() => import('./pages/AdminPaymentsPage'));
+
 
 /**
  * Application Content Component
@@ -32,6 +33,13 @@ import SubscriptionStatusPage from './pages/SubscriptionStatusPage';
  */
 function AppContent() {
   return (
+    <Suspense
+      fallback={
+        <div className="flex-center" style={{ minHeight: '80vh' }}>
+          <div className="spinner"></div>
+        </div>
+      }
+    >
     <Routes>
       {/* ============================================ */}
       {/* Public Routes */}
@@ -39,7 +47,7 @@ function AppContent() {
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/subscription-expired" element={<SubscriptionExpiredPage />} />
+
 
       {/* ============================================ */}
       {/* Protected Routes (Authentication Required) */}
@@ -116,6 +124,18 @@ function AppContent() {
           </PrivateRoute>
         }
       />
+
+      {/* Admin Payments (Super Admin Only) */}
+      <Route
+        path="/admin/payments"
+        element={
+          <PrivateRoute superAdminOnly={true}>
+            <AdminLayout>
+              <AdminPaymentsPage />
+            </AdminLayout>
+          </PrivateRoute>
+        }
+      />
       
       {/* Payment History */}
       <Route
@@ -165,18 +185,9 @@ function AppContent() {
         }
       />
       
-      {/* Subscription Status */}
-      <Route
-        path="/subscription-status"
-        element={
-          <PrivateRoute>
-            <AdminLayout>
-              <SubscriptionStatusPage />
-            </AdminLayout>
-          </PrivateRoute>
-        }
-      />
+
     </Routes>
+    </Suspense>
   );
 }
 

@@ -4,7 +4,7 @@
  * ============================================
  * Handles customer enquiry management operations
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 

@@ -4,26 +4,13 @@
  * ============================================
  * Handles land deal management operations
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
 const Deal = require('../models/Deal');
 const Payment = require('../models/Payment');
-const User = require('../models/User');
-
-const getAccessibleUserIds = async (user) => {
-  if (user.role === 'manager' && user.createdByAdmin) {
-    return [user._id, user.createdByAdmin];
-  }
-
-  if (user.role === 'admin' || user.role === 'superadmin') {
-    const managedUsers = await User.find({ createdByAdmin: user._id }).select('_id').lean();
-    return [user._id, ...managedUsers.map((managedUser) => managedUser._id)];
-  }
-
-  return [user._id];
-};
+const { getAccessibleUserIds } = require('../utils/accessControl');
 
 /**
  * @desc    Create new land deal
@@ -36,19 +23,6 @@ const createDeal = async (req, res) => {
   
   try {
     const accessibleUserIds = await getAccessibleUserIds(req.user);
-
-    // Check if user is on 7-day trial and has reached limit
-    if (req.user.subscriptionPlan === '7-day-trial') {
-      const dealCount = await Deal.countDocuments({ createdBy: { $in: accessibleUserIds } }).session(session);
-      
-      if (dealCount >= 9) {
-        await session.abortTransaction();
-        return res.status(403).json({ 
-          message: 'Trial limit reached. You can only create 9 deals in 7-day trial. Please upgrade to add more deals.',
-          trialLimitReached: true
-        });
-      }
-    }
 
     const {
       brokerName,

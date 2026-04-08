@@ -4,7 +4,7 @@
  * ============================================
  * Tracks payments made for land deals
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 

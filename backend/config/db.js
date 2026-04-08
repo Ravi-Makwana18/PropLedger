@@ -5,7 +5,7 @@
  * Handles MongoDB connection with optimized settings
  * Supports both local MongoDB and MongoDB Atlas
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
+import AppSelect from '../components/ui/AppSelect';
 import './HistoryPage.css';
 
 /* ── Mode badge colours (matching DealDetails) ── */
@@ -48,7 +49,7 @@ const TransactionCard = ({ payment, onClick }) => {
     const byName = payment.createdBy?.contactPersonName || payment.createdBy?.name || payment.createdBy?.companyName || 'Unknown';
 
     return (
-        <div className="hp-card" onClick={() => onClick(deal._id)} role="button" tabIndex={0}
+        <div className="hp-card app-card" onClick={() => onClick(deal._id)} role="button" tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && onClick(deal._id)}>
 
             {/* Middle: deal info */}
@@ -243,7 +244,7 @@ const HistoryPage = () => {
 
             {/* ── Filters Bar ── */}
             <div className="hp-filters-wrap">
-                <div className="hp-filters">
+                <div className="hp-filters app-card">
                     {/* Search */}
                     <div className="hp-search-wrap">
                         <svg className="hp-search-icon" width="15" height="15" fill="none"
@@ -253,7 +254,7 @@ const HistoryPage = () => {
                         </svg>
                         <input
                             type="text"
-                            className="hp-search-input"
+                            className="hp-search-input app-input"
                             placeholder="Search by village name…"
                             value={search}
                             onChange={handleSearchChange}
@@ -262,7 +263,7 @@ const HistoryPage = () => {
                     </div>
 
                     {/* Mode filter */}
-                    <select
+                    <AppSelect
                         className="hp-select"
                         value={mode}
                         onChange={handleModeChange}
@@ -271,7 +272,7 @@ const HistoryPage = () => {
                         {MODES.map(m => (
                             <option key={m} value={m}>{m === 'ALL' ? 'All Modes' : m}</option>
                         ))}
-                    </select>
+                    </AppSelect>
 
                     {/* Results count */}
                     {!loading && (
@@ -284,15 +285,15 @@ const HistoryPage = () => {
 
             {/* ── Main Content ── */}
             <div className="hp-content">
-                {error && <div className="hp-error-banner">⚠️ {error}</div>}
+                {error && <div className="hp-error-banner pl-state pl-state--error">⚠️ {error}</div>}
 
                 {loading ? (
                     <SkeletonList />
                 ) : payments.length === 0 ? (
-                    <div className="hp-empty">
-                        <span className="hp-empty-icon">📭</span>
-                        <h3>No transactions found</h3>
-                        <p>{search || mode !== 'ALL' ? 'Try adjusting your filters.' : 'No payments have been recorded yet.'}</p>
+                    <div className="hp-empty pl-state pl-state--empty">
+                        <span className="hp-empty-icon pl-empty-icon">📭</span>
+                        <h3 className="pl-empty-title">No transactions found</h3>
+                        <p className="pl-empty-desc">{search || mode !== 'ALL' ? 'Try adjusting your filters.' : 'No payments have been recorded yet.'}</p>
                     </div>
                 ) : (
                     <>

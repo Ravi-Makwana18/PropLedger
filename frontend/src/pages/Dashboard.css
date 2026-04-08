@@ -61,7 +61,7 @@
 }
 
 .dashboard-hero-title {
-  font-size: 2rem;
+  font-size: var(--type-display-lg);
   font-weight: 800;
   color: #fff;
   letter-spacing: -0.02em;
@@ -70,7 +70,7 @@
 }
 
 .dashboard-hero-subtitle {
-  font-size: 1rem;
+  font-size: var(--type-body-lg);
   color: rgba(255, 255, 255, 0.95);
   margin: 0.2rem 0 0;
 }
@@ -124,13 +124,13 @@
 .dashboard-filters {
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
   padding: 1.25rem 1.5rem;
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
   align-items: center;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e9eff5;
 }
 
 .dashboard-search-wrap {
@@ -150,8 +150,9 @@
 
 .dashboard-search-input {
   width: 100%;
+  min-height: 46px;
   padding: 0.75rem 0.9rem 0.75rem 2.5rem;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid #dbe4ee;
   border-radius: 10px;
   font-size: 0.9375rem;
   color: #1e293b;
@@ -167,6 +168,7 @@
 }
 
 .dashboard-search-btn {
+  min-height: 46px;
   padding: 0.75rem 1.25rem;
   background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   color: white;
@@ -182,6 +184,13 @@
   white-space: nowrap;
 }
 
+.dashboard-search-btn svg,
+.dashboard-sort-btn svg,
+.dashboard-action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
 .dashboard-search-btn-text {
   display: inline;
 }
@@ -192,8 +201,9 @@
 }
 
 .dashboard-sort-btn {
+  min-height: 46px;
   padding: 0.75rem 1rem;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid #dbe4ee;
   border-radius: 10px;
   background: #f8fafc;
   color: #475569;
@@ -215,6 +225,10 @@
 .dashboard-sort-btn:hover {
   border-color: #1a5490;
   background: #fff;
+}
+
+.dashboard-sort-wrap {
+  position: relative;
 }
 
 .dashboard-sort-dropdown {
@@ -334,7 +348,7 @@
   background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -356,7 +370,7 @@
 
 .dashboard-deal-card {
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e9eff5;
   border-radius: 16px;
   padding: 1.5rem;
   transition: all 0.3s ease;
@@ -373,7 +387,7 @@
   display: flex;
   justify-content: space-between;
   align-items: start;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   gap: 1rem;
 }
 
@@ -472,12 +486,13 @@
 .dashboard-deal-actions {
   display: flex;
   gap: 0.75rem;
-  padding-top: 1rem;
+  padding-top: 0.875rem;
   border-top: 1px solid #f1f5f9;
 }
 
 .dashboard-action-btn {
   flex: 1;
+  min-height: 44px;
   padding: 0.75rem;
   border-radius: 10px;
   font-size: 0.875rem;
@@ -565,6 +580,16 @@
   background-size: 200% 100%;
   animation: dashboard-shimmer 1.4s infinite;
   border-radius: 16px;
+}
+
+.dashboard-skeleton-card--hero {
+  height: 200px;
+  margin-bottom: 2rem;
+}
+
+.dashboard-skeleton-card--filters {
+  height: 80px;
+  margin-bottom: 1.5rem;
 }
 
 @keyframes dashboard-shimmer {
@@ -666,7 +691,7 @@
 .dashboard-modal-btn {
   flex: 1;
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: 10px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -1386,8 +1411,9 @@
 }
 
 .dashboard-form-input {
+  min-height: 46px;
   padding: 0.75rem 1rem;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid #dbe4ee;
   border-radius: 10px;
   font-size: 0.9375rem;
   color: #1e293b;
@@ -1399,6 +1425,16 @@
 .dashboard-form-input:focus {
   border-color: #1a5490;
   box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+}
+
+.dashboard-form-input--readonly {
+  background-color: #f7fafc;
+  cursor: not-allowed;
+}
+
+.dashboard-danger-note {
+  color: #e53e3e;
+  font-size: 0.82rem;
 }
 
 .dashboard-modal--large .dashboard-modal-actions {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-// import { useNavigate } from 'react-router-dom';
-import PaymentModal from '../components/PaymentModal';
+
+
 import ImageCropModal from '../components/ImageCropModal';
 import API from '../api/axios';
 import './AdminProfile.css';
@@ -9,12 +9,7 @@ import './AdminProfile.css';
 const AdminProfile = () => {
   const { user } = useAuth();
 
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState('');
-  const [upgradeError, setUpgradeError] = useState('');
-  const [upgradeSuccess, setUpgradeSuccess] = useState('');
   const [isUploadingPicture, setIsUploadingPicture] = useState(false);
   const [profilePicture, setProfilePicture] = useState(user?.profilePicture || null);
   const [showCropModal, setShowCropModal] = useState(false);
@@ -33,42 +28,6 @@ const AdminProfile = () => {
   };
 
 
-
-  // Calculate days remaining
-  const getDaysRemaining = (endDate) => {
-    if (!endDate) return null;
-    const end = new Date(endDate);
-    const now = new Date();
-    const diff = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
-    return diff;
-  };
-
-  const daysRemaining = getDaysRemaining(user?.subscriptionEndDate);
-  const isExpiringSoon = daysRemaining !== null && daysRemaining <= 7 && daysRemaining > 0 && user?.subscriptionStatus === 'active';
-  const isExpired = user?.subscriptionStatus === 'expired' || (user?.subscriptionStatus === 'active' && daysRemaining !== null && daysRemaining <= 0);
-
-
-
-
-
-  const handleUpgrade = async () => {
-    if (!selectedPlan) {
-      setUpgradeError('Please select a plan');
-      return;
-    }
-    
-    // Close plan selection modal and open payment modal
-    setShowUpgradeModal(false);
-    setShowPaymentModal(true);
-  };
-
-  const handlePaymentSuccess = async (updatedUser) => {
-    setUpgradeSuccess('Subscription upgraded successfully!');
-    setShowPaymentModal(false);
-    
-    // Refresh user data
-    window.location.reload();
-  };
 
   // Handle profile picture upload
   const handleProfilePictureChange = async (e) => {
@@ -121,7 +80,6 @@ const AdminProfile = () => {
         window.location.reload();
       }, 1000);
     } catch (error) {
-      console.error('Error uploading profile picture:', error);
       setUploadError(error.response?.data?.message || 'Failed to upload profile picture. Please try again.');
       setIsUploadingPicture(false);
       setImageToCrop(null);
@@ -154,23 +112,11 @@ const AdminProfile = () => {
         window.location.reload();
       }, 1000);
     } catch (error) {
-      console.error('Error removing profile picture:', error);
       setUploadError(error.response?.data?.message || 'Failed to remove profile picture. Please try again.');
       setIsRemovingPicture(false);
       setShowRemoveConfirm(false);
     }
   };
-
-  const plans = [
-    { value: '7-day-trial', label: '7 Day Trial', price: 'Free', color: '#10b981', bg: '#d1fae5' },
-    { value: 'monthly', label: 'Monthly Plan', price: '₹999/month', color: '#f59e0b', bg: '#fef3c7' },
-    { value: 'yearly', label: 'Yearly Plan', price: '₹9,999/year', color: '#8b5cf6', bg: '#ede9fe', savings: 'Save 17%' }
-  ];
-
-  // Check if user has already used trial or is on a paid plan
-  const hasUsedTrial = user?.subscriptionPlan === '7-day-trial' && user?.subscriptionStatus === 'expired';
-  const isOnPaidPlan = user?.subscriptionPlan === 'monthly' || user?.subscriptionPlan === 'yearly';
-  const cannotUseTrial = hasUsedTrial || isOnPaidPlan;
 
   return (
     <div className="admin-profile-page">
@@ -277,7 +223,7 @@ const AdminProfile = () => {
               type="file"
               accept="image/*"
               onChange={handleProfilePictureChange}
-              style={{ display: 'none' }}
+              className="admin-profile-file-input-hidden"
               disabled={isUploadingPicture}
             />
           </div>
@@ -289,33 +235,20 @@ const AdminProfile = () => {
               {user?.companyName ? `${user.companyName} · ` : ''}
               {user?.role === 'superadmin' ? 'Super Admin' : user?.role === 'admin' ? 'Administrator' : 'Staff User'} • {user?.email || user?.mobileNumber || 'No email'}
             </p> */}
-            {/* Subscription chips row */}
-            <div className="admin-profile-header-chips">
-              {/* <div className="admin-profile-header-chip">
-                <span className="admin-profile-header-chip-icon">📋</span>
-                <span>{subscriptionBadge.label}</span>
-              </div> */}
-              <div className={`admin-profile-header-chip admin-profile-header-chip--${user?.subscriptionStatus || 'active'}`}>
-                <span>{user?.subscriptionStatus === 'active' ? '● Active' : user?.subscriptionStatus === 'expired' ? '● Expired' : '● Cancelled'}</span>
-              </div>
-              {daysRemaining !== null && daysRemaining > 0 && (
-                <div className={`admin-profile-header-chip ${isExpiringSoon ? 'admin-profile-header-chip--warning' : ''}`}>
-                  <span>⏱ {daysRemaining}d left</span>
-                </div>
-              )}
-              {user?.isVerified && (
+            {user?.isVerified && (
+              <div className="admin-profile-header-chips">
                 <div className="admin-profile-header-chip admin-profile-header-chip--verified">
                   <span>✓ Verified</span>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Subscription Status Alert */}
       {uploadError && (
-        <div className="admin-profile-alert admin-profile-alert--danger">
+        <div className="admin-profile-alert admin-profile-alert--danger pl-alert pl-alert--error">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
           </svg>
@@ -327,7 +260,7 @@ const AdminProfile = () => {
       )}
 
       {uploadSuccess && (
-        <div className="admin-profile-alert admin-profile-alert--success">
+        <div className="admin-profile-alert admin-profile-alert--success pl-alert pl-alert--success">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
           </svg>
@@ -338,30 +271,6 @@ const AdminProfile = () => {
         </div>
       )}
 
-      {/* Subscription Status Alert */}
-      {isExpired && (
-        <div className="admin-profile-alert admin-profile-alert--danger">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-          </svg>
-          <div>
-            <strong>Subscription Expired</strong>
-            <p>Your subscription has expired. Please renew to continue using all features.</p>
-          </div>
-        </div>
-      )}
-
-      {isExpiringSoon && (
-        <div className="admin-profile-alert admin-profile-alert--warning">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-          <div>
-            <strong>Subscription Expiring Soon</strong>
-            <p>Your subscription expires in {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'}. Renew now to avoid interruption.</p>
-          </div>
-        </div>
-      )}
 
       <div className="admin-profile-grid">
         {/* Company Information */}
@@ -486,125 +395,6 @@ const AdminProfile = () => {
         </div> */}
       </div>
 
-      {/* Upgrade Subscription Modal */}
-      {showUpgradeModal && (
-        <div className="logout-modal-overlay" onClick={() => setShowUpgradeModal(false)}>
-          <div className="logout-modal upgrade-modal" onClick={e => e.stopPropagation()}>
-            <div className="logout-modal-icon" style={{ background: '#e3f0fa' }}>
-              <svg width="28" height="28" fill="#1a5490" viewBox="0 0 20 20">
-                <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <h3 className="logout-modal-title">Upgrade Subscription</h3>
-            <p className="logout-modal-desc">Choose a plan that works best for you</p>
-            
-            {upgradeError && (
-              <div className="upgrade-error" style={{ background: '#fee2e2', color: '#dc2626', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.875rem' }}>
-                {upgradeError}
-              </div>
-            )}
-            
-            {upgradeSuccess && (
-              <div className="upgrade-success" style={{ background: '#d1fae5', color: '#059669', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.875rem' }}>
-                ✓ {upgradeSuccess}
-              </div>
-            )}
-            
-            <div className="upgrade-plans">
-              {plans.map(plan => {
-                const isTrialDisabled = plan.value === '7-day-trial' && cannotUseTrial;
-                return (
-                  <div 
-                    key={plan.value}
-                    className={`upgrade-plan-card ${selectedPlan === plan.value ? 'selected' : ''} ${user?.subscriptionPlan === plan.value ? 'current' : ''} ${isTrialDisabled ? 'disabled' : ''}`}
-                    onClick={() => !isTrialDisabled && setSelectedPlan(plan.value)}
-                    style={{
-                      border: selectedPlan === plan.value ? `2px solid ${plan.color}` : '2px solid #e5e7eb',
-                      borderRadius: '12px',
-                      padding: '1rem',
-                      cursor: isTrialDisabled ? 'not-allowed' : 'pointer',
-                      marginBottom: '0.75rem',
-                      position: 'relative',
-                      transition: 'all 0.2s',
-                      opacity: isTrialDisabled ? 0.5 : 1
-                    }}
-                  >
-                    {user?.subscriptionPlan === plan.value && (
-                      <span style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: plan.bg, color: plan.color, padding: '0.25rem 0.5rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '600' }}>
-                        Current
-                      </span>
-                    )}
-                    {plan.savings && !isTrialDisabled && (
-                      <span style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: '#dcfce7', color: '#16a34a', padding: '0.25rem 0.5rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '600' }}>
-                        {plan.savings}
-                      </span>
-                    )}
-                    {isTrialDisabled && (
-                      <span style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: '#fee2e2', color: '#dc2626', padding: '0.25rem 0.5rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '600' }}>
-                        Not Available
-                      </span>
-                    )}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: `2px solid ${selectedPlan === plan.value ? plan.color : '#d1d5db'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {selectedPlan === plan.value && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: plan.color }} />}
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem' }}>{plan.label}</div>
-                        <div style={{ fontSize: '1.25rem', fontWeight: '700', color: plan.color }}>{plan.price}</div>
-                        {isTrialDisabled && (
-                          <div style={{ fontSize: '0.75rem', color: '#dc2626', marginTop: '0.25rem', fontWeight: '500' }}>
-                            {hasUsedTrial ? 'Trial already used' : 'Upgrade only'}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            
-            {cannotUseTrial && (
-              <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', color: '#92400e', padding: '0.75rem', borderRadius: '8px', marginTop: '1rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-                <span>
-                  {hasUsedTrial ? 'Your trial period has ended. Please select a paid plan to continue.' : 'Trial is only available for new users. Please select a paid plan.'}
-                </span>
-              </div>
-            )}
-            
-            <div className="logout-modal-actions" style={{ marginTop: '1.5rem' }}>
-              <button 
-                className="logout-modal-btn logout-modal-btn--cancel" 
-                onClick={() => setShowUpgradeModal(false)}
-              >
-                Cancel
-              </button>
-              <button 
-                className="logout-modal-btn logout-modal-btn--confirm" 
-                onClick={handleUpgrade} 
-                disabled={!selectedPlan}
-                style={{ background: selectedPlan ? '#1a5490' : '#d1d5db' }}
-              >
-                Continue to Payment
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Payment Modal */}
-      <PaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => {
-          setShowPaymentModal(false);
-          setSelectedPlan('');
-        }}
-        selectedPlan={selectedPlan}
-        onSuccess={handlePaymentSuccess}
-      />
 
       {/* Image Crop Modal */}
       {showCropModal && imageToCrop && (
@@ -619,7 +409,7 @@ const AdminProfile = () => {
       {showRemoveConfirm && (
         <div className="logout-modal-overlay" onClick={() => !isRemovingPicture && setShowRemoveConfirm(false)}>
           <div className="logout-modal" onClick={e => e.stopPropagation()}>
-            <div className="logout-modal-icon" style={{ background: '#fee2e2' }}>
+            <div className="logout-modal-icon admin-profile-remove-icon">
               <svg width="28" height="28" fill="#dc2626" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
@@ -635,10 +425,9 @@ const AdminProfile = () => {
                 Cancel
               </button>
               <button 
-                className="logout-modal-btn logout-modal-btn--confirm" 
+                className="logout-modal-btn logout-modal-btn--confirm admin-profile-remove-confirm-btn" 
                 onClick={handleRemoveProfilePicture}
                 disabled={isRemovingPicture}
-                style={{ background: '#dc2626' }}
               >
                 {isRemovingPicture ? (
                   <>

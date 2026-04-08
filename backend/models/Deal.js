@@ -1,4 +1,3 @@
-// ...existing code...
 /**
  * ============================================
  * PropLedger - Deal Model
@@ -6,7 +5,7 @@
  * Defines the land deal schema with automatic calculations
  * Tracks property details, pricing, and payment deadlines
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 

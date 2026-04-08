@@ -5,7 +5,7 @@
  * Provides global authentication state and methods
  * Manages user login, registration, logout, and token verification
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 

@@ -5,7 +5,7 @@
  * Defines the customer enquiry schema
  * Tracks customer inquiries and their read status
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 

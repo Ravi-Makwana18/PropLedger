@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { countries, getStatesForCountry, getCitiesForState } from '../data/locationData';
+import AppCard from '../components/ui/AppCard';
+import AppInput from '../components/ui/AppInput';
+import AppButton from '../components/ui/AppButton';
+import AppSelect from '../components/ui/AppSelect';
 import './Login.css';
 
 const Register = () => {
@@ -165,7 +169,7 @@ const Register = () => {
           <span className="auth-mobile-brand">PropLedger</span>
         </div>
 
-        <div className="auth-form-container auth-form-container--wide">
+        <AppCard className="auth-form-container auth-form-container--wide">
           <div className="auth-form-header">
             <div className="auth-welcome-badge">Get Started</div>
             <h2 className="auth-form-title">Create your account</h2>
@@ -173,7 +177,7 @@ const Register = () => {
           </div>
 
           {error && (
-            <div className="auth-error-alert">
+            <div className="auth-error-alert pl-alert pl-alert--error">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
               </svg>
@@ -196,12 +200,11 @@ const Register = () => {
                   <label className="auth-label" htmlFor="companyName">
                     Company Name <span className="auth-required">*</span>
                   </label>
-                  <input
+                  <AppInput
                     id="companyName"
                     name="companyName"
                     type="text"
-                    className="auth-input"
-                    style={{ paddingLeft: '1rem' }}
+                    className="auth-input auth-input--pad-left"
                     placeholder="🏢 Your company name"
                     value={formData.companyName}
                     onChange={handleChange}
@@ -213,12 +216,11 @@ const Register = () => {
                   <label className="auth-label" htmlFor="contactPersonName">
                     Contact Person <span className="auth-required">*</span>
                   </label>
-                  <input
+                  <AppInput
                     id="contactPersonName"
                     name="contactPersonName"
                     type="text"
-                    className="auth-input"
-                    style={{ paddingLeft: '1rem' }}
+                    className="auth-input auth-input--pad-left"
                     placeholder="👤 Full name"
                     value={formData.contactPersonName}
                     onChange={handleChange}
@@ -242,11 +244,10 @@ const Register = () => {
                   <label className="auth-label" htmlFor="country">
                     Country <span className="auth-required">*</span>
                   </label>
-                  <select
+                  <AppSelect
                     id="country"
                     name="country"
-                    className="auth-input"
-                    style={{ paddingLeft: '1rem' }}
+                    className="auth-input auth-input--pad-left"
                     value={formData.country}
                     onChange={handleChange}
                     required
@@ -257,18 +258,17 @@ const Register = () => {
                         {country.name}
                       </option>
                     ))}
-                  </select>
+                  </AppSelect>
                 </div>
 
                 <div className="auth-form-group">
                   <label className="auth-label" htmlFor="state">
                     State <span className="auth-required">*</span>
                   </label>
-                  <select
+                  <AppSelect
                     id="state"
                     name="state"
-                    className="auth-input"
-                    style={{ paddingLeft: '1rem' }}
+                    className="auth-input auth-input--pad-left"
                     value={formData.state}
                     onChange={handleChange}
                     required
@@ -280,7 +280,7 @@ const Register = () => {
                         {state}
                       </option>
                     ))}
-                  </select>
+                  </AppSelect>
                 </div>
               </div>
 
@@ -290,11 +290,10 @@ const Register = () => {
                     City <span className="auth-required">*</span>
                   </label>
                   {availableCities.length > 0 ? (
-                    <select
+                    <AppSelect
                       id="city"
                       name="city"
-                      className="auth-input"
-                      style={{ paddingLeft: '1rem' }}
+                      className="auth-input auth-input--pad-left"
                       value={formData.city}
                       onChange={handleChange}
                       required
@@ -305,14 +304,13 @@ const Register = () => {
                           {city}
                         </option>
                       ))}
-                    </select>
+                    </AppSelect>
                   ) : (
-                    <input
+                    <AppInput
                       id="city"
                       name="city"
                       type="text"
-                      className="auth-input"
-                      style={{ paddingLeft: '1rem' }}
+                      className="auth-input auth-input--pad-left"
                       placeholder="🏙️ Enter city name"
                       value={formData.city}
                       onChange={handleChange}
@@ -326,12 +324,11 @@ const Register = () => {
                   <label className="auth-label" htmlFor="pincode">
                     Pincode <span className="auth-required">*</span>
                   </label>
-                  <input
+                  <AppInput
                     id="pincode"
                     name="pincode"
                     type="text"
-                    className="auth-input"
-                    style={{ paddingLeft: '1rem' }}
+                    className="auth-input auth-input--pad-left"
                     placeholder="📮 Postal code"
                     value={formData.pincode}
                     onChange={handleChange}
@@ -356,12 +353,11 @@ const Register = () => {
                   <label className="auth-label" htmlFor="email">
                     Email Address <span className="auth-required">*</span>
                   </label>
-                  <input
+                  <AppInput
                     id="email"
                     name="email"
                     type="email"
-                    className="auth-input"
-                    style={{ paddingLeft: '1rem' }}
+                    className="auth-input auth-input--pad-left"
                     placeholder="📧 you@company.com"
                     value={formData.email}
                     onChange={handleChange}
@@ -374,12 +370,11 @@ const Register = () => {
                   <label className="auth-label" htmlFor="phone">
                     Phone Number <span className="auth-required">*</span>
                   </label>
-                  <input
+                  <AppInput
                     id="phone"
                     name="phone"
                     type="tel"
-                    className="auth-input"
-                    style={{ paddingLeft: '1rem' }}
+                    className="auth-input auth-input--pad-left"
                     placeholder="📱 +1 (555) 000-0000"
                     value={formData.phone}
                     onChange={handleChange}
@@ -405,12 +400,11 @@ const Register = () => {
                     Password (min 8 characters) <span className="auth-required">*</span>
                   </label>
                   <div className="auth-input-wrapper">
-                    <input
+                    <AppInput
                       id="password"
                       name="password"
                       type={showPassword ? 'text' : 'password'}
-                      className="auth-input"
-                      style={{ paddingLeft: '1rem' }}
+                      className="auth-input auth-input--pad-left"
                       placeholder="🔒 Create password"
                       value={formData.password}
                       onChange={handleChange}
@@ -443,12 +437,11 @@ const Register = () => {
                     Confirm Password <span className="auth-required">*</span>
                   </label>
                   <div className="auth-input-wrapper">
-                    <input
+                    <AppInput
                       id="confirmPassword"
                       name="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
-                      className="auth-input"
-                      style={{ paddingLeft: '1rem' }}
+                      className="auth-input auth-input--pad-left"
                       placeholder="🔒 Confirm password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
@@ -549,7 +542,7 @@ const Register = () => {
               </div>
             </div>
 
-            <button
+            <AppButton
               type="submit"
               className="auth-submit-btn"
               disabled={loading}
@@ -567,20 +560,20 @@ const Register = () => {
                   </svg>
                 </>
               )}
-            </button>
+            </AppButton>
           </form>
 
           <div className="auth-divider">
             <span>Already have an account?</span>
           </div>
 
-          <Link to="/login" className="auth-secondary-btn">
+          <Link to="/login" className="auth-secondary-btn app-btn">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clipRule="evenodd" />
             </svg>
             <span>Sign in to existing account</span>
           </Link>
-        </div>
+        </AppCard>
       </div>
     </div>
   );

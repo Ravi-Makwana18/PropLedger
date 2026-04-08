@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import API from '../api/axios';
+import AppCard from '../components/ui/AppCard';
+import AppInput from '../components/ui/AppInput';
+import AppButton from '../components/ui/AppButton';
 import './ManageUsers.css';
 
 const ManageUsers = () => {
@@ -86,9 +89,9 @@ const ManageUsers = () => {
             </div>
           </div>
         </div>
-        <div className="mu-content">
+        <AppCard className="mu-content">
           <div className="mu-error">You don't have permission to access this page.</div>
-        </div>
+        </AppCard>
       </div>
     );
   }
@@ -119,7 +122,7 @@ const ManageUsers = () => {
               <span className="mu-stat-number">{managedUsers.length}</span>
               <span className="mu-stat-label">Total Users</span>
             </div>
-            <div className="mu-stat-card mu-stat-card--active">
+            {/* <div className="mu-stat-card mu-stat-card--active">
               <span className="mu-stat-number">
                 {managedUsers.filter(u => u.subscriptionStatus === 'active').length}
               </span>
@@ -130,20 +133,20 @@ const ManageUsers = () => {
                 {managedUsers.filter(u => u.subscriptionStatus !== 'active').length}
               </span>
               <span className="mu-stat-label">Inactive</span>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="mu-content">
+      <AppCard className="mu-content">
         {/* Search */}
         <div className="mu-search-wrap">
           <svg className="mu-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
-          <input
+          <AppInput
             type="text"
             className="mu-search-input"
             placeholder="Search by name or email..."
@@ -154,7 +157,7 @@ const ManageUsers = () => {
 
         {/* Success Message */}
         {deleteSuccess && (
-          <div className="mu-alert mu-alert--success">
+          <div className="mu-alert mu-alert--success pl-alert pl-alert--success">
             <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
@@ -164,36 +167,37 @@ const ManageUsers = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="mu-alert mu-alert--error">
+          <div className="mu-alert mu-alert--error pl-alert pl-alert--error">
             <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
             </svg>
             <span>{error}</span>
-            <button className="mu-retry-btn" onClick={fetchUsers}>Retry</button>
+            <AppButton className="mu-retry-btn" onClick={fetchUsers}>Retry</AppButton>
           </div>
         )}
 
         {/* Loading State */}
         {isLoading ? (
-          <div className="mu-loading">
+          <div className="mu-loading pl-state pl-state--loading">
             <div className="mu-spinner"></div>
             <span>Loading users...</span>
           </div>
         ) : filteredUsers.length === 0 ? (
-          <div className="mu-empty">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="mu-empty pl-state pl-state--empty">
+            <svg className="pl-empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
               <circle cx="9" cy="7" r="4" />
               <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
               <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
-            <p>{searchTerm ? 'No users match your search.' : 'No users found. Create a staff user first.'}</p>
+            <h3 className="pl-empty-title">No users found</h3>
+            <p className="pl-empty-desc">{searchTerm ? 'No users match your search.' : 'Create a staff user first to get started.'}</p>
           </div>
         ) : (
           /* User List */
           <div className="mu-list">
             {filteredUsers.map(u => (
-              <div key={u._id} className="mu-user-card">
+              <AppCard key={u._id} className="mu-user-card">
                 <div className="mu-user-avatar">
                   {u.profilePicture ? (
                     <img src={u.profilePicture} alt="avatar" />
@@ -211,7 +215,7 @@ const ManageUsers = () => {
                     <span className="mu-user-role">{u.role}</span>
                   </div>
                 </div>
-                <button
+                <AppButton
                   className="mu-delete-btn"
                   onClick={() => handleDeleteClick(u)}
                   title="Delete user"
@@ -222,12 +226,12 @@ const ManageUsers = () => {
                     <line x1="10" y1="11" x2="10" y2="17" />
                     <line x1="14" y1="11" x2="14" y2="17" />
                   </svg>
-                </button>
-              </div>
+                </AppButton>
+              </AppCard>
             ))}
           </div>
         )}
-      </div>
+      </AppCard>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
@@ -246,15 +250,15 @@ const ManageUsers = () => {
               Are you sure you want to delete <strong>{userToDelete?.contactPersonName || userToDelete?.name || userToDelete?.email}</strong>? This action cannot be undone.
             </p>
             <div className="mu-modal-actions">
-              <button
-                className="mu-modal-btn mu-modal-btn--cancel"
+              <AppButton
+                className="mu-modal-btn mu-modal-btn--cancel app-btn"
                 onClick={() => setShowDeleteModal(false)}
                 disabled={isDeleting}
               >
                 Cancel
-              </button>
-              <button
-                className="mu-modal-btn mu-modal-btn--delete"
+              </AppButton>
+              <AppButton
+                className="mu-modal-btn mu-modal-btn--delete app-btn"
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
               >
@@ -266,7 +270,7 @@ const ManageUsers = () => {
                 ) : (
                   'Delete User'
                 )}
-              </button>
+              </AppButton>
             </div>
           </div>
         </div>

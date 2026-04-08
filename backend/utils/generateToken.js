@@ -4,7 +4,7 @@
  * ============================================
  * Generates JSON Web Tokens for user authentication
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 

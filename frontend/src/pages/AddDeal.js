@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
+import AppSelect from '../components/ui/AppSelect';
+import AppTextarea from '../components/ui/AppTextarea';
 import './AddDeal.css';
 
 const formatINR = (amount) =>
@@ -73,18 +75,9 @@ const AddDeal = () => {
         deadlineEndDate: formData.deadlineEndDate,
       };
 
-      console.log('Full payload:', JSON.stringify(payload, null, 2));
-      console.log('Dates:', {
-        start: formData.deadlineStartDate,
-        end: formData.deadlineEndDate,
-        startType: typeof formData.deadlineStartDate,
-        endType: typeof formData.deadlineEndDate,
-      });
-
       const { data } = await API.post('/api/deals', payload);
       navigate(`/deals/${data._id}`);
     } catch (err) {
-      console.error('Error creating deal:', err.response?.data);
       setError(err.response?.data?.message || 'Failed to create deal');
     } finally {
       setLoading(false);
@@ -128,7 +121,7 @@ const AddDeal = () => {
 
         {/* ── Error Banner ── */}
         {error && (
-          <div className="ad-error-banner">
+          <div className="ad-error-banner pl-alert pl-alert--error">
             <span>⚠️</span> {error}
           </div>
         )}
@@ -136,14 +129,14 @@ const AddDeal = () => {
         <form onSubmit={handleSubmit} className="ad-form" noValidate>
 
           {/* ── Section 1: Broker Details ── */}
-          <div className="ad-section">
-            <div className="ad-section-header">
+          <div className="ad-section app-card">
+            <div className="ad-section-header app-section-header">
               <h2 className="ad-section-title">Broker Details</h2>
             </div>
             <Field label="Broker Name">
               <input
                 type="text"
-                className="ad-input"
+                className="ad-input app-input"
                 name="brokerName"
                 placeholder="e.g. Premji"
                 value={formData.brokerName}
@@ -153,8 +146,8 @@ const AddDeal = () => {
           </div>
 
           {/* ── Section 2: Property Details ── */}
-          <div className="ad-section">
-            <div className="ad-section-header">
+          <div className="ad-section app-card">
+            <div className="ad-section-header app-section-header">
               {/* <span className="ad-section-icon">📍</span> */}
               <h2 className="ad-section-title">Property Details</h2>
             </div>
@@ -162,7 +155,7 @@ const AddDeal = () => {
               <Field label="District" required>
                 <input
                   type="text"
-                  className="ad-input"
+                  className="ad-input app-input"
                   name="district"
                   placeholder="e.g. Bhavnagar"
                   value={formData.district}
@@ -173,7 +166,7 @@ const AddDeal = () => {
               <Field label="Sub-District" required>
                 <input
                   type="text"
-                  className="ad-input"
+                  className="ad-input app-input"
                   name="subDistrict"
                   placeholder="e.g. Bhavnagar"
                   value={formData.subDistrict}
@@ -186,7 +179,7 @@ const AddDeal = () => {
             <Field label="Village" required>
               <input
                 type="text"
-                className="ad-input"
+                className="ad-input app-input"
                 name="villageName"
                 placeholder="e.g. Bhangadh"
                 value={formData.villageName}
@@ -195,7 +188,7 @@ const AddDeal = () => {
               />
             </Field>
             <Field label="NA Type">
-              <select
+              <AppSelect
                 className="ad-input"
                 name="naType"
                 value={formData.naType}
@@ -205,14 +198,14 @@ const AddDeal = () => {
                 <option value="Residential">Residential</option>
                 <option value="Industrial">Industrial</option>
                 <option value="Multi-purpose">Multi-purpose</option>
-              </select>
+              </AppSelect>
             </Field>
             </div>
             <div className="ad-grid-2">
               <Field label="Old Survey No.">
                 <input
                   type="text"
-                  className="ad-input"
+                  className="ad-input app-input"
                   name="oldSurveyNo"
                   placeholder="e.g. 201"
                   value={formData.oldSurveyNo}
@@ -222,7 +215,7 @@ const AddDeal = () => {
               <Field label="New Survey No." required>
                 <input
                   type="text"
-                  className="ad-input"
+                  className="ad-input app-input"
                   name="newSurveyNo"
                   placeholder="e.g. 151/A"
                   value={formData.newSurveyNo}
@@ -235,7 +228,7 @@ const AddDeal = () => {
             <div className="ad-deal-type-row">
               <Field label="Deal Type" required>
                 <div className="ad-deal-type-select-wrap">
-                  <select
+                  <AppSelect
                     className="ad-input ad-deal-type-select"
                     name="dealType"
                     value={formData.dealType}
@@ -245,7 +238,7 @@ const AddDeal = () => {
                     <option value="Buy">Purchase</option>
                     <option value="Sell">Sell</option>
                     <option value="Other">Other</option>
-                  </select>
+                  </AppSelect>
                   <span className={`ad-deal-type-badge ad-deal-type-badge--${formData.dealType.toLowerCase()}`}>
                     {formData.dealType === 'Buy' ? 'Purchase Deal' : formData.dealType === 'Sell' ? 'Sell Deal' : 'Other Deal'}
                   </span>
@@ -255,8 +248,8 @@ const AddDeal = () => {
           </div>
 
           {/* ── Section 3: Pricing & Area ── */}
-          <div className="ad-section">
-            <div className="ad-section-header">
+          <div className="ad-section app-card">
+            <div className="ad-section-header app-section-header">
               {/* <span className="ad-section-icon">💰</span> */}
               <h2 className="ad-section-title">Pricing & Area</h2>
             </div>
@@ -266,7 +259,7 @@ const AddDeal = () => {
                   <span className="ad-input-prefix">₹</span>
                   <input
                     type="number"
-                    className="ad-input ad-input--prefixed"
+                    className="ad-input app-input ad-input--prefixed"
                     name="pricePerSqYard"
                     placeholder="0.00"
                     value={formData.pricePerSqYard}
@@ -281,7 +274,7 @@ const AddDeal = () => {
                 <div className="ad-input-suffix-wrap">
                   <input
                     type="number"
-                    className="ad-input ad-input--suffixed"
+                    className="ad-input app-input ad-input--suffixed"
                     name="totalSqYard"
                     placeholder="0.00"
                     value={formData.totalSqYard}
@@ -297,7 +290,7 @@ const AddDeal = () => {
                 <div className="ad-input-suffix-wrap">
                   <input
                     type="number"
-                    className="ad-input ad-input--suffixed"
+                    className="ad-input app-input ad-input--suffixed"
                     name="totalSqMeter"
                     placeholder="0.00"
                     value={formData.totalSqMeter}
@@ -313,7 +306,7 @@ const AddDeal = () => {
                   <span className="ad-input-prefix">₹</span>
                   <input
                     type="number"
-                    className="ad-input ad-input--prefixed"
+                    className="ad-input app-input ad-input--prefixed"
                     name="jantri"
                     placeholder="0.00"
                     value={formData.jantri}
@@ -348,7 +341,7 @@ const AddDeal = () => {
                 )}
                 {whitePayment > 0 && (
                   <>
-                    {totalAmount > 0 && <div className="ad-calc-divider" style={{ background: 'none', color: '#94a3b8' }}>|</div>}
+                    {totalAmount > 0 && <div className="ad-calc-divider ad-calc-divider--pipe">|</div>}
                     <div className="ad-calc-card ad-calc-card--white">
                       <span className="ad-calc-label">White Payment{whitePayment > 5000000 ? ' (Before TDS)' : ''}</span>
                       <span className="ad-calc-value">{formatINR(whitePayment)}</span>
@@ -374,27 +367,26 @@ const AddDeal = () => {
           </div>
 
           {/* ── Section 4: Notes ── */}
-          <div className="ad-section">
-            <div className="ad-section-header">
+          <div className="ad-section app-card">
+            <div className="ad-section-header app-section-header">
               {/* <span className="ad-section-icon">📝</span> */}
               <h2 className="ad-section-title">Notes</h2>
             </div>
             <Field label="Additional Notes" hint="Add any additional information or remarks">
-              <textarea
+              <AppTextarea
                 className="ad-input ad-textarea"
                 name="notes"
                 placeholder="e.g., Special conditions, important details, etc."
                 value={formData.notes}
                 onChange={handleChange}
                 rows="4"
-                style={{ resize: 'vertical', minHeight: '100px' }}
               />
             </Field>
           </div>
 
           {/* ── Section 5: Deadline ── */}
-          <div className="ad-section">
-            <div className="ad-section-header">
+          <div className="ad-section app-card">
+            <div className="ad-section-header app-section-header">
               {/* <span className="ad-section-icon">📅</span> */}
               <h2 className="ad-section-title">Payment Deadlines</h2>
             </div>
@@ -402,7 +394,7 @@ const AddDeal = () => {
               <Field label="Deal Date:">
                 <input
                   type="date"
-                  className="ad-input"
+                  className="ad-input app-input"
                   name="dealDate"
                   value={formData.dealDate}
                   onChange={handleChange}
@@ -411,7 +403,7 @@ const AddDeal = () => {
               <Field label="25% Deadline">
                 <input
                   type="date"
-                  className="ad-input"
+                  className="ad-input app-input"
                   name="deadlineStartDate"
                   value={formData.deadlineStartDate}
                   onChange={handleChange}
@@ -420,7 +412,7 @@ const AddDeal = () => {
               <Field label="75% Deadline">
                 <input
                   type="date"
-                  className="ad-input"
+                  className="ad-input app-input"
                   name="deadlineEndDate"
                   value={formData.deadlineEndDate}
                   onChange={handleChange}
@@ -430,17 +422,17 @@ const AddDeal = () => {
           </div>
 
           {/* ── Action Buttons ── */}
-          <div className="ad-actions">
+          <div className="ad-actions app-actions-row">
             <button
               type="button"
-              className="ad-btn ad-btn--cancel"
+              className="ad-btn app-btn ad-btn--cancel"
               onClick={() => navigate(-1)}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="ad-btn ad-btn--submit"
+              className="ad-btn app-btn ad-btn--submit"
               disabled={loading}
             >
               {loading ? (

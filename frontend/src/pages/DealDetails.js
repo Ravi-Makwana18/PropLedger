@@ -4,6 +4,8 @@ import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import AppSelect from '../components/ui/AppSelect';
+import AppTextarea from '../components/ui/AppTextarea';
 import './DealDetails.css';
 
 /* ─────────────────────────────────────────────
@@ -70,6 +72,11 @@ const DealDetails = () => {
   });
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [expandedSections, setExpandedSections] = useState([]); // Default all sections closed for mobile
+  const [isEditingDeal, setIsEditingDeal] = useState(false);
+  const [isSavingDeal, setIsSavingDeal] = useState(false);
+  const [editDealForm, setEditDealForm] = useState({});
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [editNotesValue, setEditNotesValue] = useState('');
 
   // Toggle section expansion for mobile
   const toggleSection = (sectionId) => {
@@ -253,6 +260,76 @@ const DealDetails = () => {
     setDraggedIndex(null);
   };
 
+  const handleOpenEditDeal = () => {
+    const d = dealData.deal;
+    setEditDealForm({
+      brokerName: d.brokerName || '',
+      dealType: d.dealType || 'Buy',
+      naType: d.naType || '',
+      dealDate: d.dealDate ? new Date(d.dealDate).toISOString().split('T')[0] : '',
+      district: d.district || '',
+      subDistrict: d.subDistrict || '',
+      villageName: d.villageName || '',
+      oldSurveyNo: d.oldSurveyNo || '',
+      newSurveyNo: d.newSurveyNo || d.surveyNumber || '',
+      pricePerSqYard: d.pricePerSqYard || '',
+      totalSqYard: d.totalSqYard || '',
+      totalSqMeter: d.totalSqMeter || '',
+      jantri: d.jantri || '',
+      deadlineStartDate: d.deadlineStartDate ? new Date(d.deadlineStartDate).toISOString().split('T')[0] : '',
+      deadlineEndDate: d.deadlineEndDate ? new Date(d.deadlineEndDate).toISOString().split('T')[0] : '',
+    });
+    setIsEditingDeal(true);
+  };
+
+  const handleSaveDeal = async () => {
+    setError('');
+    setSuccess('');
+    setIsSavingDeal(true);
+    try {
+      const { data: updatedDeal } = await API.put(`/api/deals/${id}`, {
+        ...editDealForm,
+        pricePerSqYard: parseFloat(editDealForm.pricePerSqYard) || 0,
+        totalSqYard: parseFloat(editDealForm.totalSqYard) || 0,
+        totalSqMeter: parseFloat(editDealForm.totalSqMeter) || 0,
+        jantri: parseFloat(editDealForm.jantri) || 0,
+      });
+      const newJantriAmt = (updatedDeal.jantri || 0) * (updatedDeal.totalSqMeter || 0);
+      const newOtherAmt = updatedDeal.totalAmount - newJantriAmt;
+      setDealData(prev => ({
+        ...prev,
+        deal: updatedDeal,
+        jantriAmount: newJantriAmt,
+        otherAmount: newOtherAmt,
+        remainingAmount: updatedDeal.totalAmount - prev.totalPaid,
+        jantriRemaining: newJantriAmt - (prev.bankPaid || 0),
+        otherRemaining: newOtherAmt - (prev.otherPaid || 0),
+      }));
+      setSuccess('Deal updated successfully');
+      setIsEditingDeal(false);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update deal');
+    } finally {
+      setIsSavingDeal(false);
+    }
+  };
+
+  const handleSaveNotes = async () => {
+    setError('');
+    setSuccess('');
+    setIsSavingDeal(true);
+    try {
+      const { data: updatedDeal } = await API.put(`/api/deals/${id}`, { notes: editNotesValue });
+      setDealData(prev => ({ ...prev, deal: { ...prev.deal, notes: updatedDeal.notes } }));
+      setSuccess('Notes updated successfully');
+      setIsEditingNotes(false);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update notes');
+    } finally {
+      setIsSavingDeal(false);
+    }
+  };
+
   const formatCurrency = (amount) =>
     new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
 
@@ -319,10 +396,10 @@ const DealDetails = () => {
       doc.setFontSize(14);
       doc.setTextColor(79, 70, 229);
       doc.setFont('helvetica', 'bold');
-      doc.text('Deal Details', pageWidth / 2, 40, { align: 'center' });
+      doc.text('Deal Details', pageWidth / 2, 44, { align: 'center' });
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
-      let yPos = 50;
+      let yPos = 55;
 
 
       // Helper function to print two columns
@@ -343,14 +420,7 @@ const DealDetails = () => {
       printRow('District:', deal.district || 'N/A', 'Sub-District:', deal.subDistrict || 'N/A', yPos);
       yPos += 8;
 
-      // // Broker Name (if exists)
-      // if (deal.brokerName) {
-      //   doc.setFont('helvetica', 'bold');
-      //   doc.text('Broker Name:', 14, yPos);
-      //   doc.setFont('helvetica', 'normal');
-      //   doc.text(deal.brokerName, 55, yPos);
-      //   yPos += 8;
-      // }
+    
 
 
       // Village and deal type
@@ -361,13 +431,7 @@ const DealDetails = () => {
       // NA Type (if exists)
       printRow('NA Type:', deal.naType || 'N/A', 'Deal Date:', deal.dealDate ? formatDate(deal.dealDate) : 'N/A', yPos);
       yPos += 8;
-      // if (deal.naType) {
-      //   doc.setFont('helvetica', 'bold');
-      //   doc.text('NA Type:', 14, yPos);
-      //   doc.setFont('helvetica', 'normal');
-      //   doc.text(deal.naType, 55, yPos);
-      //   yPos += 8;
-      // }
+    
 
       // Old Survey No. and New Survey No.
       printRow('Old Survey No.:', deal.oldSurveyNo || 'N/A', 'New Survey No.:', deal.newSurveyNo || deal.surveyNumber || 'N/A', yPos);
@@ -428,7 +492,7 @@ const DealDetails = () => {
       printRow('25% Deadline:', deal.deadlineStartDate ? formatDate(deal.deadlineStartDate) : 'N/A', '75% Deadline:', deal.deadlineEndDate ? formatDate(deal.deadlineEndDate) : 'N/A', yPos);
       yPos += 8;
 
-      yPos += 8;
+      yPos += 15;
       doc.setFontSize(14);
       doc.setTextColor(79, 70, 229);
       doc.setFont('helvetica', 'bold');
@@ -447,9 +511,9 @@ const DealDetails = () => {
         startY: yPos,
         head: [['Description', 'Total Amount', 'JR Amount', 'Other Amount']],
         body: [
-          ['Target Amount', formatPDFCurrency(deal.totalAmount), formatPDFCurrency(jantriAmount || 0), formatPDFCurrency(otherAmount || 0)],
-          ['Total Paid', formatPDFCurrency(totalPaid), formatPDFCurrency(bPaid || 0), formatPDFCurrency(oPaid || 0)],
-          ['Remaining', formatPDFCurrency(remainingAmount), formatPDFCurrency(jRem), formatPDFCurrency(oRem)]
+          ['Deal Amount', formatPDFCurrency(deal.totalAmount), formatPDFCurrency(jantriAmount || 0), formatPDFCurrency(otherAmount || 0)],
+          ['Total Paid Amount', formatPDFCurrency(totalPaid), formatPDFCurrency(bPaid || 0), formatPDFCurrency(oPaid || 0)],
+          ['Remaining Amount', formatPDFCurrency(remainingAmount), formatPDFCurrency(jRem), formatPDFCurrency(oRem)]
         ],
         theme: 'grid',
         headStyles: { fillColor: [79, 70, 229], textColor: 255 },
@@ -470,40 +534,6 @@ const DealDetails = () => {
           }
         }
       });
-
-      // Notes section — below payment summary
-      if (deal.notes) {
-        const notesStartY = doc.lastAutoTable.finalY + 12;
-        const notesX = 14;
-        const notesWidth = pageWidth - 28;
-
-        // Label
-        doc.setFontSize(11);
-        doc.setTextColor(0);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Notes:', notesX, notesStartY);
-
-        // Box
-        const noteLines = doc.splitTextToSize(deal.notes, notesWidth - 8);
-        const lineHeight = 6;
-        const boxHeight = noteLines.length * lineHeight + 10;
-        doc.setDrawColor(200, 200, 200);
-        doc.setFillColor(250, 250, 245);
-        doc.roundedRect(notesX, notesStartY + 4, notesWidth, boxHeight, 2, 2, 'FD');
-
-        // Text inside box
-        doc.setFontSize(10);
-        doc.setTextColor(50, 50, 50);
-        doc.setFont('helvetica', 'normal');
-        doc.text(noteLines, notesX + 4, notesStartY + 4 + lineHeight);
-      }
-
-      // // Jantri / Other Amount Summary Table
-      // yPos = doc.lastAutoTable.finalY + 10;
-      // doc.setFontSize(12);
-      // doc.setTextColor(0, 0, 0);
-      // doc.text('Amount Breakdown:', 14, yPos);
-      // yPos += 5;
 
 
       if (payments && payments.length > 0) {
@@ -543,7 +573,7 @@ const DealDetails = () => {
           tableWidth: 182,
           columnStyles: {
             0: { cellWidth: 10, halign: 'center' },
-            1: { cellWidth: 28 },
+            1: { cellWidth: 28, halign: 'center' },
             2: { cellWidth: 40, halign: 'right' },
             3: { cellWidth: 40, halign: 'right' },
             4: { cellWidth: 64, overflow: 'linebreak' }
@@ -555,13 +585,39 @@ const DealDetails = () => {
         autoTable(doc, {
           startY: doc.lastAutoTable.finalY + 10,
           body: [
-            ['PAID AMOUNT', '', formatPDFCurrency(totalPaid), ''],
-            ['PENDING AMOUNT', '', formatPDFCurrency(remainingAmount), '']
+            ['PAID AMOUNT', '', formatPDFCurrency(totalPaid), '']
           ],
           theme: 'plain',
           styles: { fontStyle: 'bold', fillColor: [210, 250, 230] },
           margin: { left: 30, right: 30 }
         });
+
+        // Notes section
+      if (deal.notes) {
+        const notesStartY = doc.lastAutoTable.finalY + 12;
+        const notesX = 14;
+        const notesWidth = pageWidth - 28;
+
+        // Label
+        doc.setFontSize(11);
+        doc.setTextColor(0);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Notes:', notesX, notesStartY);
+
+        // Box
+        const noteLines = doc.splitTextToSize(deal.notes, notesWidth - 8);
+        const lineHeight = 6;
+        const boxHeight = noteLines.length * lineHeight;
+        doc.setDrawColor(200, 200, 200);
+        doc.setFillColor(250, 250, 245);
+        doc.roundedRect(notesX, notesStartY + 4, notesWidth, boxHeight, 2, 2, 'FD');
+
+        // Text inside box
+        doc.setFontSize(10);
+        doc.setTextColor(50, 50, 50);
+        doc.setFont('helvetica', 'normal');
+        doc.text(noteLines, notesX + 4, notesStartY + 4 + lineHeight);
+      }
       }
 
       const pageCount = doc.internal.getNumberOfPages();
@@ -592,7 +648,7 @@ const DealDetails = () => {
         );
       }
 
-      doc.save(`${deal.villageName}_${deal.surveyNumber}.pdf`);
+      doc.save(`${deal.villageName}_${deal.surveyNumber}_${deal.dealType}.pdf`);
       setIsGeneratingPDF(false);
     }, 800);
   };
@@ -605,7 +661,7 @@ const DealDetails = () => {
       <div className="dd-page">
         <div className="dd-wrapper">
           {/* Header skeleton */}
-          <div className="dd-page-header" style={{ marginBottom: '1.5rem' }}>
+          <div className="dd-page-header dd-page-header--skeleton">
             <div className="dd-sk-line" style={{ width: 70, height: 32, borderRadius: 8 }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.75rem' }}>
               <div className="dd-sk-line" style={{ width: 48, height: 48, borderRadius: 12 }} />
@@ -677,7 +733,7 @@ const DealDetails = () => {
       <div className="dd-wrapper">
 
         {/* ── Page Header ── */}
-        <div className="dd-page-header">
+        <div className="dd-page-header app-card">
           <div className="dd-page-title-block">
             {/* <div className="dd-page-icon">🏡</div> */}
             <div>
@@ -688,15 +744,28 @@ const DealDetails = () => {
         </div>
 
         {/* ── Toasts ── */}
-        {error && <div className="dd-toast dd-toast--error"><span>⚠️</span> {error}</div>}
-        {success && <div className="dd-toast dd-toast--success"><span>✅</span> {success}</div>}
+        {error && <div className="dd-toast dd-toast--error pl-alert pl-alert--error"><span>⚠️</span> {error}</div>}
+        {success && <div className="dd-toast dd-toast--success pl-alert pl-alert--success"><span>✅</span> {success}</div>}
 
         {/* ── Section 1: Deal Information ── */}
         <div className={`dd-section ${expandedSections.includes('deal-info') ? 'dd-section--expanded' : ''}`}>
-          <div className="dd-section-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, cursor: 'pointer' }} onClick={() => toggleSection('deal-info')}>
+          <div className="dd-section-header app-section-header">
+            <div className="dd-section-toggle-hit" onClick={() => toggleSection('deal-info')}>
               {/* <span className="dd-section-icon">📋</span> */}
               <h2 className="dd-section-title">Deal Information</h2>
+              {isAdmin && (
+                <button
+                  className="dd-edit-icon-btn app-btn"
+                  onClick={(e) => { e.stopPropagation(); handleOpenEditDeal(); }}
+                  title="Edit Deal Information"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                  <span className="dd-edit-icon-label">Edit</span>
+                </button>
+              )}
             </div>
           </div>
           <div className="dd-section-content">
@@ -723,10 +792,63 @@ const DealDetails = () => {
           </div>
         </div>
 
+        {/* ── Section: Notes ── */}
+        <div className={`dd-section ${expandedSections.includes('notes') ? 'dd-section--expanded' : ''}`}>
+          <div className="dd-section-header app-section-header">
+            <div className="dd-section-toggle-hit" onClick={() => toggleSection('notes')}>
+              <h2 className="dd-section-title">Notes</h2>
+              {isAdmin && !isEditingNotes && (
+                <button
+                  className="dd-edit-icon-btn app-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditNotesValue(deal.notes || '');
+                    setIsEditingNotes(true);
+                    if (!expandedSections.includes('notes')) {
+                      setExpandedSections(prev => [...prev, 'notes']);
+                    }
+                  }}
+                  title="Edit Notes"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                  <span className="dd-edit-icon-label">Edit</span>
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="dd-section-content">
+            {isEditingNotes ? (
+              <>
+                <AppTextarea
+                  className="dd-notes-input"
+                  value={editNotesValue}
+                  onChange={(e) => setEditNotesValue(e.target.value)}
+                  rows={4}
+                  placeholder="Add notes here..."
+                  autoFocus
+                />
+                <div className="dd-notes-edit-actions app-actions-row">
+                  <button className="dd-btn app-btn dd-btn--ghost dd-btn--sm" onClick={() => setIsEditingNotes(false)} disabled={isSavingDeal}>Cancel</button>
+                  <button className="dd-btn app-btn dd-btn--submit dd-btn--sm" onClick={handleSaveNotes} disabled={isSavingDeal}>
+                    {isSavingDeal ? <><span className="dd-spinner" /> Saving...</> : 'Save'}
+                  </button>
+                </div>
+              </>
+            ) : deal.notes ? (
+              <div className="dd-notes-display">{deal.notes}</div>
+            ) : (
+              <p className="dd-notes-empty">{isAdmin ? 'No notes yet — click the edit icon to add.' : 'No notes.'}</p>
+            )}
+          </div>
+        </div>
+
         {/* ── Section 2: Payment Summary ── */}
         <div className={`dd-section ${expandedSections.includes('payment-summary') ? 'dd-section--expanded' : ''}`}>
-          <div className="dd-section-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, cursor: 'pointer' }} onClick={() => toggleSection('payment-summary')}>
+          <div className="dd-section-header app-section-header">
+            <div className="dd-section-toggle-hit" onClick={() => toggleSection('payment-summary')}>
               {/* <span className="dd-section-icon">💰</span> */}
               <h2 className="dd-section-title">Payment Summary</h2>
             </div>
@@ -735,8 +857,8 @@ const DealDetails = () => {
 
 
 
-            {/* Row 2: Payment Status (overall) */}
-            <div className="dd-stat-grid" style={{ marginTop: '1.5rem' }}>
+            {/* Row 1: Payment Status (overall) */}
+            <div className="dd-stat-grid dd-stat-grid--mt-lg">
               <StatCard label="Total Amount" value={formatCurrency(deal.totalAmount)} variant="total" />
               <StatCard label="Total Paid" value={formatCurrency(totalPaid)} variant="paid" />
               <StatCard
@@ -765,7 +887,7 @@ const DealDetails = () => {
                 </span>
               </div>
             )}
-            {/* Row 3: Per-mode breakdown (Bank → Jantri | Other → Other) */}
+            {/* Row 2: Per-mode breakdown (Bank → Jantri | Other → Other) */}
             {(jantriAmount > 0 || otherAmount > 0) && (
               <>
                 <div style={{ marginTop: '1.25rem', marginBottom: '0.5rem', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted, #6b7280)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
@@ -811,8 +933,8 @@ const DealDetails = () => {
 
         {/* ── Section 3: Payment History ── */}
         <div className={`dd-section ${expandedSections.includes('payment-history') ? 'dd-section--expanded' : ''}`}>
-          <div className="dd-section-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, cursor: 'pointer' }} onClick={() => toggleSection('payment-history')}>
+          <div className="dd-section-header app-section-header">
+            <div className="dd-section-toggle-hit" onClick={() => toggleSection('payment-history')}>
               {/* <span className="dd-section-icon">📜</span> */}
               <h2 className="dd-section-title">Payment History</h2>
               <span className="dd-payment-count">{payments.length} record{payments.length !== 1 ? 's' : ''}</span>
@@ -837,8 +959,8 @@ const DealDetails = () => {
 
             {/* Add Payment Form */}
             {showPaymentForm && (
-              <div className="dd-payment-form-card">
-                <div className="dd-section-header" style={{ marginBottom: '1rem' }}>
+              <div className="dd-payment-form-card app-card">
+                <div className="dd-section-header app-section-header dd-section-header--tight">
                   <h3 className="dd-section-title">Add Payment Record</h3>
                 </div>
                 <form onSubmit={handlePaymentSubmit} noValidate>
@@ -847,7 +969,7 @@ const DealDetails = () => {
                       <label className="dd-label">Date <span className="dd-required">*</span></label>
                       <input
                         type="date"
-                        className="dd-input"
+                        className="dd-input app-input"
                         value={paymentForm.date}
                         onChange={(e) => setPaymentForm({ ...paymentForm, date: e.target.value })}
                         required
@@ -855,7 +977,7 @@ const DealDetails = () => {
                     </div>
                     <div className="dd-field">
                       <label className="dd-label">Mode of Payment <span className="dd-required">*</span></label>
-                      <select
+                      <AppSelect
                         className="dd-input"
                         value={paymentForm.modeOfPayment}
                         onChange={(e) => setPaymentForm({ ...paymentForm, modeOfPayment: e.target.value })}
@@ -863,7 +985,7 @@ const DealDetails = () => {
                       >
                         <option value="Bank">Bank</option>
                         <option value="Other">Other</option>
-                      </select>
+                      </AppSelect>
                     </div>
                     <div className="dd-field">
                       <label className="dd-label">Amount (₹) <span className="dd-required">*</span></label>
@@ -871,7 +993,7 @@ const DealDetails = () => {
                         <span className="dd-input-prefix">₹</span>
                         <input
                           type="number"
-                          className="dd-input dd-input--prefixed"
+                          className="dd-input app-input dd-input--prefixed"
                           placeholder="0.00"
                           value={paymentForm.amount}
                           onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
@@ -882,9 +1004,9 @@ const DealDetails = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="dd-field" style={{ marginTop: '0.75rem' }}>
+                  <div className="dd-field dd-field--mt-sm">
                     <label className="dd-label">Remarks</label>
-                    <textarea
+                    <AppTextarea
                       className="dd-input dd-textarea"
                       placeholder="e.g., IN HAND ALPESH BHAI"
                       value={paymentForm.remarks}
@@ -892,11 +1014,11 @@ const DealDetails = () => {
                       rows="2"
                     />
                   </div>
-                  <div className="dd-form-actions">
-                    <button type="button" className="dd-btn dd-btn--ghost" onClick={() => { setShowPaymentForm(false); setPaymentForm({ date: new Date().toISOString().split('T')[0], modeOfPayment: 'Bank', amount: '', remarks: '' }); }} disabled={isSavingPayment}>
+                  <div className="dd-form-actions app-actions-row">
+                    <button type="button" className="dd-btn app-btn dd-btn--ghost" onClick={() => { setShowPaymentForm(false); setPaymentForm({ date: new Date().toISOString().split('T')[0], modeOfPayment: 'Bank', amount: '', remarks: '' }); }} disabled={isSavingPayment}>
                       Cancel
                     </button>
-                    <button type="submit" className="dd-btn dd-btn--submit" disabled={isSavingPayment}>
+                    <button type="submit" className="dd-btn app-btn dd-btn--submit" disabled={isSavingPayment}>
                       {isSavingPayment ? (
                         <>
                           <span className="dd-spinner" />
@@ -1019,13 +1141,120 @@ const DealDetails = () => {
               </>
             ) : (
               <>
-                Export PDF
+                Download Report
               </>
             )}
           </button>
         </div>
 
       </div>
+
+      {/* ── Edit Deal Modal ── */}
+      {isEditingDeal && (
+        <div className="logout-modal-overlay" onClick={() => !isSavingDeal && setIsEditingDeal(false)}>
+          <div className="dashboard-modal dashboard-modal--large" onClick={e => e.stopPropagation()}>
+            <div className="dashboard-modal-header">
+              <h3 className="dashboard-modal-title">Edit Deal Information</h3>
+              <button className="dashboard-modal-close" onClick={() => setIsEditingDeal(false)} disabled={isSavingDeal}>
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div className="dashboard-modal-body">
+              <div className="dashboard-edit-form">
+                <div className="dashboard-form-row">
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">Village Name</label>
+                    <input type="text" className="dashboard-form-input" value={editDealForm.villageName} onChange={e => setEditDealForm(p => ({...p, villageName: e.target.value}))} />
+                  </div>
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">Deal Type</label>
+                    <AppSelect className="dashboard-form-input" value={editDealForm.dealType} onChange={e => setEditDealForm(p => ({...p, dealType: e.target.value}))}>
+                      <option value="Buy">Buy</option>
+                      <option value="Sell">Sell</option>
+                      <option value="Other">Other</option>
+                    </AppSelect>
+                  </div>
+                </div>
+                <div className="dashboard-form-row">
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">Broker Name</label>
+                    <input type="text" className="dashboard-form-input" value={editDealForm.brokerName} onChange={e => setEditDealForm(p => ({...p, brokerName: e.target.value}))} />
+                  </div>
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">NA Type</label>
+                    <input type="text" className="dashboard-form-input" value={editDealForm.naType} onChange={e => setEditDealForm(p => ({...p, naType: e.target.value}))} />
+                  </div>
+                </div>
+                <div className="dashboard-form-row">
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">District</label>
+                    <input type="text" className="dashboard-form-input" value={editDealForm.district} onChange={e => setEditDealForm(p => ({...p, district: e.target.value}))} />
+                  </div>
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">Sub District</label>
+                    <input type="text" className="dashboard-form-input" value={editDealForm.subDistrict} onChange={e => setEditDealForm(p => ({...p, subDistrict: e.target.value}))} />
+                  </div>
+                </div>
+                <div className="dashboard-form-row">
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">Old Survey No.</label>
+                    <input type="text" className="dashboard-form-input" value={editDealForm.oldSurveyNo} onChange={e => setEditDealForm(p => ({...p, oldSurveyNo: e.target.value}))} />
+                  </div>
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">New Survey No.</label>
+                    <input type="text" className="dashboard-form-input" value={editDealForm.newSurveyNo} onChange={e => setEditDealForm(p => ({...p, newSurveyNo: e.target.value}))} />
+                  </div>
+                </div>
+                <div className="dashboard-form-row">
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">Deal Date</label>
+                    <input type="date" className="dashboard-form-input" value={editDealForm.dealDate} onChange={e => setEditDealForm(p => ({...p, dealDate: e.target.value}))} />
+                  </div>
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">Unit Price</label>
+                    <input type="number" className="dashboard-form-input" value={editDealForm.pricePerSqYard} onChange={e => setEditDealForm(p => ({...p, pricePerSqYard: e.target.value}))} min="0" step="0.01" />
+                  </div>
+                </div>
+                <div className="dashboard-form-row">
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">Total Area (sq. yds)</label>
+                    <input type="number" className="dashboard-form-input" value={editDealForm.totalSqYard} onChange={e => setEditDealForm(p => ({...p, totalSqYard: e.target.value}))} min="0" step="0.01" />
+                  </div>
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">Total Area (sq. mtr)</label>
+                    <input type="number" className="dashboard-form-input" value={editDealForm.totalSqMeter} onChange={e => setEditDealForm(p => ({...p, totalSqMeter: e.target.value}))} min="0" step="0.01" />
+                  </div>
+                </div>
+                <div className="dashboard-form-row">
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">Jantri Rate (₹/sq.mtr)</label>
+                    <input type="number" className="dashboard-form-input" value={editDealForm.jantri} onChange={e => setEditDealForm(p => ({...p, jantri: e.target.value}))} min="0" step="0.01" />
+                  </div>
+                  <div className="dashboard-form-group" />
+                </div>
+                <div className="dashboard-form-row">
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">25% Deadline</label>
+                    <input type="date" className="dashboard-form-input" value={editDealForm.deadlineStartDate} onChange={e => setEditDealForm(p => ({...p, deadlineStartDate: e.target.value}))} />
+                  </div>
+                  <div className="dashboard-form-group">
+                    <label className="dashboard-form-label">75% Deadline</label>
+                    <input type="date" className="dashboard-form-input" value={editDealForm.deadlineEndDate} onChange={e => setEditDealForm(p => ({...p, deadlineEndDate: e.target.value}))} />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="dashboard-modal-actions">
+              <button className="dashboard-modal-btn dashboard-modal-btn--cancel" onClick={() => setIsEditingDeal(false)} disabled={isSavingDeal}>Cancel</button>
+              <button className="dashboard-modal-btn dashboard-modal-btn--confirm" onClick={handleSaveDeal} disabled={isSavingDeal}>
+                {isSavingDeal ? <><span className="modal-spinner" /> Saving...</> : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Edit Payment Modal ── */}
       {editingPaymentId && (() => {
@@ -1058,7 +1287,7 @@ const DealDetails = () => {
                     </div>
                     <div className="dashboard-form-group">
                       <label className="dashboard-form-label">Mode of Payment</label>
-                      <select
+                      <AppSelect
                         name="modeOfPayment"
                         className="dashboard-form-input"
                         value={editPaymentForm.modeOfPayment}
@@ -1066,7 +1295,7 @@ const DealDetails = () => {
                       >
                         <option value="Bank">Bank</option>
                         <option value="Other">Other</option>
-                      </select>
+                      </AppSelect>
                     </div>
                   </div>
 
@@ -1086,14 +1315,13 @@ const DealDetails = () => {
 
                   <div className="dashboard-form-group">
                     <label className="dashboard-form-label">Remarks(optional)</label>
-                    <textarea
+                    <AppTextarea
                       name="remarks"
-                      className="dashboard-form-input"
+                      className="dashboard-form-input dd-textarea-resize"
                       value={editPaymentForm.remarks}
                       onChange={handleEditFormChange}
                       rows="3"
                       placeholder="Add any notes or remarks..."
-                      style={{ resize: 'vertical' }}
                     />
                   </div>
                 </div>
@@ -1134,7 +1362,7 @@ const DealDetails = () => {
               <p className="logout-modal-desc">
                 Are you sure you want to delete this payment record?<br />
                 {payment && <><strong>{formatCurrency(payment.amount)}</strong> &mdash; {payment.modeOfPayment}</>}<br />
-                <span style={{ color: '#e53e3e', fontSize: '0.82rem' }}>This action cannot be undone.</span>
+                <span className="dd-danger-note">This action cannot be undone.</span>
               </p>
               <div className="logout-modal-actions">
                 <button className="logout-modal-btn logout-modal-btn--cancel" onClick={() => setConfirmDeletePaymentId(null)} disabled={isDeletingPayment}>Cancel</button>

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AppCard from '../components/ui/AppCard';
+import AppInput from '../components/ui/AppInput';
+import AppButton from '../components/ui/AppButton';
 import './Login.css';
 
 const Login = () => {
@@ -81,7 +84,7 @@ const Login = () => {
           <span className="auth-mobile-brand">PropLedger</span>
         </div>
 
-        <div className="auth-form-container">
+        <AppCard className="auth-form-container">
           <div className="auth-form-header">
             <div className="auth-welcome-badge">Welcome Back</div>
             <h2 className="auth-form-title">Sign in to your account</h2>
@@ -89,7 +92,7 @@ const Login = () => {
           </div>
 
           {error && (
-            <div className="auth-error-alert">
+            <div className="auth-error-alert pl-alert pl-alert--error">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
               </svg>
@@ -107,7 +110,7 @@ const Login = () => {
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
-                <input
+                <AppInput
                   id="email"
                   name="email"
                   type="email"
@@ -129,7 +132,7 @@ const Login = () => {
                 <svg className="auth-input-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
-                <input
+                <AppInput
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
@@ -161,7 +164,7 @@ const Login = () => {
               </div>
             </div>
 
-            <button
+            <AppButton
               type="submit"
               className="auth-submit-btn"
               disabled={loading}
@@ -179,20 +182,20 @@ const Login = () => {
                   </svg>
                 </>
               )}
-            </button>
+            </AppButton>
           </form>
 
           <div className="auth-divider">
             <span>New to PropLedger?</span>
           </div>
 
-          <Link to="/register" className="auth-secondary-btn">
+          <Link to="/register" className="auth-secondary-btn app-btn">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
               <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
             </svg>
             <span>Create New Account</span>
           </Link>
-        </div>
+        </AppCard>
       </div>
     </div>
   );

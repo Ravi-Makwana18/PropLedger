@@ -5,7 +5,7 @@
  * Defines the user schema with authentication features
  * Includes password hashing, OTP generation, and role-based access
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
@@ -114,14 +114,7 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String
   },
-  otp: {
-    type: String,
-    select: false  // Don't include OTP in queries by default
-  },
-  otpExpiry: {
-    type: Date,
-    select: false  // Don't include OTP expiry in queries by default
-  },
+
   isVerified: {
     type: Boolean,
     default: false
@@ -177,34 +170,6 @@ userSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-/**
- * Instance method to generate 6-digit OTP
- * Sets OTP expiry to 10 minutes from now
- * 
- * @returns {string} 6-digit OTP code
- */
-userSchema.methods.generateOTP = function() {
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  this.otp = otp;
-  this.otpExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
-  return otp;
-};
 
-/**
- * Instance method to verify OTP
- * Checks both OTP value and expiry time
- * 
- * @param {string} enteredOTP - OTP to verify
- * @returns {boolean} True if OTP is valid and not expired
- */
-userSchema.methods.verifyOTP = function(enteredOTP) {
-  if (this.otp !== enteredOTP) {
-    return false;
-  }
-  if (Date.now() > this.otpExpiry) {
-    return false;
-  }
-  return true;
-};
 
 module.exports = mongoose.model('User', userSchema);

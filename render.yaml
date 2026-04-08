@@ -1,12 +1,19 @@
 services:
   - type: web
-    name: PropLedger
-    runtime: node
-    rootDir: backend
-    buildCommand: npm install
-    startCommand: node server.js
+    name: propledger-backend
+    env: node
+    buildCommand: npm install --prefix backend
+    startCommand: npm start --prefix backend
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 5001
+      - key: MONGO_URI
+        sync: false          # set in Render dashboard
+      - key: JWT_SECRET
+        sync: false          # set in Render dashboard
+      - key: JWT_EXPIRE
+        value: 30d
+      - key: FRONTEND_URL
+        sync: false          # set in Render dashboard (your Vercel URL)

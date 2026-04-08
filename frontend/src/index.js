@@ -4,7 +4,7 @@
  * ============================================
  * Initializes React application and renders root component
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 

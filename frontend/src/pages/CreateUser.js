@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import API from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import AppCard from '../components/ui/AppCard';
+import AppInput from '../components/ui/AppInput';
+import AppButton from '../components/ui/AppButton';
 import './CreateUser.css';
 
 const CreateUser = () => {
@@ -81,9 +84,9 @@ const CreateUser = () => {
             </div>
           </div>
         </div>
-        <div className="cu-content">
-          <div className="cu-error">You don't have permission to access this page.</div>
-        </div>
+        <AppCard className="cu-content">
+          <div className="cu-error pl-state pl-state--error">You don't have permission to access this page.</div>
+        </AppCard>
       </div>
     );
   }
@@ -111,13 +114,13 @@ const CreateUser = () => {
       </div>
 
       {/* Main Content */}
-      <div className="cu-content">
+      <AppCard className="cu-content">
         <p className="cu-description">
           Create a staff user with deal access. This staff user can create, update and manage deals, but cannot create another user.
         </p>
 
         {error && (
-          <div className="cu-alert cu-alert--error">
+          <div className="cu-alert cu-alert--error pl-alert pl-alert--error">
             <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
             </svg>
@@ -126,7 +129,7 @@ const CreateUser = () => {
         )}
 
         {success && (
-          <div className="cu-alert cu-alert--success">
+          <div className="cu-alert cu-alert--success pl-alert pl-alert--success">
             <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
@@ -137,7 +140,7 @@ const CreateUser = () => {
         <form className="cu-form" onSubmit={handleSubmit}>
           <div className="cu-field">
             <label className="cu-label" htmlFor="name">Full Name</label>
-            <input
+            <AppInput
               id="name"
               type="text"
               name="name"
@@ -151,7 +154,7 @@ const CreateUser = () => {
 
           <div className="cu-field">
             <label className="cu-label" htmlFor="phone">Phone Number</label>
-            <input
+            <AppInput
               id="phone"
               type="tel"
               name="phone"
@@ -165,7 +168,7 @@ const CreateUser = () => {
 
           <div className="cu-field">
             <label className="cu-label" htmlFor="email">Email Address</label>
-            <input
+            <AppInput
               id="email"
               type="email"
               name="email"
@@ -180,7 +183,7 @@ const CreateUser = () => {
           <div className="cu-field">
             <label className="cu-label" htmlFor="password">Password</label>
             <div className="cu-password-wrap">
-              <input
+              <AppInput
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 name="password"
@@ -200,7 +203,7 @@ const CreateUser = () => {
             </div>
           </div>
 
-          <button
+          <AppButton
             type="submit"
             className="cu-submit-btn"
             disabled={isLoading}
@@ -213,9 +216,9 @@ const CreateUser = () => {
             ) : (
               'Create User'
             )}
-          </button>
+          </AppButton>
         </form>
-      </div>
+      </AppCard>
     </div>
   );
 };

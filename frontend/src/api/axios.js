@@ -5,7 +5,7 @@
  * Configures Axios instance with base URL and authentication
  * Automatically injects JWT token from localStorage for all requests
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 

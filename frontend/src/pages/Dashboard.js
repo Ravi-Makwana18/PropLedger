@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import AppInput from '../components/ui/AppInput';
+import AppButton from '../components/ui/AppButton';
+import AppSelect from '../components/ui/AppSelect';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -223,8 +226,8 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="dashboard-page">
-        <div className="dashboard-skeleton-card" style={{ height: 200, marginBottom: '2rem' }} />
-        <div className="dashboard-skeleton-card" style={{ height: 80, marginBottom: '1.5rem' }} />
+        <div className="dashboard-skeleton-card dashboard-skeleton-card--hero" />
+        <div className="dashboard-skeleton-card dashboard-skeleton-card--filters" />
         <div className="dashboard-deals-grid">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="dashboard-skeleton-card" />
@@ -342,18 +345,18 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {error && <div className="hp-error-banner">⚠️ {error}</div>}
+      {error && <div className="hp-error-banner pl-alert pl-alert--error">⚠️ {error}</div>}
 
       {/* ── Filters Bar ── */}
       <div className="dashboard-filters-wrap">
-        <div className="dashboard-filters">
+        <div className="dashboard-filters app-card">
           {/* Search */}
           <div className="dashboard-search-wrap">
             <svg className="dashboard-search-icon" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <input
+            <AppInput
               type="text"
               className="dashboard-search-input"
               placeholder="Search by village name or survey number…"
@@ -363,17 +366,17 @@ const Dashboard = () => {
             />
           </div>
 
-          <button onClick={handleSearch} className="dashboard-search-btn">
+          <AppButton onClick={handleSearch} className="dashboard-search-btn">
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.9" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
               <circle cx="11" cy="11" r="8" />
               <line x1="24" y1="24" x2="16.65" y2="16.65" />
             </svg>
             <span className="dashboard-search-btn-text">Search</span>
-          </button>
+          </AppButton>
 
           {/* Sort Button */}
-          <div style={{ position: 'relative' }}>
-            <button
+          <div className="dashboard-sort-wrap">
+            <AppButton
               className="dashboard-sort-btn"
               onClick={() => setSortOpen((v) => !v)}
             >
@@ -383,7 +386,7 @@ const Dashboard = () => {
                 <line x1="9" y1="18" x2="15" y2="18" />
               </svg>
               <span className="dashboard-sort-btn-text">Sort</span>
-            </button>
+            </AppButton>
             {sortOpen && (
               <div className="dashboard-sort-dropdown">
                 {sortOptions.map(opt => (
@@ -406,7 +409,7 @@ const Dashboard = () => {
           <div className="dashboard-count-badge">
             {filteredCount} of {totalDeals} deals
           </div>
-          <Link to="/add-deal" className="dashboard-add-btn">
+          <Link to="/add-deal" className="dashboard-add-btn app-btn">
             <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" viewBox="0 0 24 24">
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
@@ -417,16 +420,16 @@ const Dashboard = () => {
       )}
 
       {sortedDeals.length === 0 ? (
-        <div className="dashboard-empty">
-          <span className="dashboard-empty-icon">📁</span>
-          <h3>No deals found</h3>
-          <p>{searchTerm || dealTypeFilter !== 'All' ? 'Try adjusting your filters.' : 'No deals have been created yet.'}</p>
+        <div className="dashboard-empty pl-state pl-state--empty">
+          <span className="dashboard-empty-icon pl-empty-icon">📁</span>
+          <h3 className="pl-empty-title">No deals found</h3>
+          <p className="pl-empty-desc">{searchTerm || dealTypeFilter !== 'All' ? 'Try adjusting your filters.' : 'No deals have been created yet.'}</p>
         </div>
       ) : (
         <div className="dashboard-deals-grid">
           {sortedDeals.map((deal) => (
             <div key={deal._id} className={`dashboard-deal-card ${expandedDeals.includes(deal._id) ? 'dashboard-deal-card--expanded' : ''}`}>
-              <div className="dashboard-deal-header" onClick={() => toggleDeal(deal._id)}>
+                <div className="dashboard-deal-header app-section-header" onClick={() => toggleDeal(deal._id)}>
                 <div className="dashboard-deal-header-left">
                   <h3 className="dashboard-deal-title">{deal.villageName}</h3>
                   <div className="dashboard-deal-survey">
@@ -471,8 +474,8 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                <div className="dashboard-deal-actions">
-                  <Link to={`/deals/${deal._id}`} className="dashboard-action-btn dashboard-action-btn--view">
+                <div className="dashboard-deal-actions app-actions-row">
+                  <Link to={`/deals/${deal._id}`} className="dashboard-action-btn app-btn dashboard-action-btn--view">
                     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -481,14 +484,14 @@ const Dashboard = () => {
                   </Link>
                   {isAdmin && (
                     <>
-                      <button onClick={() => handleEdit(deal)} className="dashboard-action-btn dashboard-action-btn--edit">
+                      <AppButton onClick={() => handleEdit(deal)} className="dashboard-action-btn dashboard-action-btn--edit">
                         <EditIconSvg />
                         <span className="dashboard-action-btn-text">Edit</span>
-                      </button>
-                      <button onClick={() => setConfirmDeleteId(deal._id)} className="dashboard-action-btn dashboard-action-btn--delete">
+                      </AppButton>
+                      <AppButton onClick={() => setConfirmDeleteId(deal._id)} className="dashboard-action-btn dashboard-action-btn--delete">
                         <DeleteIconSvg />
                         <span className="dashboard-action-btn-text">Delete</span>
-                      </button>
+                      </AppButton>
                     </>
                   )}
                 </div>
@@ -518,7 +521,7 @@ const Dashboard = () => {
                   <div className="dashboard-form-row">
                     <div className="dashboard-form-group">
                       <label className="dashboard-form-label">District</label>
-                      <input
+                      <AppInput
                         type="text"
                         name="district"
                         className="dashboard-form-input"
@@ -528,7 +531,7 @@ const Dashboard = () => {
                     </div>
                     <div className="dashboard-form-group">
                       <label className="dashboard-form-label">Sub-District</label>
-                      <input
+                      <AppInput
                         type="text"
                         name="subDistrict"
                         className="dashboard-form-input"
@@ -540,7 +543,7 @@ const Dashboard = () => {
 
                   <div className="dashboard-form-group">
                     <label className="dashboard-form-label">Village Name</label>
-                    <input
+                    <AppInput
                       type="text"
                       name="villageName"
                       className="dashboard-form-input"
@@ -552,7 +555,7 @@ const Dashboard = () => {
                   <div className="dashboard-form-row">
                     <div className="dashboard-form-group">
                       <label className="dashboard-form-label">Old Survey No.</label>
-                      <input
+                      <AppInput
                         type="text"
                         name="oldSurveyNo"
                         className="dashboard-form-input"
@@ -562,7 +565,7 @@ const Dashboard = () => {
                     </div>
                     <div className="dashboard-form-group">
                       <label className="dashboard-form-label">New Survey No.</label>
-                      <input
+                      <AppInput
                         type="text"
                         name="newSurveyNo"
                         className="dashboard-form-input"
@@ -575,7 +578,7 @@ const Dashboard = () => {
                   <div className="dashboard-form-row">
                     <div className="dashboard-form-group">
                       <label className="dashboard-form-label">Deal Type</label>
-                      <select
+                      <AppSelect
                         name="dealType"
                         className="dashboard-form-input"
                         value={editFormData.dealType}
@@ -584,11 +587,11 @@ const Dashboard = () => {
                         <option value="Buy">Purchase</option>
                         <option value="Sell">Sell</option>
                         <option value="Other">Other</option>
-                      </select>
+                      </AppSelect>
                     </div>
                     <div className="dashboard-form-group">
                       <label className="dashboard-form-label">Price per Sq. Yard</label>
-                      <input
+                      <AppInput
                         type="number"
                         name="pricePerSqYard"
                         className="dashboard-form-input"
@@ -601,7 +604,7 @@ const Dashboard = () => {
                   <div className="dashboard-form-row">
                     <div className="dashboard-form-group">
                       <label className="dashboard-form-label">Total Sq. Yard</label>
-                      <input
+                      <AppInput
                         type="number"
                         name="totalSqYard"
                         className="dashboard-form-input"
@@ -611,7 +614,7 @@ const Dashboard = () => {
                     </div>
                     <div className="dashboard-form-group">
                       <label className="dashboard-form-label">Total Sq. Meter</label>
-                      <input
+                      <AppInput
                         type="number"
                         name="totalSqMeter"
                         className="dashboard-form-input"
@@ -624,7 +627,7 @@ const Dashboard = () => {
                   <div className="dashboard-form-row">
                     <div className="dashboard-form-group">
                       <label className="dashboard-form-label">Jantri</label>
-                      <input
+                      <AppInput
                         type="number"
                         name="jantri"
                         className="dashboard-form-input"
@@ -634,20 +637,20 @@ const Dashboard = () => {
                     </div>
                     <div className="dashboard-form-group">
                       <label className="dashboard-form-label">Total Amount</label>
-                      <input
+                      <AppInput
                         type="number"
                         name="totalAmount"
                         className="dashboard-form-input"
                         value={editFormData.totalAmount}
                         readOnly
-                        style={{ backgroundColor: '#f7fafc', cursor: 'not-allowed' }}
+                        className="dashboard-form-input dashboard-form-input--readonly"
                       />
                     </div>
                   </div>
 
                   <div className="dashboard-form-group">
                     <label className="dashboard-form-label">Payment Deadline</label>
-                    <input
+                    <AppInput
                       type="date"
                       name="paymentDeadlineMonth"
                       className="dashboard-form-input"
@@ -658,8 +661,8 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="dashboard-modal-actions">
-                <button className="dashboard-modal-btn dashboard-modal-btn--cancel" onClick={handleCancelEdit} disabled={isSavingEdit}>Cancel</button>
-                <button className="dashboard-modal-btn dashboard-modal-btn--confirm" onClick={() => handleSaveEdit(editingId)} disabled={isSavingEdit}>
+                <AppButton className="dashboard-modal-btn dashboard-modal-btn--cancel" onClick={handleCancelEdit} disabled={isSavingEdit}>Cancel</AppButton>
+                <AppButton className="dashboard-modal-btn dashboard-modal-btn--confirm" onClick={() => handleSaveEdit(editingId)} disabled={isSavingEdit}>
                   {isSavingEdit ? (
                     <>
                       <span className="dashboard-modal-spinner" />
@@ -668,7 +671,7 @@ const Dashboard = () => {
                   ) : (
                     'Save Changes'
                   )}
-                </button>
+                </AppButton>
               </div>
             </div>
           </div>
@@ -693,13 +696,13 @@ const Dashboard = () => {
               <p className="dashboard-modal-desc">
                 Are you sure you want to delete<br />
                 <strong>{deal?.villageName}</strong> (New Survey #{deal?.newSurveyNo || deal?.surveyNumber})?<br />
-                <span style={{ color: '#e53e3e', fontSize: '0.82rem' }}>This action cannot be undone.</span>
+                <span className="dashboard-danger-note">This action cannot be undone.</span>
               </p>
               <div className="dashboard-modal-actions">
-                <button className="dashboard-modal-btn dashboard-modal-btn--cancel" onClick={() => setConfirmDeleteId(null)} disabled={isDeleting}>Cancel</button>
-                <button className="dashboard-modal-btn dashboard-modal-btn--confirm" onClick={() => handleDelete(confirmDeleteId)} disabled={isDeleting}>
+                <AppButton className="dashboard-modal-btn dashboard-modal-btn--cancel" onClick={() => setConfirmDeleteId(null)} disabled={isDeleting}>Cancel</AppButton>
+                <AppButton className="dashboard-modal-btn dashboard-modal-btn--confirm" onClick={() => handleDelete(confirmDeleteId)} disabled={isDeleting}>
                   {isDeleting ? <><span className="dashboard-modal-spinner" /> Deleting…</> : 'Yes, Delete'}
-                </button>
+                </AppButton>
               </div>
             </div>
           </div>

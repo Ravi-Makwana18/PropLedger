@@ -5,7 +5,7 @@
  * Main server file for the PropLedger land deal management system
  * Handles API routing, middleware setup, and database connection
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
@@ -46,7 +46,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
   "https://prop-ledger-opal.vercel.app",
-  "https://prop-ledger-xi.vercel.app", // <-- Add this line
+  "https://prop-ledger-xi.vercel.app",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -80,8 +80,7 @@ app.use('/api/payments', require('./routes/paymentRoutes'));
 // Customer Enquiry Routes
 app.use('/api/enquiry', require('./routes/enquiryRoutes'));
 
-// Subscription Payment Routes
-app.use('/api/subscription-payment', require('./routes/subscriptionPaymentRoutes'));
+
 
 // ============================================
 // Health Check & Info Endpoints

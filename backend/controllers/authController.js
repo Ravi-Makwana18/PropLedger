@@ -4,13 +4,13 @@
  * ============================================
  * Handles user authentication, registration, and profile management
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
-const { sendOTP } = require('../utils/smsService');
+
 
 /**
  * @desc    Register new user
@@ -18,79 +18,74 @@ const { sendOTP } = require('../utils/smsService');
  * @access  Public
  */
 const register = async (req, res) => {
-  try {
-    const { 
-      companyName, 
-      contactPersonName, 
-      country, 
-      state, 
-      city, 
-      pincode, 
-      email, 
-      phone, 
-      password,
-      subscriptionPlan 
-    } = req.body;
-    
-    // Normalize email to lowercase
-    const normalizedEmail = email ? email.toLowerCase().trim() : email;
-    
-    // Check if user already exists
-    const userExists = await User.findOne({ email: normalizedEmail });
-    if (userExists) {
-      return res.status(400).json({ message: 'Email already registered' });
-    }
-    
-    // Create new user
-    const user = await User.create({
-      companyName,
-      contactPersonName,
-      country,
-      state,
-      city,
-      pincode,
-      email,
-      phone,
-      password,
-      subscriptionPlan,
-      isVerified: true
-    });
-    
-    // Generate JWT token
-    const token = generateToken(user._id);
-    
-    // Set secure HTTP-only cookie
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      path: '/',
-      maxAge: 15 * 60 * 1000 // 15 minutes
-    });
-    
-    res.status(201).json({
-      _id: user._id,
-      companyName: user.companyName,
-      contactPersonName: user.contactPersonName,
-      country: user.country,
-      state: user.state,
-      city: user.city,
-      pincode: user.pincode,
-      email: user.email,
-      phone: user.phone,
-      subscriptionPlan: user.subscriptionPlan,
-      subscriptionStatus: user.subscriptionStatus,
-      subscriptionStartDate: user.subscriptionStartDate,
-      subscriptionEndDate: user.subscriptionEndDate,
-      role: user.role,
-      isVerified: user.isVerified,
-      profilePicture: user.profilePicture,
-      token
-    });
-  } catch (error) {
-    console.error('❌ Register error:', error);
-    res.status(500).json({ message: error.message });
+  const { 
+    companyName, 
+    contactPersonName, 
+    country, 
+    state, 
+    city, 
+    pincode, 
+    email, 
+    phone, 
+    password,
+    subscriptionPlan 
+  } = req.body;
+  
+  // Normalize email to lowercase
+  const normalizedEmail = email ? email.toLowerCase().trim() : email;
+  
+  // Check if user already exists
+  const userExists = await User.findOne({ email: normalizedEmail });
+  if (userExists) {
+    return res.status(400).json({ message: 'Email already registered' });
   }
+  
+  // Create new user
+  const user = await User.create({
+    companyName,
+    contactPersonName,
+    country,
+    state,
+    city,
+    pincode,
+    email,
+    phone,
+    password,
+    subscriptionPlan,
+    isVerified: true
+  });
+  
+  // Generate JWT token
+  const token = generateToken(user._id);
+  
+  // Set secure HTTP-only cookie — align with JWT expiry (1 hour)
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    path: '/',
+    maxAge: 60 * 60 * 1000 // 1 hour
+  });
+  
+  res.status(201).json({
+    _id: user._id,
+    companyName: user.companyName,
+    contactPersonName: user.contactPersonName,
+    country: user.country,
+    state: user.state,
+    city: user.city,
+    pincode: user.pincode,
+    email: user.email,
+    phone: user.phone,
+    subscriptionPlan: user.subscriptionPlan,
+    subscriptionStatus: user.subscriptionStatus,
+    subscriptionStartDate: user.subscriptionStartDate,
+    subscriptionEndDate: user.subscriptionEndDate,
+    role: user.role,
+    isVerified: user.isVerified,
+    profilePicture: user.profilePicture,
+    token
+  });
 };
 
 /**
@@ -99,150 +94,65 @@ const register = async (req, res) => {
  * @access  Public
  */
 const login = async (req, res) => {
-  try {
-    const { email, mobileNumber, password } = req.body;
-    
-    // Support both email and mobile number login for backward compatibility
-    let user;
-    if (email) {
-      // Normalize email to lowercase for case-insensitive login
-      const normalizedEmail = email.toLowerCase().trim();
-      user = await User.findOne({ email: normalizedEmail }).select('+password');
-    } else if (mobileNumber) {
-      // Normalize mobile number
-      const normalizedMobile = mobileNumber.trim();
-      user = await User.findOne({ mobileNumber: normalizedMobile }).select('+password');
-    } else {
-      return res.status(400).json({ message: 'Please provide email or mobile number' });
-    }
-    
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    
-    // Verify password
-    const isMatch = await user.matchPassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    
-    // Generate JWT token
-    const token = generateToken(user._id);
-    
-    // Set secure HTTP-only cookie
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      path: '/',
-      maxAge: 15 * 60 * 1000 // 15 minutes
-    });
+  const { email, password } = req.body;
 
-    res.json({
-      _id: user._id,
-      companyName: user.companyName,
-      contactPersonName: user.contactPersonName,
-      country: user.country,
-      state: user.state,
-      city: user.city,
-      pincode: user.pincode,
-      email: user.email,
-      phone: user.phone,
-      subscriptionPlan: user.subscriptionPlan,
-      subscriptionStatus: user.subscriptionStatus,
-      subscriptionStartDate: user.subscriptionStartDate,
-      subscriptionEndDate: user.subscriptionEndDate,
-      role: user.role,
-      isVerified: user.isVerified,
-      profilePicture: user.profilePicture,
-      // Legacy fields for backward compatibility
-      name: user.name,
-      mobileNumber: user.mobileNumber,
-      token
-    });
-  } catch (error) {
-    console.error('❌ Login error:', error);
-    res.status(500).json({ message: error.message });
+  if (!email) {
+    return res.status(400).json({ message: 'Please provide email' });
   }
+
+  // Normalize email to lowercase for case-insensitive login
+  const normalizedEmail = email.toLowerCase().trim();
+  const user = await User.findOne({ email: normalizedEmail }).select('+password');
+
+  if (!user) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+
+  // Enforce email verification (Issue #9)
+  if (!user.isVerified) {
+    return res.status(403).json({ message: 'Account not verified. Please contact support.' });
+  }
+
+  // Verify password
+  const isMatch = await user.matchPassword(password);
+  if (!isMatch) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+
+  // Generate JWT token
+  const token = generateToken(user._id);
+
+  // Set secure HTTP-only cookie — align with JWT expiry (1 hour)
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    path: '/',
+    maxAge: 60 * 60 * 1000 // 1 hour
+  });
+
+  res.json({
+    _id: user._id,
+    companyName: user.companyName,
+    contactPersonName: user.contactPersonName,
+    country: user.country,
+    state: user.state,
+    city: user.city,
+    pincode: user.pincode,
+    email: user.email,
+    phone: user.phone,
+    subscriptionPlan: user.subscriptionPlan,
+    subscriptionStatus: user.subscriptionStatus,
+    subscriptionStartDate: user.subscriptionStartDate,
+    subscriptionEndDate: user.subscriptionEndDate,
+    role: user.role,
+    isVerified: user.isVerified,
+    profilePicture: user.profilePicture,
+    token
+  });
 };
 
-/**
- * @desc    Send OTP to user's mobile
- * @route   POST /api/auth/send-otp
- * @access  Public
- */
-const sendOTPController = async (req, res) => {
-  try {
-    const { mobileNumber } = req.body;
 
-    const user = await User.findOne({ mobileNumber });
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Generate OTP
-    const otp = user.generateOTP();
-    await user.save();
-
-    // Send OTP
-    await sendOTP(mobileNumber, otp);
-
-    res.json({ message: 'OTP sent successfully', userId: user._id });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-/**
- * @desc    Verify OTP and authenticate user
- * @route   POST /api/auth/verify-otp
- * @access  Public
- */
-const verifyOTP = async (req, res) => {
-  try {
-    const { userId, otp } = req.body;
-
-    const user = await User.findById(userId).select('+otp +otpExpiry');
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Verify OTP
-    const isValid = user.verifyOTP(otp);
-
-    if (!isValid) {
-      return res.status(400).json({ message: 'Invalid or expired OTP' });
-    }
-
-    // Mark user as verified
-    user.isVerified = true;
-    user.otp = undefined;
-    user.otpExpiry = undefined;
-    await user.save();
-
-    // Generate JWT
-    const token = generateToken(user._id);
-    // Set secure cookie
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      path: '/',
-      maxAge: 15 * 60 * 1000 // 15 minutes
-    });
-    res.json({
-      _id: user._id,
-      name: user.name,
-      mobileNumber: user.mobileNumber,
-      role: user.role,
-      token
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 /**
  * @desc    Get current user profile
@@ -258,91 +168,12 @@ const getProfile = async (req, res) => {
   }
 };
 
-/**
- * @desc    Upgrade user subscription plan
- * @route   PUT /api/auth/upgrade-subscription
- * @access  Private
- */
-const upgradeSubscription = async (req, res) => {
-  try {
-    const { subscriptionPlan } = req.body;
-    
-    if (!['7-day-trial', 'monthly', 'yearly'].includes(subscriptionPlan)) {
-      return res.status(400).json({ message: 'Invalid subscription plan' });
-    }
-    
-    const user = await User.findById(req.user._id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    // Prevent trial abuse and downgrades
-    if (subscriptionPlan === '7-day-trial') {
-      if (user.subscriptionPlan === '7-day-trial' && user.subscriptionStatus === 'expired') {
-        return res.status(400).json({ 
-          message: 'Trial period already used. Please choose Monthly or Yearly plan.' 
-        });
-      }
-      if (user.subscriptionPlan === 'monthly' || user.subscriptionPlan === 'yearly') {
-        return res.status(400).json({ 
-          message: 'Cannot downgrade to trial. Please choose Monthly or Yearly plan.' 
-        });
-      }
-    }
-    
-    // Update subscription
-    user.subscriptionPlan = subscriptionPlan;
-    user.subscriptionStatus = 'active';
-    user.subscriptionStartDate = new Date();
-    
-    // Calculate new end date
-    let endDate = new Date();
-    switch(subscriptionPlan) {
-      case '7-day-trial':
-        endDate.setDate(endDate.getDate() + 7);
-        break;
-      case 'monthly':
-        endDate.setMonth(endDate.getMonth() + 1);
-        break;
-      case 'yearly':
-        endDate.setFullYear(endDate.getFullYear() + 1);
-        break;
-    }
-    user.subscriptionEndDate = endDate;
-    
-    await user.save();
-    
-    res.json({
-      _id: user._id,
-      companyName: user.companyName,
-      contactPersonName: user.contactPersonName,
-      country: user.country,
-      state: user.state,
-      city: user.city,
-      pincode: user.pincode,
-      email: user.email,
-      phone: user.phone,
-      subscriptionPlan: user.subscriptionPlan,
-      subscriptionStatus: user.subscriptionStatus,
-      subscriptionStartDate: user.subscriptionStartDate,
-      subscriptionEndDate: user.subscriptionEndDate,
-      role: user.role,
-      isVerified: user.isVerified,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      profilePicture: user.profilePicture,
-      name: user.name,
-      mobileNumber: user.mobileNumber
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+
 
 /**
- * @desc    Update user profile picture
- * @route   PUT /api/auth/profile-picture
- * @access  Private
+ * @desc    Create a managed user (manager) under an admin account
+ * @route   POST /api/auth/managed-users
+ * @access  Private (admin / superadmin)
  */
 const createManagedUser = async (req, res) => {
   try {
@@ -586,12 +417,9 @@ const deleteUser = async (req, res) => {
 module.exports = {
   register,
   login,
-  sendOTPController,
-  verifyOTP,
   getProfile,
   verifyToken,
   logout,
-  upgradeSubscription,
   updateProfilePicture,
   createManagedUser,
   getAllUsers,

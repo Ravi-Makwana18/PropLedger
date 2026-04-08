@@ -4,7 +4,7 @@
  * ============================================
  * Defines routes for payment tracking and management
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
@@ -18,7 +18,7 @@ const {
   updatePayment,
   deletePayment
 } = require('../controllers/paymentController');
-const { protect, admin, adminOrManager, requirePremium } = require('../middleware/auth');
+const { protect, adminOrManager } = require('../middleware/auth');
 const asyncHandler = require('../middleware/asyncHandler');
 
 // ============================================
@@ -26,7 +26,7 @@ const asyncHandler = require('../middleware/asyncHandler');
 // ============================================
 router.route('/')
   .get(protect, asyncHandler(getAllPayments))                    // Get all payments
-  .post(protect, requirePremium, asyncHandler(addPayment));      // Add payment (premium required)
+  .post(protect, asyncHandler(addPayment));                       // Add payment
 
 // ============================================
 // Special Routes (Must be before /:id)
@@ -38,7 +38,7 @@ router.get('/deal/:dealId', protect, asyncHandler(getPaymentsByDeal));   // Get 
 // Individual Payment Routes: /api/payments/:id
 // ============================================
 router.route('/:id')
-  .put(protect, adminOrManager, requirePremium, asyncHandler(updatePayment))    // Update payment (admin/manager + premium)
-  .delete(protect, adminOrManager, requirePremium, asyncHandler(deletePayment)); // Delete payment (admin/manager + premium)
+  .put(protect, adminOrManager, asyncHandler(updatePayment))                    // Update payment (admin/manager)
+  .delete(protect, adminOrManager, asyncHandler(deletePayment));                 // Delete payment (admin/manager)
 
 module.exports = router;

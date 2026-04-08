@@ -5,7 +5,7 @@
  * Wraps async route handlers to catch errors automatically
  * Eliminates need for try-catch blocks in every route
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 

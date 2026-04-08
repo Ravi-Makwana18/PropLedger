@@ -4,7 +4,7 @@
  * ============================================
  * Protects routes requiring authentication and role-based access
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
@@ -28,7 +28,7 @@ const PrivateRoute = ({ children, adminOnly = false, superAdminOnly = false }) =
   // Show loading spinner while checking authentication
   if (loading) {
     return (
-      <div className="flex-center" style={{ minHeight: '80vh' }}>
+      <div className="flex-center min-h-80vh">
         <div className="spinner"></div>
       </div>
     );

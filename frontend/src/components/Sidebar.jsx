@@ -4,7 +4,7 @@
  * ============================================
  * Responsive sidebar with role-based navigation items
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
@@ -12,6 +12,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
+import AppButton from './ui/AppButton';
 
 /**
  * Main navigation links (visible to all authenticated users)
@@ -40,16 +41,7 @@ const NAV_ITEMS = [
       </svg>
     )
   },
-  {
-    to: '/subscription-status',
-    label: 'Subscription',
-    icon: (
-      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-        <rect x="2" y="5" width="20" height="14" rx="2" />
-        <line x1="2" y1="10" x2="22" y2="10" />
-      </svg>
-    )
-  },
+
   {
     to: '/history',
     label: 'History',
@@ -171,9 +163,6 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
 
-  // Debug logging for props
-  console.log('🎯 Sidebar received props - collapsed:', collapsed, 'mobileOpen:', mobileOpen, 'isMobile:', isMobile);
-
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
@@ -186,7 +175,6 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
   // Close sidebar on route change (mobile only)
   useEffect(() => {
     if (isMobile && mobileOpen && onClose) {
-      console.log('🚪 Closing sidebar due to route change');
       onClose();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -223,7 +211,6 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
       <aside 
         className={`sidebar${collapsed ? ' sidebar--collapsed' : ''}${mobileOpen ? ' sidebar--mobile-open' : ''}`} 
         data-mobile-open={mobileOpen}
-        style={isMobile && mobileOpen ? { transform: 'translateX(0)' } : {}}
       >
         {/* Brand / logo area */}
         <div className="sidebar-brand">
@@ -330,7 +317,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
         {/* Footer: user info + sign-out button */}
         <div className="sidebar-footer">
           {!collapsed && (
-            <div className="sidebar-user" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }} title="View Profile">
+            <div className="sidebar-user" onClick={() => navigate('/profile')} title="View Profile">
               <div className="sidebar-user-avatar">
                 {user?.profilePicture ? (
                   <img src={user.profilePicture} alt="Profile" />
@@ -345,7 +332,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
               </div>
             </div>
           )}
-          <button
+          <AppButton
             className="sidebar-logout-btn"
             onClick={openLogoutModal}
             title="Sign Out"
@@ -356,7 +343,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
               <line x1="21" y1="12" x2="9" y2="12" />
             </svg>
             {!collapsed && <span>Sign Out</span>}
-          </button>
+          </AppButton>
         </div>
       </aside>
 
@@ -374,10 +361,10 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
             <h3 className="logout-modal-title">Sign Out?</h3>
             <p className="logout-modal-desc">Are you sure you want to sign out of your account?</p>
             <div className="logout-modal-actions">
-              <button className="logout-modal-btn logout-modal-btn--cancel" onClick={() => setShowLogoutModal(false)} disabled={isLoggingOut}>Cancel</button>
-              <button className="logout-modal-btn logout-modal-btn--confirm" onClick={handleLogout} disabled={isLoggingOut}>
+              <AppButton className="logout-modal-btn logout-modal-btn--cancel" onClick={() => setShowLogoutModal(false)} disabled={isLoggingOut}>Cancel</AppButton>
+              <AppButton className="logout-modal-btn logout-modal-btn--confirm" onClick={handleLogout} disabled={isLoggingOut}>
                 {isLoggingOut ? <><span className="modal-spinner" /> Signing out…</> : 'Yes, Sign Out'}
-              </button>
+              </AppButton>
             </div>
           </div>
         </div>

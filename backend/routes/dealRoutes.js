@@ -4,7 +4,7 @@
  * ============================================
  * Defines routes for land deal management
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
@@ -18,7 +18,7 @@ const {
   updateDeal,
   deleteDeal
 } = require('../controllers/dealController');
-const { protect, admin, adminOrManager, requirePremium } = require('../middleware/auth');
+const { protect, adminOrManager } = require('../middleware/auth');
 const asyncHandler = require('../middleware/asyncHandler');
 
 // ============================================
@@ -26,7 +26,7 @@ const asyncHandler = require('../middleware/asyncHandler');
 // ============================================
 router.route('/')
   .get(protect, asyncHandler(getDeals))                              // Get all deals
-  .post(protect, adminOrManager, requirePremium, asyncHandler(createDeal));   // Create deal (admin/manager + premium)
+  .post(protect, adminOrManager, asyncHandler(createDeal));                   // Create deal (admin/manager)
 
 // ============================================
 // Search Route
@@ -38,7 +38,7 @@ router.get('/search', protect, asyncHandler(searchDeals));  // Search deals by v
 // ============================================
 router.route('/:id')
   .get(protect, asyncHandler(getDealById))                          // Get deal by ID
-  .put(protect, adminOrManager, requirePremium, asyncHandler(updateDeal))    // Update deal (admin/manager + premium)
-  .delete(protect, adminOrManager, requirePremium, asyncHandler(deleteDeal)); // Delete deal (admin/manager + premium)
+  .put(protect, adminOrManager, asyncHandler(updateDeal))                    // Update deal (admin/manager)
+  .delete(protect, adminOrManager, asyncHandler(deleteDeal));                 // Delete deal (admin/manager)
 
 module.exports = router;

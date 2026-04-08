@@ -125,7 +125,7 @@
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
   border: 1.5px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 0.45rem 1rem;
   font-size: 0.85rem;
   font-weight: 700;
@@ -192,10 +192,10 @@
   flex-direction: column;
   gap: 0;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #e9eff5;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 8px 24px -6px rgba(37, 99, 235, 0.07);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
 }
 
 /* ── Notification Card ── */
@@ -335,6 +335,7 @@
   color: #fff;
   border: none;
   border-radius: 6px;
+  min-height: 32px;
   padding: 0.3rem 0.7rem;
   font-size: 0.75rem;
   font-weight: 700;
@@ -514,7 +515,8 @@
   background: #fff5f5;
   color: #dc2626;
   border: 1.5px solid #fecaca;
-  border-radius: 8px;
+  border-radius: 10px;
+  min-height: 36px;
   padding: 0.45rem 1rem;
   font-size: 0.85rem;
   font-weight: 700;
@@ -579,6 +581,70 @@
 
 .nf-confirm-no:hover {
   background: #e2e8f0;
+}
+
+/* Skeleton utility classes (replacing static inline styles) */
+.nf-sk-flex-1 {
+  flex: 1;
+}
+
+.nf-sk-hero-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+
+.nf-sk-hero-title {
+  height: 22px;
+  width: 55%;
+  margin-bottom: 10px;
+}
+
+.nf-sk-hero-subtitle {
+  height: 14px;
+  width: 70%;
+}
+
+.nf-sk-chip {
+  height: 60px;
+  border-radius: 12px;
+}
+
+.nf-sk-tabs {
+  height: 44px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.nf-sk-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nf-sk-line-1 {
+  height: 14px;
+  width: 40%;
+  margin-bottom: 8px;
+}
+
+.nf-sk-line-2 {
+  height: 12px;
+  width: 30%;
+  margin-bottom: 6px;
+}
+
+.nf-sk-line-3 {
+  height: 12px;
+  width: 60%;
+}
+
+.nf-sk-action {
+  width: 60px;
+  height: 28px;
+  border-radius: 6px;
 }
 
 /* Responsive tweaks for new elements */

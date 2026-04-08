@@ -4,11 +4,11 @@
  * ============================================
  * Main layout wrapper with sidebar and topbar navigation
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
@@ -60,7 +60,10 @@ const AdminLayout = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
+  const [isRouteLoading, setIsRouteLoading] = useState(false);
+  const [routeAnimKey, setRouteAnimKey] = useState(0);
   const location = useLocation();
+  const previousRouteRef = useRef(`${location.pathname}${location.search}`);
 
   // Handle window resize
   useEffect(() => {
@@ -81,17 +84,26 @@ const AdminLayout = ({ children }) => {
     setMobileOpen(false);
   }, [location.pathname]);
 
+  // Professional micro-loader on internal route transitions.
+  useEffect(() => {
+    const currentRoute = `${location.pathname}${location.search}`;
+    if (currentRoute === previousRouteRef.current) return;
+
+    previousRouteRef.current = currentRoute;
+    setIsRouteLoading(true);
+    setRouteAnimKey((prev) => prev + 1);
+    const timer = setTimeout(() => setIsRouteLoading(false), 420);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname, location.search]);
+
   /**
    * Handle menu button click
    * Toggles sidebar on desktop, opens drawer on mobile
    */
   const handleMenuClick = () => {
-    console.log('🍔 Hamburger clicked! isMobile:', isMobile, 'current mobileOpen:', mobileOpen);
     if (isMobile) {
-      setMobileOpen(prev => {
-        console.log('📱 Setting mobileOpen from', prev, 'to', !prev);
-        return !prev;
-      });
+      setMobileOpen(prev => !prev);
     } else {
       setSidebarCollapsed(v => !v);
     }
@@ -105,9 +117,6 @@ const AdminLayout = ({ children }) => {
   const pageTitle = getPageTitle(location.pathname, location.search);
   const sidebarCollapsedProp = !isMobile && sidebarCollapsed;
 
-  // Debug logging
-  console.log('📐 Layout render - isMobile:', isMobile, 'mobileOpen:', mobileOpen, 'sidebarCollapsed:', sidebarCollapsed);
-
   return (
     <div className={`admin-layout${sidebarCollapsed && !isMobile ? ' admin-layout--collapsed' : ''}`}>
       <Sidebar
@@ -116,8 +125,13 @@ const AdminLayout = ({ children }) => {
         onClose={handleClose}
       />
       <div className="admin-main">
+        {isRouteLoading && (
+          <div className="admin-route-loader" aria-hidden="true">
+            <span className="admin-route-loader-bar" />
+          </div>
+        )}
         <Topbar onMenuClick={handleMenuClick} pageTitle={pageTitle} />
-        <main className="admin-content">
+        <main key={routeAnimKey} className="admin-content admin-content--route-enter">
           {children}
         </main>
       </div>

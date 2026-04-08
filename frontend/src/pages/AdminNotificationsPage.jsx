@@ -102,28 +102,28 @@ const AdminNotificationsPage = () => {
         {/* Hero shimmer */}
         <div className="nf-skeleton-hero">
           <div className="nf-skeleton-hero-top">
-            <div className="db-skeleton-line" style={{ width: 48, height: 48, borderRadius: 14, flexShrink: 0 }} />
-            <div style={{ flex: 1 }}>
-              <div className="db-skeleton-line" style={{ height: 22, width: '55%', marginBottom: 10 }} />
-              <div className="db-skeleton-line" style={{ height: 14, width: '70%' }} />
+            <div className="db-skeleton-line nf-sk-hero-icon" />
+            <div className="nf-sk-flex-1">
+              <div className="db-skeleton-line nf-sk-hero-title" />
+              <div className="db-skeleton-line nf-sk-hero-subtitle" />
             </div>
           </div>
           <div className="nf-skeleton-chips">
-            {[80, 80, 80].map((w, i) => <div key={i} className="db-skeleton-line" style={{ width: w, height: 60, borderRadius: 12 }} />)}
+            {[80, 80, 80].map((w, i) => <div key={i} className="db-skeleton-line nf-sk-chip" style={{ width: w }} />)}
           </div>
         </div>
         {/* Content shimmer */}
         <div className="nf-content-area">
-          <div className="db-skeleton-line" style={{ height: 44, marginBottom: 20, borderRadius: 8 }} />
+          <div className="db-skeleton-line nf-sk-tabs" />
           {[...Array(5)].map((_, i) => (
             <div key={i} className="nf-skeleton-card">
-              <div className="db-skeleton-line" style={{ width: 42, height: 42, borderRadius: '50%', flexShrink: 0 }} />
-              <div style={{ flex: 1 }}>
-                <div className="db-skeleton-line" style={{ height: 14, width: '40%', marginBottom: 8 }} />
-                <div className="db-skeleton-line" style={{ height: 12, width: '30%', marginBottom: 6 }} />
-                <div className="db-skeleton-line" style={{ height: 12, width: '60%' }} />
+              <div className="db-skeleton-line nf-sk-avatar" />
+              <div className="nf-sk-flex-1">
+                <div className="db-skeleton-line nf-sk-line-1" />
+                <div className="db-skeleton-line nf-sk-line-2" />
+                <div className="db-skeleton-line nf-sk-line-3" />
               </div>
-              <div className="db-skeleton-line" style={{ width: 60, height: 28, borderRadius: 6 }} />
+              <div className="db-skeleton-line nf-sk-action" />
             </div>
           ))}
         </div>
@@ -166,7 +166,7 @@ const AdminNotificationsPage = () => {
               <span className="nf-hero-chip-value">{enquiries.length - unreadCount}</span>
             </div>
             {unreadCount > 0 && (
-              <button className="nf-mark-all-btn" onClick={markAllRead}>
+              <button className="nf-mark-all-btn app-btn" onClick={markAllRead}>
                 ✓ Mark all read
               </button>
             )}
@@ -197,7 +197,7 @@ const AdminNotificationsPage = () => {
                   <button className="nf-confirm-no" onClick={() => setConfirmDeleteAll(false)}>Cancel</button>
                 </div>
               ) : (
-                <button className="nf-delete-all-btn" onClick={() => setConfirmDeleteAll(true)} title="Delete all notifications">
+                <button className="nf-delete-all-btn app-btn" onClick={() => setConfirmDeleteAll(true)} title="Delete all notifications">
                   <TrashIcon /> Delete all
                 </button>
               )}
@@ -206,11 +206,12 @@ const AdminNotificationsPage = () => {
         </div>
 
         {/* ── Notification List ── */}
-        <div className="nf-list">
+        <div className="nf-list app-card">
           {filtered.length === 0 ? (
-            <div className="nf-empty">
-              <span className="nf-empty-icon">📭</span>
-              <p>No {filter !== 'all' ? filter : ''} notifications found.</p>
+            <div className="nf-empty pl-state pl-state--empty">
+              <span className="nf-empty-icon pl-empty-icon">📭</span>
+              <h3 className="pl-empty-title">No notifications</h3>
+              <p className="pl-empty-desc">No {filter !== 'all' ? filter : ''} notifications found.</p>
             </div>
           ) : (
             filtered.map(enquiry => {
@@ -247,7 +248,7 @@ const AdminNotificationsPage = () => {
                     <span className="nf-date">{formatDate(enquiry.createdAt)}</span>
                     <div className="nf-actions-row">
                       {!enquiry.isRead && (
-                        <button className="nf-read-btn" onClick={() => markAsRead(enquiry._id)} title="Mark as read">
+                        <button className="nf-read-btn app-btn" onClick={() => markAsRead(enquiry._id)} title="Mark as read">
                           ✓ Read
                         </button>
                       )}
@@ -262,7 +263,7 @@ const AdminNotificationsPage = () => {
                         </div>
                       ) : (
                         <button
-                          className="nf-trash-btn"
+                          className="nf-trash-btn app-btn"
                           onClick={() => setConfirmDeleteId(enquiry._id)}
                           title="Delete notification"
                         >

@@ -281,10 +281,335 @@
   background-clip: text;
 }
 
-/* Topbar Avatar Image */
-.topbar-avatar-image {
+/* ============================================
+   SaaS Polish Layer (System-wide)
+   ============================================ */
+
+:root {
+  --saas-space-1: 0.5rem;   /* 8px */
+  --saas-space-2: 1rem;     /* 16px */
+  --saas-space-3: 1.5rem;   /* 24px */
+  --saas-space-4: 2rem;     /* 32px */
+  --saas-space-5: 2.5rem;   /* 40px */
+
+  --saas-text-strong: #0f172a;
+  --saas-text-muted: #64748b;
+  --saas-surface: #ffffff;
+  --saas-surface-soft: #f8fafc;
+  --saas-border: #e7eef6;
+  --saas-border-strong: #dbe4ee;
+  --saas-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+}
+
+html, body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  color: var(--saas-text-strong);
+  background: #f4f7fb;
+}
+
+:where(h1, h2, h3) {
+  letter-spacing: -0.02em;
+}
+
+:where(p, .muted, .subtitle, .helper-text) {
+  color: var(--saas-text-muted);
+}
+
+/* Shared app surfaces for page cards/sections */
+:where(
+  .ad-section,
+  .dd-section,
+  .dashboard-deal-card,
+  .mu-content,
+  .cu-content,
+  .hp-filters,
+  .nf-list,
+  .admin-payments-section
+) {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  box-shadow: var(--saas-shadow);
+}
+
+/* Shared controls */
+:where(
+  .ad-input,
+  .dd-input,
+  .auth-input,
+  .dashboard-search-input,
+  .dashboard-form-input,
+  .hp-search-input,
+  .hp-select,
+  .mu-search-input,
+  .cu-input
+) {
+  border-color: var(--saas-border-strong);
+  background: var(--saas-surface-soft);
+}
+
+:where(
+  .ad-input:focus,
+  .dd-input:focus,
+  .auth-input:focus,
+  .dashboard-search-input:focus,
+  .dashboard-form-input:focus,
+  .hp-search-input:focus,
+  .hp-select:focus,
+  .mu-search-input:focus,
+  .cu-input:focus
+) {
+  background: var(--saas-surface);
+}
+
+/* Shared action rhythm */
+:where(
+  .ad-btn,
+  .dd-btn,
+  .dashboard-add-btn,
+  .dashboard-action-btn,
+  .dashboard-modal-btn,
+  .auth-submit-btn,
+  .auth-secondary-btn,
+  .admin-payment-btn,
+  .cu-submit-btn,
+  .mu-modal-btn
+) {
+  font-weight: 600;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+:where(
+  .ad-btn:hover,
+  .dd-btn:hover,
+  .dashboard-add-btn:hover,
+  .dashboard-action-btn:hover,
+  .dashboard-modal-btn:hover,
+  .auth-submit-btn:hover,
+  .auth-secondary-btn:hover,
+  .admin-payment-btn:hover,
+  .cu-submit-btn:hover,
+  .mu-modal-btn:hover
+):not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* Responsive rhythm */
+@media (max-width: 768px) {
+  :where(.ad-section, .dd-section, .dashboard-deal-card, .mu-content, .cu-content) {
+    padding: var(--saas-space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  :where(.ad-section, .dd-section, .dashboard-deal-card, .mu-content, .cu-content) {
+    padding: var(--saas-space-2);
+  }
+}
+
+/* ============================================
+   Reusable UI Primitives
+   ============================================ */
+.app-card {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  box-shadow: var(--saas-shadow);
+}
+
+.app-input {
+  border-color: var(--saas-border-strong);
+  background: var(--saas-surface-soft);
+}
+
+.app-input:focus {
+  background: var(--saas-surface);
+}
+
+.payment-form-input,
+.payment-file-input {
   width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
+}
+
+.payment-file-input {
+  padding: 0.5rem 0.625rem;
+  cursor: pointer;
+}
+
+.payment-file-input::file-selector-button {
+  margin-right: 0.625rem;
+  border: 1px solid var(--saas-border-strong);
+  background: var(--saas-surface);
+  color: var(--saas-text);
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.payment-modal-icon--qr {
+  background: #ede9fe;
+}
+
+.payment-modal-icon--upload {
+  background: #dbeafe;
+}
+
+.payment-modal-icon--success {
+  background: #d1fae5;
+}
+
+.payment-plan-amount {
+  font-size: 1.5rem;
+  color: #8b5cf6;
+}
+
+.payment-qr-wrap {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.payment-qr-image {
+  max-width: 250px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.payment-upi-box {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+.payment-upi-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.payment-upi-id {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.payment-note-card {
+  background: #fef3c7;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.payment-note-text {
+  font-size: 0.875rem;
+  color: #92400e;
+}
+
+.payment-note-list {
+  margin: 0.5rem 0 0 1.25rem;
+  padding-left: 0;
+}
+
+.payment-note-paragraph {
+  margin: 0.5rem 0 0 0;
+}
+
+.payment-error-banner {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.payment-field-group {
+  margin-bottom: 1rem;
+}
+
+.payment-field-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.payment-required {
+  color: #dc2626;
+}
+
+.payment-field-help {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.payment-screenshot-preview {
+  margin-top: 0.5rem;
+  max-width: 200px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.payment-txn-id {
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.payment-success-amount {
+  color: #10b981;
+}
+
+.payment-modal-btn--confirm {
+  background: #8b5cf6;
+}
+
+.payment-modal-btn--confirm:hover:not(:disabled) {
+  background: #7c3aed;
+}
+
+.payment-modal-btn--success {
+  background: #10b981;
+}
+
+.payment-modal-btn--success:hover:not(:disabled) {
+  background: #059669;
+}
+
+.payment-modal-btn--block {
+  width: 100%;
+}
+
+.crop-slider {
+  background: #dbe3ee;
+}
+
+.crop-slider::-webkit-slider-thumb,
+.crop-slider::-moz-range-thumb {
+  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
+}
+
+.app-btn {
+  font-weight: 600;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.app-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.app-section-header {
+  margin-bottom: 1.25rem;
+}
+
+.app-actions-row {
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+}
+
+.min-h-80vh {
+  min-height: 80vh;
 }

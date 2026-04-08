@@ -4,26 +4,13 @@
  * ============================================
  * Handles payment tracking and management operations
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
 const Payment = require('../models/Payment');
 const Deal = require('../models/Deal');
-const User = require('../models/User');
-
-const getAccessibleUserIds = async (user) => {
-  if (user.role === 'manager' && user.createdByAdmin) {
-    return [user._id, user.createdByAdmin];
-  }
-
-  if (user.role === 'admin' || user.role === 'superadmin') {
-    const managedUsers = await User.find({ createdByAdmin: user._id }).select('_id').lean();
-    return [user._id, ...managedUsers.map((managedUser) => managedUser._id)];
-  }
-
-  return [user._id];
-};
+const { getAccessibleUserIds } = require('../utils/accessControl');
 
 /**
  * @desc    Add new payment to a deal

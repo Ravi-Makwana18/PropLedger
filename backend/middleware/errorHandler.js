@@ -5,7 +5,7 @@
  * Centralized error handling middleware
  * Formats errors consistently and hides stack traces in production
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 

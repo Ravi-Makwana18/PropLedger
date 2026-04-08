@@ -64,10 +64,10 @@ const AdminPaymentsPage = () => {
   if (loading) {
     return (
       <div className="admin-payments-page">
-        <div className="admin-payments-section">
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <div className="spinner" style={{ margin: '0 auto' }} />
-            <p style={{ marginTop: '1rem', color: '#6b7280' }}>Loading payments...</p>
+        <div className="admin-payments-section app-card">
+          <div className="pl-state pl-state--loading">
+            <div className="spinner" />
+            <p>Loading payments...</p>
           </div>
         </div>
       </div>
@@ -97,7 +97,7 @@ const AdminPaymentsPage = () => {
           <button
             key={status}
             onClick={() => setFilter(status)}
-            className={`admin-payments-filter-btn ${filter === status ? 'admin-payments-filter-btn--active' : ''}`}
+            className={`admin-payments-filter-btn app-btn ${filter === status ? 'admin-payments-filter-btn--active' : ''}`}
           >
             {status === 'pending' && '⏳'}
             {status === 'completed' && '✓'}
@@ -110,23 +110,23 @@ const AdminPaymentsPage = () => {
       </div>
 
       {/* Payments Section */}
-      <div className="admin-payments-section">
+      <div className="admin-payments-section app-card">
         {payments.length === 0 ? (
-          <div className="admin-payments-empty">
-            <div className="admin-payments-empty-icon">
+          <div className="admin-payments-empty pl-state pl-state--empty">
+            <div className="admin-payments-empty-icon pl-empty-icon">
               <svg width="40" height="40" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
             </div>
-            <h3 className="admin-payments-empty-title">No Payments Found</h3>
-            <p className="admin-payments-empty-desc">There are no {filter !== 'all' ? filter : ''} payments to display.</p>
+            <h3 className="admin-payments-empty-title pl-empty-title">No Payments Found</h3>
+            <p className="admin-payments-empty-desc pl-empty-desc">There are no {filter !== 'all' ? filter : ''} payments to display.</p>
           </div>
         ) : (
           <div className="admin-payments-grid">
             {payments.map((payment) => {
               const statusStyle = getStatusColor(payment.paymentStatus);
               return (
-                <div key={payment._id} className="admin-payment-card">
+                <div key={payment._id} className="admin-payment-card app-card">
                   <div className="admin-payment-card-header">
                     <div className="admin-payment-user-info">
                       <div className="admin-payment-user-name">
@@ -155,13 +155,13 @@ const AdminPaymentsPage = () => {
                     </div>
                     <div className="admin-payment-detail-item">
                       <div className="admin-payment-detail-label">Transaction ID</div>
-                      <div className="admin-payment-detail-value" style={{ fontSize: '0.8rem', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                      <div className="admin-payment-detail-value admin-payment-detail-value--mono admin-payment-detail-value--break">
                         {payment.transactionId}
                       </div>
                     </div>
                     <div className="admin-payment-detail-item">
                       <div className="admin-payment-detail-label">UPI Txn ID</div>
-                      <div className="admin-payment-detail-value" style={{ fontSize: '0.8rem', fontFamily: 'monospace' }}>
+                      <div className="admin-payment-detail-value admin-payment-detail-value--mono">
                         {payment.upiTransactionId || 'N/A'}
                       </div>
                     </div>
@@ -189,7 +189,7 @@ const AdminPaymentsPage = () => {
                     <div className="admin-payment-actions">
                       <button
                         onClick={() => handleVerify(payment._id, true)}
-                        className="admin-payment-btn admin-payment-btn--approve"
+                        className="admin-payment-btn app-btn admin-payment-btn--approve"
                       >
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -198,7 +198,7 @@ const AdminPaymentsPage = () => {
                       </button>
                       <button
                         onClick={() => handleVerify(payment._id, false)}
-                        className="admin-payment-btn admin-payment-btn--reject"
+                        className="admin-payment-btn app-btn admin-payment-btn--reject"
                       >
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293z" clipRule="evenodd" />
@@ -215,7 +215,7 @@ const AdminPaymentsPage = () => {
                       rel="noopener noreferrer"
                       className="admin-payment-screenshot-link"
                     >
-                      <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" style={{ display: 'inline', marginRight: '0.5rem' }}>
+                      <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" className="admin-payment-screenshot-icon">
                         <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                       </svg>
                       View Payment Screenshot

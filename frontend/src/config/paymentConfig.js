@@ -4,7 +4,7 @@
  * ============================================
  * Configure your UPI payment details and subscription plans
  * 
- * @author PropLedger Development Team
+ * @author Ravi Makwana
  * @version 1.0.0
  */
 
