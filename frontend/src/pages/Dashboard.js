@@ -640,7 +640,6 @@ const Dashboard = () => {
                       <AppInput
                         type="number"
                         name="totalAmount"
-                        className="dashboard-form-input"
                         value={editFormData.totalAmount}
                         readOnly
                         className="dashboard-form-input dashboard-form-input--readonly"
