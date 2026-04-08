@@ -45,8 +45,6 @@ app.use(express.urlencoded({ extended: true }));
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
-  "https://prop-ledger-opal.vercel.app",
-  "https://prop-ledger-xi.vercel.app",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
