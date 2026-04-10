@@ -392,6 +392,36 @@
   background: none;
 }
 
+/* ── Additional Expenses ── */
+.ad-expenses-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.ad-expense-card {
+  gap: 0.75rem;
+}
+
+.ad-expense-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.ad-expense-subtitle {
+  font-size: 0.8125rem;
+  color: #475569;
+  margin-top: -0.25rem;
+}
+
+.ad-expense-total {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+  padding-top: 0.25rem;
+}
+
 /* ── Action Buttons ── */
 .ad-actions {
   display: flex;
@@ -495,6 +525,10 @@
   .ad-calc-strip {
     grid-template-columns: 1fr;
     gap: 0.625rem;
+  }
+
+  .ad-expenses-grid {
+    grid-template-columns: 1fr;
   }
 
   .ad-calc-divider {

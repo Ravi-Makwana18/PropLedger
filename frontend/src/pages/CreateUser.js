@@ -63,7 +63,7 @@ const CreateUser = () => {
     }
   };
 
-  if (user?.role !== 'admin' && user?.role !== 'superadmin') {
+  if (user?.role !== 'admin') {
     return (
       <div className="cu-page">
         <div className="cu-hero">

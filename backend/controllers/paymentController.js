@@ -2,8 +2,8 @@
  * ============================================
  * PropLedger - Payment Controller
  * ============================================
- * Handles payment tracking and management operations
- * 
+ * Handles payment tracking and management operations.
+ *
  * @author Ravi Makwana
  * @version 1.0.0
  */
@@ -13,36 +13,47 @@ const Deal = require('../models/Deal');
 const { getAccessibleUserIds } = require('../utils/accessControl');
 
 /**
- * @desc    Add new payment to a deal
+ * Escapes special regex characters in a user-supplied string.
+ * Prevents Regular Expression Denial of Service (ReDoS) attacks.
+ * @param {string} str
+ * @returns {string}
+ */
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/** Fields a user is allowed to update on an existing payment */
+const PAYMENT_UPDATABLE_FIELDS = ['date', 'modeOfPayment', 'amount', 'remarks'];
+
+/**
+ * @desc    Add a new payment to a deal
  * @route   POST /api/payments
  * @access  Private
  */
 const addPayment = async (req, res) => {
   const session = await Payment.startSession();
   session.startTransaction();
-  
+
   try {
     const { dealId, date, modeOfPayment, amount, remarks } = req.body;
 
     const accessibleUserIds = await getAccessibleUserIds(req.user);
-    
-    const deal = await Deal.findOne({ 
-      _id: dealId, 
-      createdBy: { $in: accessibleUserIds } 
+
+    const deal = await Deal.findOne({
+      _id: dealId,
+      createdBy: { $in: accessibleUserIds },
     }).session(session);
+
     if (!deal) {
       await session.abortTransaction();
       return res.status(404).json({ message: 'Deal not found or access denied' });
     }
 
-    // Create payment (within transaction)
     const [payment] = await Payment.create([{
       dealId,
       date,
       modeOfPayment,
       amount,
       remarks,
-      createdBy: req.user._id
+      createdBy: req.user._id,
     }], { session });
 
     await payment.populate('createdBy', 'name');
@@ -66,17 +77,17 @@ const getPaymentsByDeal = async (req, res) => {
   try {
     const accessibleUserIds = await getAccessibleUserIds(req.user);
 
-    const deal = await Deal.findOne({ 
-      _id: req.params.dealId, 
-      createdBy: { $in: accessibleUserIds } 
+    const deal = await Deal.findOne({
+      _id: req.params.dealId,
+      createdBy: { $in: accessibleUserIds },
     });
     if (!deal) {
       return res.status(404).json({ message: 'Deal not found' });
     }
 
-    const payments = await Payment.find({ 
-      dealId: req.params.dealId, 
-      createdBy: { $in: accessibleUserIds } 
+    const payments = await Payment.find({
+      dealId: req.params.dealId,
+      createdBy: { $in: accessibleUserIds },
     })
       .sort({ date: -1 })
       .populate('createdBy', 'name')
@@ -91,21 +102,24 @@ const getPaymentsByDeal = async (req, res) => {
 };
 
 /**
- * @desc    Get all payments for current user
+ * @desc    Get all payments accessible to the current user
  * @route   GET /api/payments
  * @access  Private
  */
 const getAllPayments = async (req, res) => {
   try {
     const accessibleUserIds = await getAccessibleUserIds(req.user);
-    
-    const accessibleDeals = await Deal.find({ createdBy: { $in: accessibleUserIds } }).select('_id').lean();
-    const dealIds = accessibleDeals.map(d => d._id);
-    
+
+    const accessibleDeals = await Deal.find({ createdBy: { $in: accessibleUserIds } })
+      .select('_id')
+      .lean();
+    const dealIds = accessibleDeals.map((d) => d._id);
+
     const payments = await Payment.find({ dealId: { $in: dealIds } })
       .sort({ date: -1 })
       .populate('dealId', 'villageName surveyNumber')
-      .populate('createdBy', 'name');
+      .populate('createdBy', 'name')
+      .lean();
 
     res.json(payments);
   } catch (error) {
@@ -114,34 +128,42 @@ const getAllPayments = async (req, res) => {
 };
 
 /**
- * @desc    Get paginated payment history with search and filters
+ * @desc    Get paginated payment history with optional search and mode filter
  * @route   GET /api/payments/history
  * @access  Private
  */
 const getPaymentHistory = async (req, res) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(100, parseInt(req.query.limit) || 30);
-    const search = (req.query.search || '').trim();
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, parseInt(req.query.limit, 10) || 30);
+    const rawSearch = (req.query.search || '').trim();
     const mode = req.query.mode || '';
 
     const accessibleUserIds = await getAccessibleUserIds(req.user);
 
-    let dealFilter = { createdBy: { $in: accessibleUserIds } };
-    if (search) {
+    const dealFilter = { createdBy: { $in: accessibleUserIds } };
+    if (rawSearch) {
+      if (rawSearch.length > 100) {
+        return res.status(400).json({ message: 'Search term too long' });
+      }
+      const search = escapeRegex(rawSearch);
       dealFilter.$or = [
         { villageName: { $regex: search, $options: 'i' } },
         { district: { $regex: search, $options: 'i' } },
-        { subDistrict: { $regex: search, $options: 'i' } }
+        { subDistrict: { $regex: search, $options: 'i' } },
       ];
     }
 
     const accessibleDeals = await Deal.find(dealFilter).select('_id').lean();
-    const dealIds = accessibleDeals.map(d => d._id);
+    const dealIds = accessibleDeals.map((d) => d._id);
 
-    let filter = { dealId: { $in: dealIds } };
-
+    const filter = { dealId: { $in: dealIds } };
+    // Validate mode against the exact Payment enum to prevent NoSQL injection
+    const VALID_MODES = ['Bank', 'Other'];
     if (mode && mode !== 'ALL') {
+      if (!VALID_MODES.includes(mode)) {
+        return res.status(400).json({ message: 'Invalid payment mode filter' });
+      }
       filter.modeOfPayment = mode;
     }
 
@@ -153,7 +175,7 @@ const getPaymentHistory = async (req, res) => {
         .populate('dealId', 'villageName surveyNumber dealType _id')
         .populate('createdBy', 'name contactPersonName companyName')
         .lean(),
-      Payment.countDocuments(filter)
+      Payment.countDocuments(filter),
     ]);
 
     res.json({
@@ -161,7 +183,7 @@ const getPaymentHistory = async (req, res) => {
       total,
       page,
       pages: Math.ceil(total / limit),
-      limit
+      limit,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -169,18 +191,26 @@ const getPaymentHistory = async (req, res) => {
 };
 
 /**
- * @desc    Update existing payment
+ * @desc    Update an existing payment
  * @route   PUT /api/payments/:id
- * @access  Private/Admin
+ * @access  Private / Admin or Manager
  */
 const updatePayment = async (req, res) => {
   try {
     const accessibleUserIds = await getAccessibleUserIds(req.user);
-    
+
+    // Whitelist only safe, user-editable fields to prevent mass-assignment
+    const safeUpdate = {};
+    for (const field of PAYMENT_UPDATABLE_FIELDS) {
+      if (req.body[field] !== undefined) {
+        safeUpdate[field] = req.body[field];
+      }
+    }
+
     const updatedPayment = await Payment.findOneAndUpdate(
       { _id: req.params.id, createdBy: { $in: accessibleUserIds } },
-      req.body,
-      { new: true, runValidators: true, returnDocument: 'after' }
+      { $set: safeUpdate },
+      { new: true, runValidators: true }
     ).populate('createdBy', 'name');
 
     if (!updatedPayment) {
@@ -194,18 +224,21 @@ const updatePayment = async (req, res) => {
 };
 
 /**
- * @desc    Delete payment
+ * @desc    Delete a payment
  * @route   DELETE /api/payments/:id
- * @access  Private/Admin
+ * @access  Private / Admin or Manager
  */
 const deletePayment = async (req, res) => {
   const session = await Payment.startSession();
   session.startTransaction();
-  
+
   try {
     const accessibleUserIds = await getAccessibleUserIds(req.user);
-    
-    const payment = await Payment.findOne({ _id: req.params.id, createdBy: { $in: accessibleUserIds } }).session(session);
+
+    const payment = await Payment.findOne({
+      _id: req.params.id,
+      createdBy: { $in: accessibleUserIds },
+    }).session(session);
 
     if (!payment) {
       await session.abortTransaction();
@@ -230,5 +263,5 @@ module.exports = {
   getAllPayments,
   getPaymentHistory,
   updatePayment,
-  deletePayment
+  deletePayment,
 };

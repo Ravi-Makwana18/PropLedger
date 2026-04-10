@@ -103,15 +103,11 @@ const Topbar = ({ onMenuClick, pageTitle }) => {
           <div className="topbar-title-wrapper">
             <h1 className="topbar-title">{pageTitle}</h1>
             <div className="topbar-breadcrumb">
-              <span className="topbar-breadcrumb-item">Dashboard</span>
-              {pageTitle !== 'Dashboard' && (
-                <>
-                  <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                  <span className="topbar-breadcrumb-item topbar-breadcrumb-item--active">{pageTitle}</span>
-                </>
-              )}
+              <span className="topbar-breadcrumb-item">PropLedger</span>
+              <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+              <span className="topbar-breadcrumb-item topbar-breadcrumb-item--active">{pageTitle}</span>
             </div>
           </div>
         </div>
@@ -159,13 +155,6 @@ const Topbar = ({ onMenuClick, pageTitle }) => {
                   </svg>
                   <span>My Profile</span>
                 </Link>
-                {/* <Link to="/subscription-status" className="topbar-dropdown-item">
-                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                    <rect x="2" y="5" width="20" height="14" rx="2" />
-                    <line x1="2" y1="10" x2="22" y2="10" />
-                  </svg>
-                  <span>Subscription</span>
-                </Link> */}
                 <div className="topbar-dropdown-divider" />
                 <AppButton className="topbar-dropdown-item topbar-dropdown-item--danger" onClick={openLogoutModal}>
                   <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">

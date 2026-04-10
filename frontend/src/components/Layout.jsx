@@ -20,11 +20,8 @@ const PAGE_TITLES = {
   '/dashboard': 'Dashboard',
   '/deals': 'Deals',
   '/add-deal': 'Add New Deal',
-  '/admin/add-deal': 'Add New Deal',
-  '/admin/notifications': 'Notifications',
   '/history': 'Payment History',
   '/profile': 'My Profile',
-  '/subscription-status': 'Subscription Status',
   '/create-user': 'Create User',
   '/manage-users': 'Manage Users'
 };

@@ -7,7 +7,7 @@ import API from '../api/axios';
 import './AdminProfile.css';
 
 const AdminProfile = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
 
   const [isUploadingPicture, setIsUploadingPicture] = useState(false);
@@ -74,11 +74,10 @@ const AdminProfile = () => {
 
       setProfilePicture(data.profilePicture);
       setUploadSuccess('Profile picture updated successfully!');
-      
-      // Refresh page to update user context
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+
+      // Refresh user context without a page reload
+      await refreshUser();
+      setIsUploadingPicture(false);
     } catch (error) {
       setUploadError(error.response?.data?.message || 'Failed to upload profile picture. Please try again.');
       setIsUploadingPicture(false);
@@ -106,11 +105,10 @@ const AdminProfile = () => {
       setProfilePicture(null);
       setUploadSuccess('Profile picture removed successfully!');
       setShowRemoveConfirm(false);
-      
-      // Refresh page to update user context
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+
+      // Refresh user context without a page reload
+      await refreshUser();
+      setIsRemovingPicture(false);
     } catch (error) {
       setUploadError(error.response?.data?.message || 'Failed to remove profile picture. Please try again.');
       setIsRemovingPicture(false);
@@ -233,7 +231,7 @@ const AdminProfile = () => {
             </h1>
             {/* <p className="admin-profile-subtitle">
               {user?.companyName ? `${user.companyName} · ` : ''}
-              {user?.role === 'superadmin' ? 'Super Admin' : user?.role === 'admin' ? 'Administrator' : 'Staff User'} • {user?.email || user?.mobileNumber || 'No email'}
+              {user?.role === 'admin' ? 'Administrator' : user?.role === 'manager' ? 'Staff User' : 'User'} • {user?.email || user?.mobileNumber || 'No email'}
             </p> */}
             {user?.isVerified && (
               <div className="admin-profile-header-chips">
@@ -246,7 +244,7 @@ const AdminProfile = () => {
         </div>
       </div>
 
-      {/* Subscription Status Alert */}
+      {/* Upload / feedback alerts */}
       {uploadError && (
         <div className="admin-profile-alert admin-profile-alert--danger pl-alert pl-alert--error">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
@@ -276,9 +274,11 @@ const AdminProfile = () => {
         {/* Company Information */}
         <div className={`admin-profile-card ${expandedCards.includes('company') ? 'admin-profile-card--expanded' : ''}`}>
           <div className="admin-profile-card-header" onClick={() => toggleCard('company')}>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
-            </svg>
+            <div className="admin-profile-card-icon admin-profile-card-icon--company">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
+              </svg>
+            </div>
             <h2>Company Information</h2>
           </div>
           <div className="admin-profile-card-content">
@@ -294,7 +294,7 @@ const AdminProfile = () => {
               <span className="admin-profile-info-label">Role</span>
               <span className="admin-profile-info-value">
                 <span className="admin-profile-role-badge">
-                  {user?.role === 'admin' ? 'Administrator' : 'User'}
+                  {user?.role === 'admin' ? 'Administrator' : user?.role === 'manager' ? 'Staff' : 'User'}
                 </span>
               </span>
             </div>
@@ -304,10 +304,12 @@ const AdminProfile = () => {
         {/* Contact Information */}
         <div className={`admin-profile-card ${expandedCards.includes('contact') ? 'admin-profile-card--expanded' : ''}`}>
           <div className="admin-profile-card-header" onClick={() => toggleCard('contact')}>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-            </svg>
+            <div className="admin-profile-card-icon admin-profile-card-icon--contact">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+              </svg>
+            </div>
             <h2>Contact Information</h2>
           </div>
           <div className="admin-profile-card-content">
@@ -325,9 +327,11 @@ const AdminProfile = () => {
         {/* Location Information */}
         <div className={`admin-profile-card ${expandedCards.includes('location') ? 'admin-profile-card--expanded' : ''}`}>
           <div className="admin-profile-card-header" onClick={() => toggleCard('location')}>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-            </svg>
+            <div className="admin-profile-card-icon admin-profile-card-icon--location">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+              </svg>
+            </div>
             <h2>Location Details</h2>
           </div>
           <div className="admin-profile-card-content">

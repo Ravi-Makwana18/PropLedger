@@ -19,12 +19,10 @@ const Register = lazy(() => import('./pages/Register'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const DealDetails = lazy(() => import('./pages/DealDetails'));
 const AddDeal = lazy(() => import('./pages/AddDeal'));
-const AdminNotificationsPage = lazy(() => import('./pages/AdminNotificationsPage'));
 const HistoryPage = lazy(() => import('./pages/HistoryPage'));
 const AdminProfile = lazy(() => import('./pages/AdminProfile'));
 const CreateUser = lazy(() => import('./pages/CreateUser'));
 const ManageUsers = lazy(() => import('./pages/ManageUsers'));
-const AdminPaymentsPage = lazy(() => import('./pages/AdminPaymentsPage'));
 
 
 /**
@@ -96,42 +94,6 @@ function AppContent() {
           <PrivateRoute>
             <AdminLayout>
               <AddDeal />
-            </AdminLayout>
-          </PrivateRoute>
-        }
-      />
-      
-      {/* Admin Add Deal (Admin + Manager) */}
-      <Route
-        path="/admin/add-deal"
-        element={
-          <PrivateRoute>
-            <AdminLayout>
-              <AddDeal />
-            </AdminLayout>
-          </PrivateRoute>
-        }
-      />
-      
-      {/* Admin Notifications (Admin Only) */}
-      <Route
-        path="/admin/notifications"
-        element={
-          <PrivateRoute adminOnly={true}>
-            <AdminLayout>
-              <AdminNotificationsPage />
-            </AdminLayout>
-          </PrivateRoute>
-        }
-      />
-
-      {/* Admin Payments (Super Admin Only) */}
-      <Route
-        path="/admin/payments"
-        element={
-          <PrivateRoute superAdminOnly={true}>
-            <AdminLayout>
-              <AdminPaymentsPage />
             </AdminLayout>
           </PrivateRoute>
         }

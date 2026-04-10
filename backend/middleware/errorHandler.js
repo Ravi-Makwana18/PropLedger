@@ -2,32 +2,60 @@
  * ============================================
  * PropLedger - Global Error Handler
  * ============================================
- * Centralized error handling middleware
- * Formats errors consistently and hides stack traces in production
- * 
+ * Centralized error handling middleware.
+ * Formats errors consistently and never leaks
+ * stack traces or internal details in production.
+ *
  * @author Ravi Makwana
  * @version 1.0.0
  */
 
 /**
- * Global error handler middleware
- * Catches all errors and sends formatted response
- * 
+ * Global error handler middleware.
+ * Must be registered as the last app.use() in server.js.
+ *
  * @param {Error} err - Error object
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  * @param {Function} next - Express next middleware function
  */
 const errorHandler = (err, req, res, next) => {
-  // Log error to console for debugging
-  console.error('Error:', err);
+  const isDev = process.env.NODE_ENV !== 'production';
 
-  // Send formatted error response
-  res.status(err.statusCode || 500).json({
+  // In development log the full error; in production log a concise summary only
+  if (isDev) {
+    console.error('❌ Error:', err);
+  } else {
+    console.error(`❌ [${new Date().toISOString()}] ${req.method} ${req.originalUrl} → ${err.message}`);
+  }
+
+  // Derive a meaningful HTTP status code from the error type
+  let statusCode = err.statusCode || 500;
+  let message = err.message || 'Internal Server Error';
+
+  // Mongoose validation errors → 400
+  if (err.name === 'ValidationError') {
+    statusCode = 400;
+    message = Object.values(err.errors || {}).map((e) => e.message).join(', ') || message;
+  }
+
+  // MongoDB duplicate key → 409
+  if (err.code === 11000) {
+    statusCode = 409;
+    message = 'A record with that value already exists';
+  }
+
+  // Malformed MongoDB ObjectId → 400
+  if (err.name === 'CastError' && err.kind === 'ObjectId') {
+    statusCode = 400;
+    message = 'Invalid ID format';
+  }
+
+  res.status(statusCode).json({
     success: false,
-    message: err.message || 'Server Error',
-    // Only include stack trace in development
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    message,
+    // Stack trace only in development — never in production
+    ...(isDev && { stack: err.stack }),
   });
 };
 

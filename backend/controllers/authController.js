@@ -2,8 +2,8 @@
  * ============================================
  * PropLedger - Authentication Controller
  * ============================================
- * Handles user authentication, registration, and profile management
- * 
+ * Handles user authentication, registration, and profile management.
+ *
  * @author Ravi Makwana
  * @version 1.0.0
  */
@@ -11,6 +11,39 @@
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 
+/** Maximum allowed size for a base64-encoded profile picture (500 KB) */
+const MAX_PROFILE_PICTURE_BYTES = 500 * 1024;
+
+/**
+ * Parses a JWT expiry string (e.g. '30d', '1h', '60m') into milliseconds
+ * for use as a cookie max-age.
+ * Supports: s (seconds), m (minutes), h (hours), d (days).
+ * Falls back to 7 days if the format is unrecognised.
+ */
+const parseExpireToMs = (expireStr) => {
+  const match = String(expireStr).match(/^(\d+)([smhd]?)$/);
+  if (!match) return 7 * 24 * 60 * 60 * 1000; // default 7 days
+  const value = parseInt(match[1], 10);
+  const unit = match[2] || 'd';
+  const multipliers = { s: 1000, m: 60 * 1000, h: 60 * 60 * 1000, d: 24 * 60 * 60 * 1000 };
+  return value * (multipliers[unit] || multipliers.d);
+};
+
+/**
+ * Builds the cookie options object, aligned with the JWT_EXPIRE setting.
+ * Cookie max-age is derived from JWT_EXPIRE so they never get out of sync.
+ */
+const getCookieOptions = () => ({
+  httpOnly: true,
+  secure: true,
+  sameSite: 'None',
+  path: '/',
+  maxAge: parseExpireToMs(process.env.JWT_EXPIRE || '7d'),
+});
+
+// ---------------------------------------------------------------------------
+// Public Endpoints
+// ---------------------------------------------------------------------------
 
 /**
  * @desc    Register new user
@@ -18,30 +51,7 @@ const generateToken = require('../utils/generateToken');
  * @access  Public
  */
 const register = async (req, res) => {
-  const { 
-    companyName, 
-    contactPersonName, 
-    country, 
-    state, 
-    city, 
-    pincode, 
-    email, 
-    phone, 
-    password,
-    subscriptionPlan 
-  } = req.body;
-  
-  // Normalize email to lowercase
-  const normalizedEmail = email ? email.toLowerCase().trim() : email;
-  
-  // Check if user already exists
-  const userExists = await User.findOne({ email: normalizedEmail });
-  if (userExists) {
-    return res.status(400).json({ message: 'Email already registered' });
-  }
-  
-  // Create new user
-  const user = await User.create({
+  const {
     companyName,
     contactPersonName,
     country,
@@ -51,22 +61,47 @@ const register = async (req, res) => {
     email,
     phone,
     password,
-    subscriptionPlan,
-    isVerified: true
+  } = req.body;
+
+  // Normalize email to lowercase before every DB operation
+  const normalizedEmail = email ? email.toLowerCase().trim() : null;
+
+  if (!normalizedEmail) {
+    return res.status(400).json({ message: 'Please provide a valid email' });
+  }
+
+  if (!password || typeof password !== 'string') {
+    return res.status(400).json({ message: 'Please provide a password' });
+  }
+
+  // Trim password to prevent trivially-spaced passwords that bypass min-length checks
+  const trimmedPassword = password.trim();
+  if (trimmedPassword.length < 8) {
+    return res.status(400).json({ message: 'Password must be at least 8 characters' });
+  }
+
+  const userExists = await User.findOne({ email: normalizedEmail });
+  if (userExists) {
+    return res.status(400).json({ message: 'Email already registered' });
+  }
+
+  const user = await User.create({
+    companyName,
+    contactPersonName,
+    country,
+    state,
+    city,
+    pincode,
+    email: normalizedEmail,
+    phone,
+    password: trimmedPassword,
+    isVerified: true,
   });
-  
-  // Generate JWT token
+
   const token = generateToken(user._id);
-  
-  // Set secure HTTP-only cookie — align with JWT expiry (1 hour)
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'None',
-    path: '/',
-    maxAge: 60 * 60 * 1000 // 1 hour
-  });
-  
+
+  res.cookie('token', token, getCookieOptions());
+
   res.status(201).json({
     _id: user._id,
     companyName: user.companyName,
@@ -77,14 +112,10 @@ const register = async (req, res) => {
     pincode: user.pincode,
     email: user.email,
     phone: user.phone,
-    subscriptionPlan: user.subscriptionPlan,
-    subscriptionStatus: user.subscriptionStatus,
-    subscriptionStartDate: user.subscriptionStartDate,
-    subscriptionEndDate: user.subscriptionEndDate,
     role: user.role,
     isVerified: user.isVerified,
     profilePicture: user.profilePicture,
-    token
+    token,
   });
 };
 
@@ -96,11 +127,10 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ message: 'Please provide email' });
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Please provide email and password' });
   }
 
-  // Normalize email to lowercase for case-insensitive login
   const normalizedEmail = email.toLowerCase().trim();
   const user = await User.findOne({ email: normalizedEmail }).select('+password');
 
@@ -108,28 +138,18 @@ const login = async (req, res) => {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
 
-  // Enforce email verification (Issue #9)
   if (!user.isVerified) {
     return res.status(403).json({ message: 'Account not verified. Please contact support.' });
   }
 
-  // Verify password
   const isMatch = await user.matchPassword(password);
   if (!isMatch) {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
 
-  // Generate JWT token
   const token = generateToken(user._id);
 
-  // Set secure HTTP-only cookie — align with JWT expiry (1 hour)
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'None',
-    path: '/',
-    maxAge: 60 * 60 * 1000 // 1 hour
-  });
+  res.cookie('token', token, getCookieOptions());
 
   res.json({
     _id: user._id,
@@ -141,18 +161,16 @@ const login = async (req, res) => {
     pincode: user.pincode,
     email: user.email,
     phone: user.phone,
-    subscriptionPlan: user.subscriptionPlan,
-    subscriptionStatus: user.subscriptionStatus,
-    subscriptionStartDate: user.subscriptionStartDate,
-    subscriptionEndDate: user.subscriptionEndDate,
     role: user.role,
     isVerified: user.isVerified,
     profilePicture: user.profilePicture,
-    token
+    token,
   });
 };
 
-
+// ---------------------------------------------------------------------------
+// Protected Endpoints
+// ---------------------------------------------------------------------------
 
 /**
  * @desc    Get current user profile
@@ -160,258 +178,204 @@ const login = async (req, res) => {
  * @access  Private
  */
 const getProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id);
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
   }
+  res.json(user);
 };
-
-
 
 /**
- * @desc    Create a managed user (manager) under an admin account
- * @route   POST /api/auth/managed-users
- * @access  Private (admin / superadmin)
+ * @desc    Verify JWT token validity and return fresh user data
+ * @route   GET /api/auth/verify
+ * @access  Private
  */
-const createManagedUser = async (req, res) => {
-  try {
-    if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'superadmin')) {
-      return res.status(403).json({ message: 'Only admins can create users' });
-    }
-
-    const { name, phone, email, password } = req.body;
-
-    if (!name || !phone || !email || !password) {
-      return res.status(400).json({ message: 'Name, phone, email and password are required' });
-    }
-
-    if (password.length < 8) {
-      return res.status(400).json({ message: 'Password must be at least 8 characters' });
-    }
-
-    const trimmedName = name.trim();
-    const trimmedPhone = String(phone).trim();
-    const normalizedEmail = email.toLowerCase().trim();
-    const userExists = await User.findOne({ email: normalizedEmail });
-
-    if (userExists) {
-      return res.status(400).json({ message: 'Email already registered' });
-    }
-
-    const emailRegex = /^\S+@\S+\.\S+$/;
-    if (!emailRegex.test(normalizedEmail)) {
-      return res.status(400).json({ message: 'Please provide a valid email address' });
-    }
-
-    const managedUserPayload = {
-      email: normalizedEmail,
-      password,
-      role: 'manager',
-      createdByAdmin: req.user._id,
-      isVerified: true
-    };
-
-    const managedUser = new User(managedUserPayload);
-
-    managedUser.companyName = req.user.companyName || 'PropLedger';
-    managedUser.contactPersonName = trimmedName;
-    managedUser.country = req.user.country || 'India';
-    managedUser.state = req.user.state || 'Unknown';
-    managedUser.city = req.user.city || 'Unknown';
-    managedUser.pincode = String(req.user.pincode || '000000');
-    managedUser.phone = trimmedPhone;
-    managedUser.name = trimmedName;
-    managedUser.mobileNumber = trimmedPhone;
-    managedUser.subscriptionPlan = 'monthly';
-    managedUser.subscriptionStatus = 'active';
-    managedUser.subscriptionStartDate = new Date();
-
-    console.log('Creating managed user with payload:', {
-      email: managedUser.email,
-      role: managedUser.role,
-      createdByAdmin: managedUser.createdByAdmin
-    });
-
-    const validationError = managedUser.validateSync();
-    if (validationError) {
-      return res.status(400).json({
-        message: Object.values(validationError.errors).map((err) => err.message).join(', ')
-      });
-    }
-
-    await managedUser.save();
-
-    res.status(201).json({
-      _id: managedUser._id,
-      email: managedUser.email,
-      role: managedUser.role,
-      createdByAdmin: managedUser.createdByAdmin,
-      message: 'User created successfully'
-    });
-  } catch (error) {
-    console.error('❌ Create managed user error:', error);
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({
-        message: Object.values(error.errors).map((err) => err.message).join(', ')
-      });
-    }
-    if (error.code === 11000) {
-      return res.status(400).json({ message: 'Email already registered' });
-    }
-    res.status(500).json({ message: error.message });
+const verifyToken = async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return res.status(401).json({ message: 'User not found' });
   }
+
+  res.json({
+    _id: user._id,
+    companyName: user.companyName,
+    contactPersonName: user.contactPersonName,
+    country: user.country,
+    state: user.state,
+    city: user.city,
+    pincode: user.pincode,
+    email: user.email,
+    phone: user.phone,
+    role: user.role,
+    isVerified: user.isVerified,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    profilePicture: user.profilePicture,
+    // Compatibility fields retained for existing records
+    name: user.name,
+    mobileNumber: user.mobileNumber,
+  });
 };
 
+/**
+ * @desc    Update the authenticated user's profile picture
+ * @route   PUT /api/auth/profile-picture
+ * @access  Private
+ */
 const updateProfilePicture = async (req, res) => {
-  try {
-    const { profilePicture } = req.body;
-    
-    // Allow null to remove profile picture
-    if (profilePicture === undefined) {
-      return res.status(400).json({ message: 'Profile picture data is required' });
-    }
-    
-    const user = await User.findById(req.user._id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    user.profilePicture = profilePicture;
-    await user.save();
-    
-    res.json({
-      _id: user._id,
-      profilePicture: user.profilePicture,
-      message: profilePicture ? 'Profile picture updated successfully' : 'Profile picture removed successfully'
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  const { profilePicture } = req.body;
+
+  if (profilePicture === undefined) {
+    return res.status(400).json({ message: 'Profile picture data is required' });
   }
+
+  // Guard against oversized payloads (base64 strings can be very large)
+  if (profilePicture && Buffer.byteLength(profilePicture, 'utf8') > MAX_PROFILE_PICTURE_BYTES) {
+    return res.status(413).json({ message: 'Profile picture must be smaller than 500 KB' });
+  }
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  user.profilePicture = profilePicture;
+  await user.save();
+
+  res.json({
+    _id: user._id,
+    profilePicture: user.profilePicture,
+    message: profilePicture
+      ? 'Profile picture updated successfully'
+      : 'Profile picture removed successfully',
+  });
 };
 
 /**
  * @desc    Logout user and clear authentication cookie
  * @route   POST /api/auth/logout
- * @access  Private
+ * @access  Public
  */
 const logout = async (req, res) => {
-  try {
-    res.clearCookie('token', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None'
-    });
-    res.status(200).json({ message: 'Logged out successfully' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    path: '/',
+  });
+  res.status(200).json({ message: 'Logged out successfully' });
 };
 
+// ---------------------------------------------------------------------------
+// Admin-Only Endpoints
+// ---------------------------------------------------------------------------
+
 /**
- * @desc    Verify JWT token validity
- * @route   GET /api/auth/verify
- * @access  Private
+ * @desc    Create a managed user (manager) under an admin account
+ * @route   POST /api/auth/managed-users
+ * @access  Private (admin)
  */
-const verifyToken = async (req, res) => {
-  try {
-    // req.user is set by auth middleware if token is valid
-    if (!req.user) {
-      return res.status(401).json({ message: 'Invalid or expired token' });
-    }
-    
-    const user = await User.findById(req.user._id);
-    if (!user) {
-      return res.status(401).json({ message: 'User not found' });
-    }
-    
-    res.json({
-      _id: user._id,
-      companyName: user.companyName,
-      contactPersonName: user.contactPersonName,
-      country: user.country,
-      state: user.state,
-      city: user.city,
-      pincode: user.pincode,
-      email: user.email,
-      phone: user.phone,
-      subscriptionPlan: user.subscriptionPlan,
-      subscriptionStatus: user.subscriptionStatus,
-      subscriptionStartDate: user.subscriptionStartDate,
-      subscriptionEndDate: user.subscriptionEndDate,
-      role: user.role,
-      isVerified: user.isVerified,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      profilePicture: user.profilePicture,
-      // Legacy fields for backward compatibility
-      name: user.name,
-      mobileNumber: user.mobileNumber
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+const createManagedUser = async (req, res) => {
+  const { name, phone, email, password } = req.body;
+
+  if (!name || !phone || !email || !password) {
+    return res.status(400).json({ message: 'Name, phone, email and password are required' });
   }
+
+  // Trim password and enforce minimum length on trimmed value
+  const trimmedPassword = String(password).trim();
+  if (trimmedPassword.length < 8) {
+    return res.status(400).json({ message: 'Password must be at least 8 characters' });
+  }
+
+  const normalizedEmail = email.toLowerCase().trim();
+
+  // Validate format before hitting the database
+  const emailRegex = /^\S+@\S+\.\S+$/;
+  if (!emailRegex.test(normalizedEmail)) {
+    return res.status(400).json({ message: 'Please provide a valid email address' });
+  }
+
+  const userExists = await User.findOne({ email: normalizedEmail });
+  if (userExists) {
+    return res.status(400).json({ message: 'Email already registered' });
+  }
+
+  const trimmedName = name.trim();
+  const trimmedPhone = String(phone).trim();
+
+  const managedUser = new User({
+    email: normalizedEmail,
+    password: trimmedPassword,
+    role: 'manager',
+    createdByAdmin: req.user._id,
+    isVerified: true,
+    companyName: req.user.companyName || 'PropLedger',
+    contactPersonName: trimmedName,
+    country: req.user.country || 'India',
+    state: req.user.state || 'Unknown',
+    city: req.user.city || 'Unknown',
+    pincode: String(req.user.pincode || '000000'),
+    phone: trimmedPhone,
+    name: trimmedName,
+    mobileNumber: trimmedPhone,
+  });
+
+  const validationError = managedUser.validateSync();
+  if (validationError) {
+    return res.status(400).json({
+      message: Object.values(validationError.errors).map((e) => e.message).join(', '),
+    });
+  }
+
+  await managedUser.save();
+
+  res.status(201).json({
+    _id: managedUser._id,
+    email: managedUser.email,
+    role: managedUser.role,
+    createdByAdmin: managedUser.createdByAdmin,
+    message: 'User created successfully',
+  });
 };
 
 /**
- * @desc    Get all users managed by this admin (or all for superadmin)
+ * @desc    Get all managed users under this admin
  * @route   GET /api/auth/users
- * @access  Private (admin / superadmin)
+ * @access  Private (admin)
  */
 const getAllUsers = async (req, res) => {
-  try {
-    let users;
-    if (req.user.role === 'superadmin') {
-      // Superadmin sees everyone except other superadmins
-      users = await User.find({ role: { $ne: 'superadmin' } }).select('-password -otp -otpExpiry');
-    } else {
-      // Admin sees only the users they created
-      users = await User.find({ createdByAdmin: req.user._id }).select('-password -otp -otpExpiry');
-    }
-    res.json({ count: users.length, users });
-  } catch (error) {
-    console.error('❌ Get all users error:', error);
-    res.status(500).json({ message: error.message });
-  }
+  const users = await User.find({ createdByAdmin: req.user._id }).select('-password');
+  res.json({ count: users.length, users });
 };
 
 /**
  * @desc    Delete a managed user by ID
  * @route   DELETE /api/auth/users/:id
- * @access  Private (admin / superadmin)
+ * @access  Private (admin)
  */
 const deleteUser = async (req, res) => {
-  try {
-    const targetUser = await User.findById(req.params.id);
+  const targetUser = await User.findById(req.params.id);
 
-    if (!targetUser) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Prevent self-deletion
-    if (targetUser._id.toString() === req.user._id.toString()) {
-      return res.status(400).json({ message: 'You cannot delete your own account' });
-    }
-
-    // Admin can only delete users they created
-    if (req.user.role === 'admin') {
-      if (!targetUser.createdByAdmin || targetUser.createdByAdmin.toString() !== req.user._id.toString()) {
-        return res.status(403).json({ message: 'Not authorized to delete this user' });
-      }
-    }
-
-    // Superadmin cannot delete another superadmin
-    if (targetUser.role === 'superadmin') {
-      return res.status(403).json({ message: 'Cannot delete a super admin account' });
-    }
-
-    await User.findByIdAndDelete(req.params.id);
-    res.json({ message: 'User deleted successfully' });
-  } catch (error) {
-    console.error('❌ Delete user error:', error);
-    res.status(500).json({ message: error.message });
+  if (!targetUser) {
+    return res.status(404).json({ message: 'User not found' });
   }
+
+  // Prevent self-deletion
+  if (targetUser._id.toString() === req.user._id.toString()) {
+    return res.status(400).json({ message: 'You cannot delete your own account' });
+  }
+
+  // Ensure admin can only delete users they created
+  if (
+    !targetUser.createdByAdmin ||
+    targetUser.createdByAdmin.toString() !== req.user._id.toString()
+  ) {
+    return res.status(403).json({ message: 'Not authorized to delete this user' });
+  }
+
+  await User.findByIdAndDelete(req.params.id);
+  res.json({ message: 'User deleted successfully' });
 };
 
 module.exports = {
@@ -423,5 +387,5 @@ module.exports = {
   updateProfilePicture,
   createManagedUser,
   getAllUsers,
-  deleteUser
+  deleteUser,
 };

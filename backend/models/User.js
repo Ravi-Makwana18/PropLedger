@@ -3,7 +3,7 @@
  * PropLedger - User Model
  * ============================================
  * Defines the user schema with authentication features
- * Includes password hashing, OTP generation, and role-based access
+ * Includes password hashing and role-based access
  * 
  * @author Ravi Makwana
  * @version 1.0.0
@@ -78,28 +78,9 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     select: false
   },
-  subscriptionPlan: {
-    type: String,
-    enum: ['7-day-trial', 'monthly', 'yearly'],
-    required: function() {
-      return this.isNew;
-    }
-  },
-  subscriptionStatus: {
-    type: String,
-    enum: ['active', 'expired', 'cancelled'],
-    default: 'active'
-  },
-  subscriptionStartDate: {
-    type: Date,
-    default: Date.now
-  },
-  subscriptionEndDate: {
-    type: Date
-  },
   role: {
     type: String,
-    enum: ['admin', 'manager', 'superadmin'],
+    enum: ['admin', 'manager'],
     default: 'admin'
   },
   createdByAdmin: {
@@ -107,7 +88,7 @@ const userSchema = new mongoose.Schema({
     ref: 'User',
     default: null
   },
-  // Legacy fields for backward compatibility
+  // Compatibility fields retained for existing records
   mobileNumber: {
     type: String
   },
@@ -138,26 +119,6 @@ userSchema.pre('save', async function() {
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  
-  // Calculate subscription end date
-  if (this.isNew && this.subscriptionPlan) {
-    const startDate = this.subscriptionStartDate || new Date();
-    let endDate = new Date(startDate);
-    
-    switch(this.subscriptionPlan) {
-      case '7-day-trial':
-        endDate.setDate(endDate.getDate() + 7);
-        break;
-      case 'monthly':
-        endDate.setMonth(endDate.getMonth() + 1);
-        break;
-      case 'yearly':
-        endDate.setFullYear(endDate.getFullYear() + 1);
-        break;
-    }
-    
-    this.subscriptionEndDate = endDate;
-  }
 });
 
 /**

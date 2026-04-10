@@ -387,7 +387,7 @@
 ══════════════════════════════════════════════ */
 .admin-profile-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.25rem;
   margin-bottom: 2.5rem;
 }
@@ -459,7 +459,35 @@
   border-bottom: 1.5px solid #f1f5f9;
 }
 
-.admin-profile-card-header svg { color: var(--ap-primary); flex-shrink: 0; }
+.admin-profile-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-profile-card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.admin-profile-card-icon--company {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  color: white;
+}
+
+.admin-profile-card-icon--contact {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  color: white;
+}
+
+.admin-profile-card-icon--location {
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+  color: white;
+}
 
 .admin-profile-card-header h2 {
   font-size: 0.9375rem;

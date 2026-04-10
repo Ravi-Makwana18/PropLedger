@@ -101,7 +101,7 @@ const ADMIN_ITEMS = [
 ];
 
 /**
- * User Management navigation links (Admin/SuperAdmin only)
+ * User Management navigation links (admin only)
  */
 const USER_MANAGEMENT_ITEMS = [
   {
@@ -131,22 +131,6 @@ const USER_MANAGEMENT_ITEMS = [
 ];
 
 /**
- * Super Admin only navigation links
- */
-const SUPERADMIN_ITEMS = [
-  {
-    to: '/admin/payments',
-    label: 'Payments',
-    icon: (
-      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
-      </svg>
-    )
-  },
-];
-
-/**
  * Sidebar Component
  * Responsive navigation sidebar with role-based menu items
  * 
@@ -156,7 +140,7 @@ const SUPERADMIN_ITEMS = [
  * @param {Function} props.onClose - Callback to close mobile drawer
  */
 const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
-  const { user, isAdmin, isSuperAdmin, logout } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -256,9 +240,6 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
                   (item.to === '/dashboard?type=Buy' && location.pathname === '/dashboard' && new URLSearchParams(location.search).get('type') === 'Buy') ||
                   (item.to === '/dashboard?type=Sell' && location.pathname === '/dashboard' && new URLSearchParams(location.search).get('type') === 'Sell') ||
                   (item.to === '/dashboard?type=Other' && location.pathname === '/dashboard' && new URLSearchParams(location.search).get('type') === 'Other');
-                const isUserManagement = item.to === '/create-user' || item.to === '/manage-users';
-                const showUserManagement = isUserManagement && (user?.role === 'admin' || user?.role === 'superadmin');
-                if (isUserManagement && !showUserManagement) return null;
                 return (
                   <NavLink
                     key={item.to}
@@ -275,27 +256,8 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
             </div>
           )}
 
-          {/* Super Admin section */}
-          {isSuperAdmin && (
-            <div className="sidebar-nav-section">
-              {!collapsed && <span className="sidebar-nav-label">Super Admin</span>}
-              {SUPERADMIN_ITEMS.map(item => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  className={({ isActive }) => `sidebar-nav-item${isActive ? ' sidebar-nav-item--active' : ''}`}
-                  onClick={() => onClose && onClose()}
-                  title={collapsed ? item.label : undefined}
-                >
-                  <span className="sidebar-nav-icon">{item.icon}</span>
-                  {!collapsed && <span className="sidebar-nav-text">{item.label}</span>}
-                </NavLink>
-              ))}
-            </div>
-          )}
-
-          {/* User Management section - Admin/SuperAdmin only */}
-          {(user?.role === 'admin' || user?.role === 'superadmin') && (
+          {/* User Management section (admin only) */}
+          {user?.role === 'admin' && (
             <div className="sidebar-nav-section">
               {!collapsed && <span className="sidebar-nav-label">User Management</span>}
               {USER_MANAGEMENT_ITEMS.map(item => (
@@ -328,7 +290,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
               </div>
               <div className="sidebar-user-info">
                 <div className="sidebar-user-name">{user?.companyName || user?.name || 'Company'}</div>
-                <div className="sidebar-user-role">{user?.role === 'superadmin' ? 'Super Admin' : user?.role === 'admin' ? 'Administrator' : 'User'}</div>
+                <div className="sidebar-user-role">{user?.role === 'admin' ? 'Administrator' : user?.role === 'manager' ? 'Staff' : 'User'}</div>
               </div>
             </div>
           )}

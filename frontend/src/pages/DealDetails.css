@@ -480,6 +480,94 @@
   margin-top: 0.875rem;
 }
 
+.dd-form-grid--add-more {
+  grid-template-columns: repeat(2, 1fr);
+  margin-bottom: 1rem;
+}
+
+.dd-section-content--open {
+  max-height: none;
+  padding: 0;
+  overflow: visible;
+}
+
+.dd-add-more-result {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  padding: 0.875rem 1rem;
+}
+
+.dd-add-more-result-label {
+  font-size: var(--fs-xs);
+  color: #1e3a8a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.dd-add-more-result-value {
+  margin-top: 0.35rem;
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  color: #1d4ed8;
+}
+
+.dd-add-more-result-note {
+  margin-top: 0.35rem;
+  font-size: var(--fs-sm);
+  color: #334155;
+}
+
+.dd-add-more-list {
+  margin-top: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dd-add-more-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  font-size: var(--fs-sm);
+  border-bottom: 1px solid #eef2f7;
+  align-items: center;
+}
+
+.dd-add-more-item:last-child {
+  border-bottom: none;
+}
+
+.dd-add-more-item span:last-child {
+  text-align: right;
+  font-weight: 700;
+}
+
+.dd-add-more-delete-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #dc2626;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dd-add-more-delete-btn:hover {
+  background: #fee2e2;
+}
+
+.dd-add-more-delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .dd-section-header--tight {
   margin-bottom: 1rem;
 }
@@ -519,6 +607,8 @@
 
 .dd-btn--add-payment       { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
 .dd-btn--add-payment:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
+.dd-btn--add-more          { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; }
+.dd-btn--add-more:hover    { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35); }
 
 .dd-btn--pdf {
   background: #1a5490;
@@ -713,6 +803,45 @@
   word-break: break-word;
 }
 
+/* ── Additional Expenses ── */
+.dd-additional-expenses-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dd-additional-expense-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+  border: 1px solid #dbe4ee;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.dd-additional-expense-head {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.dd-additional-expense-sub {
+  margin-top: 0.15rem;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.dd-additional-expense-meta {
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+  color: #334155;
+}
+
+.dd-additional-expense-total {
+  margin-top: 0.3rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1d4ed8;
+}
+
 /* ── Empty State ── */
 .dd-empty-state {
   text-align: center;
@@ -872,11 +1001,16 @@
 
 /* ── Mobile Accordion (≤ 768px) ── */
 @media (max-width: 768px) {
+  .dd-wrapper { gap: 0.9rem; }
+
   /* Info & data grids */
   .dd-info-grid  { grid-template-columns: repeat(2, 1fr); }
   .dd-stat-grid  { grid-template-columns: 1fr; }
   .dd-form-grid  { grid-template-columns: 1fr; }
   .dd-form-grid  { gap: 0.75rem; }
+  .dd-form-grid--add-more { grid-template-columns: 1fr; }
+  .dd-add-more-item { grid-template-columns: 1fr auto; }
+  .dd-add-more-item span:last-child { text-align: left; }
 
   /* Edit icon btn — icon only on mobile, keep text hidden so it fits before caret */
   .dd-edit-icon-label { display: none; }
@@ -895,20 +1029,47 @@
 
   .dd-section-header {
     margin-bottom: 0;
-    padding: 1rem 3rem 1rem 1.5rem;
+    padding: 0.95rem 2.1rem 0.95rem 0.65rem;
     border-bottom: none;
     transition: background 0.2s;
     background: white;
     position: relative;
     cursor: pointer;
+    min-height: 56px;
+    align-items: center;
+    border-radius: 12px;
+    flex-wrap: nowrap;
   }
 
   .dd-section-header:hover { background: #f8fafc; }
+  .dd-section-toggle-hit {
+    min-height: 44px;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+  .dd-section-title {
+    font-size: 0.95rem;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+    font-weight: 750;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .dd-payment-count {
+    font-size: 0.68rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    margin-left: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
 
   .dd-section-header::after {
     content: '';
     position: absolute;
-    right: 1.5rem;
+    right: 0.75rem;
     top: 50%;
     transform: translateY(-50%) rotate(0deg);
     width: 0; height: 0;
@@ -927,12 +1088,17 @@
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease, padding 0.3s ease;
-    padding: 0 1.5rem;
+    padding: 0 0.45rem;
   }
 
   .dd-section--expanded .dd-section-content {
     max-height: 5000px;
-    padding: 0 1.5rem 1.5rem;
+    padding: 0.5rem 0.45rem 1.5rem;
+  }
+
+  /* Keep a little breathing room below section content on mobile */
+  .dd-section--expanded .dd-section-content > *:last-child {
+    margin-bottom: 0.35rem;
   }
 
   /* Action bar */
@@ -942,6 +1108,17 @@
   .dd-btn { width: 100%; }
   .dd-btn--pdf { width: 100%; }
   .dd-btn--sm { margin-left: auto; }
+  .dd-section-header .dd-btn--sm {
+    width: auto;
+    min-height: 34px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.74rem;
+    border-radius: 8px;
+  }
+  .dd-edit-icon-btn {
+    margin-right: 1.1rem;
+    min-height: 34px;
+  }
 
   .dd-form-actions { flex-direction: column; gap: 0.625rem; }
   .dd-payment-count { margin-left: 0; }
@@ -959,17 +1136,115 @@
   .dd-payment-btn span { display: none; }
 
   .dd-payment-total-card { max-width: 100%; margin-left: 0; margin-right: 0; }
+  .dd-additional-expenses-grid { grid-template-columns: 1fr; }
+
+  /* Compact inner card paddings for better content density */
+  .dd-info-pill { padding: 0.55rem 0.65rem; min-height: 76px; gap: 0.4rem; }
+  .dd-stat-card { padding: 0.7rem 0.75rem; min-height: 84px; gap: 0.3rem; }
+  .dd-stat-label { font-size: 0.68rem; letter-spacing: 0.04em; }
+  .dd-stat-value { font-size: 1.02rem; }
+  .dd-progress-wrap { gap: 0.5rem; margin-top: 0.75rem; }
+  .dd-progress-label { font-size: 0.78rem; }
+  .dd-cleared-badge { padding: 0.16rem 0.5rem; font-size: 0.66rem; }
+  .dd-payment-card { padding: 0.75rem; }
+  .dd-payment-info { gap: 0.5rem; }
+  .dd-payment-header { gap: 0.55rem; }
+  .dd-payment-amount-large { font-size: 1.05rem; }
+  .dd-payment-remarks { font-size: 0.78rem; line-height: 1.4; }
+  .dd-payment-btn { min-height: 36px; padding: 0.5rem 0.6rem; }
+  .dd-payment-total-card { padding: 0.75rem 0.9rem; }
+  .dd-payment-total-amount { font-size: 1.05rem; }
+  .dd-additional-expense-card { padding: 0.75rem; }
+  .dd-additional-expense-head { font-size: 0.95rem; }
+  .dd-additional-expense-sub { font-size: 0.76rem; }
+  .dd-additional-expense-meta { margin-top: 0.55rem; font-size: 0.75rem; }
+  .dd-additional-expense-total { font-size: 1rem; margin-top: 0.22rem; }
+  .dd-add-more-item { padding: 0.55rem 0.65rem; }
+  .dd-form-grid--add-more { gap: 0.6rem; margin-bottom: 0.75rem; }
+  .dd-add-more-result { padding: 0.7rem 0.75rem; }
+  .dd-add-more-result-value { font-size: 1rem; }
+  .dd-notes-display { padding: 0.75rem 0.85rem; font-size: 0.86rem; line-height: 1.55; }
+  .dd-notes-empty { font-size: 0.8rem; }
+  .dd-notes-input { min-height: 84px; padding: 0.65rem 0.75rem; font-size: 0.86rem; line-height: 1.45; }
+  .dd-notes-edit-actions { margin-top: 0.6rem; gap: 0.55rem; }
+
+  /* Milestone rows: keep all key values visible in one row */
+  .dd-add-more-item {
+    grid-template-columns: 0.7fr 1fr 1fr auto;
+    column-gap: 0.45rem;
+    font-size: 0.8rem;
+  }
+  .dd-add-more-item span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .dd-add-more-item span:last-child {
+    text-align: right;
+  }
+
+  /* Keep concise values on one line where practical */
+  .dd-pill-value,
+  .dd-stat-value,
+  .dd-additional-expense-meta,
+  .dd-additional-expense-total,
+  .dd-payment-date {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 /* ── Small Mobile (≤ 480px) ── */
 @media (max-width: 480px) {
+  .dd-wrapper { gap: 0.75rem; }
+
   .dd-info-grid { grid-template-columns: 1fr; }
   .dd-page-title-block { gap: 0.75rem; }
 
-  /* Section gets padding back at very small screens (accordion content handles its own padding) */
-  .dd-section { padding: 1rem; }
+  /* Keep accordion shell compact; content padding is handled in section-content */
+  .dd-section { padding: 0; }
+  .dd-section-header {
+    min-height: 52px;
+    padding: 0.82rem 1.95rem 0.82rem 0.55rem;
+  }
+  .dd-section-title {
+    font-size: 0.9rem;
+  }
+  .dd-payment-count {
+    font-size: 0.65rem;
+    padding: 0.22rem 0.5rem;
+  }
+  .dd-section-header::after {
+    right: 0.6rem;
+  }
 
   .dd-action-bar { bottom: 0.625rem; right: 0.625rem; left: 0.625rem; }
+
+  /* Extra compact on small phones */
+  .dd-info-pill { padding: 0.5rem 0.6rem; min-height: 72px; }
+  .dd-stat-card { padding: 0.65rem 0.65rem; min-height: 78px; }
+  .dd-stat-label { font-size: 0.65rem; }
+  .dd-stat-value { font-size: 0.95rem; }
+  .dd-progress-label { font-size: 0.74rem; }
+  .dd-payment-card { padding: 0.65rem; }
+  .dd-payment-date { font-size: 0.77rem; }
+  .dd-mode-badge { padding: 0.22rem 0.55rem; font-size: 0.68rem; }
+  .dd-payment-amount-large { font-size: 1rem; }
+  .dd-payment-btn { min-height: 34px; padding: 0.45rem 0.5rem; }
+  .dd-payment-total-card { padding: 0.65rem 0.75rem; }
+  .dd-additional-expense-card { padding: 0.65rem; }
+  .dd-additional-expense-head { font-size: 0.9rem; }
+  .dd-additional-expense-sub { font-size: 0.72rem; }
+  .dd-additional-expense-meta { font-size: 0.72rem; }
+  .dd-additional-expense-total { font-size: 0.95rem; }
+  .dd-add-more-item { padding: 0.5rem 0.55rem; }
+  .dd-add-more-item {
+    grid-template-columns: 0.68fr 0.95fr 0.95fr auto;
+    font-size: 0.77rem;
+  }
+  .dd-notes-display { padding: 0.65rem 0.7rem; font-size: 0.82rem; line-height: 1.5; }
+  .dd-notes-input { min-height: 76px; padding: 0.55rem 0.65rem; font-size: 0.82rem; }
 }
 
 /* ── Tiny Mobile (≤ 350px) ── */
@@ -1000,8 +1275,8 @@
     flex-wrap: wrap;
   }
 
-  .dd-section-content { padding: 0 1rem; }
-  .dd-section--expanded .dd-section-content { padding: 0 1rem 1rem; }
+  .dd-section-content { padding: 0 0.6rem; }
+  .dd-section--expanded .dd-section-content { padding: 0.5rem 0.6rem 1.2rem; }
 
   .dd-payment-count { width: 100%; margin-top: 0.5rem; text-align: center; }
 

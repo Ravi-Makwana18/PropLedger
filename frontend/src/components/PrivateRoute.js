@@ -19,10 +19,9 @@ import { useAuth } from '../context/AuthContext';
  * 
  * @param {Object} props - Component props
  * @param {React.ReactNode} props.children - Child components to render
- * @param {boolean} props.adminOnly - Requires admin or superadmin role
- * @param {boolean} props.superAdminOnly - Requires superadmin role only
+ * @param {boolean} props.adminOnly - Requires admin role
  */
-const PrivateRoute = ({ children, adminOnly = false, superAdminOnly = false }) => {
+const PrivateRoute = ({ children, adminOnly = false }) => {
   const { user, loading } = useAuth();
 
   // Show loading spinner while checking authentication
@@ -39,13 +38,8 @@ const PrivateRoute = ({ children, adminOnly = false, superAdminOnly = false }) =
     return <Navigate to="/login" />;
   }
 
-  // Check super admin access
-  if (superAdminOnly && user.role !== 'superadmin') {
-    return <Navigate to="/dashboard" />;
-  }
-
   // Check admin access
-  if (adminOnly && user.role !== 'admin' && user.role !== 'superadmin') {
+  if (adminOnly && user.role !== 'admin') {
     return <Navigate to="/dashboard" />;
   }
 

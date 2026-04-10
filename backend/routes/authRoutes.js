@@ -2,8 +2,8 @@
  * ============================================
  * PropLedger - Authentication Routes
  * ============================================
- * Defines routes for user authentication operations
- * 
+ * Defines routes for user authentication and profile management.
+ *
  * @author Ravi Makwana
  * @version 1.0.0
  */
@@ -19,7 +19,7 @@ const {
   updateProfilePicture,
   createManagedUser,
   getAllUsers,
-  deleteUser
+  deleteUser,
 } = require('../controllers/authController');
 const { protect, admin } = require('../middleware/auth');
 const asyncHandler = require('../middleware/asyncHandler');
@@ -27,29 +27,22 @@ const asyncHandler = require('../middleware/asyncHandler');
 // ============================================
 // Public Routes
 // ============================================
-router.post('/register', asyncHandler(register));           // Register new user
-router.post('/login', asyncHandler(login));                 // Login user
+router.post('/register', asyncHandler(register));
+router.post('/login', asyncHandler(login));
 
 // ============================================
 // Protected Routes (Authentication Required)
 // ============================================
-router.get('/profile', protect, asyncHandler(getProfile));                      // Get user profile
-router.get('/verify', protect, asyncHandler(verifyToken));                      // Verify JWT token
-router.post('/logout', asyncHandler(logout));                                   // Logout user
-router.put('/profile-picture', protect, asyncHandler(updateProfilePicture));    // Update profile picture
-// Admin User Management Routes
-const adminOrSuperadmin = (req, res, next) => {
-  if (req.user?.role === 'admin' || req.user?.role === 'superadmin') return next();
-  return res.status(403).json({ message: 'Not authorized' });
-};
-router.get('/users', protect, adminOrSuperadmin, asyncHandler(getAllUsers));
-router.delete('/users/:id', protect, adminOrSuperadmin, asyncHandler(deleteUser));
+router.get('/profile', protect, asyncHandler(getProfile));
+router.get('/verify', protect, asyncHandler(verifyToken));
+router.post('/logout', asyncHandler(logout));
+router.put('/profile-picture', protect, asyncHandler(updateProfilePicture));
 
-router.post('/managed-users', protect, (req, res, next) => {
-  if (req.user?.role === 'admin' || req.user?.role === 'superadmin') {
-    return next();
-  }
-  return res.status(403).json({ message: 'Only admins can create users' });
-}, asyncHandler(createManagedUser));                                            // Admin create restricted user
+// ============================================
+// Admin-Only Routes (User Management)
+// ============================================
+router.get('/users', protect, admin, asyncHandler(getAllUsers));
+router.delete('/users/:id', protect, admin, asyncHandler(deleteUser));
+router.post('/managed-users', protect, admin, asyncHandler(createManagedUser));
 
 module.exports = router;

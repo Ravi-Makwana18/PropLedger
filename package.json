@@ -24,7 +24,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/propledger.git"
+    "url": "https://github.com/Ravi-Makwana18/Propledger.git"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

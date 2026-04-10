@@ -42,6 +42,10 @@ const AddDeal = () => {
     dealDate: '',
     deadlineStartDate: '',
     deadlineEndDate: '',
+    buyBrokeringPercent: '',
+    sellCpIncentiveRate: '',
+    planpassRatePerSqMtr: '',
+    naRatePerSqMtr: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -73,6 +77,12 @@ const AddDeal = () => {
         dealDate: formData.dealDate,
         deadlineStartDate: formData.deadlineStartDate,
         deadlineEndDate: formData.deadlineEndDate,
+        additionalExpenses: {
+          ...(formData.buyBrokeringPercent !== '' && { buyBrokeringPercent: parseFloat(formData.buyBrokeringPercent) }),
+          ...(formData.sellCpIncentiveRate !== '' && { sellCpIncentiveRate: parseFloat(formData.sellCpIncentiveRate) }),
+          ...(formData.planpassRatePerSqMtr !== '' && { planpassRatePerSqMtr: parseFloat(formData.planpassRatePerSqMtr) }),
+          ...(formData.naRatePerSqMtr !== '' && { naRatePerSqMtr: parseFloat(formData.naRatePerSqMtr) }),
+        }
       };
 
       const { data } = await API.post('/api/deals', payload);
@@ -100,6 +110,17 @@ const AddDeal = () => {
   // Apply 1% TDS if white payment exceeds 50,00,000
   const whitePaymentAfterTDS = whitePayment > 5000000 ? whitePayment - (whitePayment * 0.01) : whitePayment;
   const tdsAmount = whitePayment > 5000000 ? whitePayment * 0.01 : 0;
+  const buyBrokeringPercent = parseFloat(formData.buyBrokeringPercent) || 0;
+  const sellCpIncentiveRate = parseFloat(formData.sellCpIncentiveRate) || 0;
+  const planpassRatePerSqMtr = parseFloat(formData.planpassRatePerSqMtr) || 0;
+  const naRatePerSqMtr = parseFloat(formData.naRatePerSqMtr) || 0;
+  const totalSqYard = parseFloat(formData.totalSqYard) || 0;
+  const totalSqMeter = parseFloat(formData.totalSqMeter) || 0;
+
+  const buyBrokeringTotal = (buyBrokeringPercent / 100) * totalAmount;
+  const sellCpIncentiveTotal = sellCpIncentiveRate * totalSqYard;
+  const planpassTotal = planpassRatePerSqMtr * totalSqMeter;
+  const naTotal = naRatePerSqMtr * totalSqMeter;
 
   return (
     <div className="ad-page">
@@ -343,7 +364,7 @@ const AddDeal = () => {
                   <>
                     {totalAmount > 0 && <div className="ad-calc-divider ad-calc-divider--pipe">|</div>}
                     <div className="ad-calc-card ad-calc-card--white">
-                      <span className="ad-calc-label">White Payment{whitePayment > 5000000 ? ' (Before TDS)' : ''}</span>
+                      <span className="ad-calc-label">Jantri Payment{whitePayment > 5000000 ? '' : ''}</span>
                       <span className="ad-calc-value">{formatINR(whitePayment)}</span>
                     </div>
                     {whitePayment > 5000000 && (
@@ -355,7 +376,7 @@ const AddDeal = () => {
                         </div>
                         <div className="ad-calc-divider">=</div>
                         <div className="ad-calc-card ad-calc-card--total">
-                          <span className="ad-calc-label">White Payment (After TDS)</span>
+                          <span className="ad-calc-label">Jantri Payment (After TDS)</span>
                           <span className="ad-calc-value">{formatINR(whitePaymentAfterTDS)}</span>
                         </div>
                       </>
@@ -391,7 +412,7 @@ const AddDeal = () => {
               <h2 className="ad-section-title">Payment Deadlines</h2>
             </div>
             <div className="ad-grid-3">
-              <Field label="Deal Date:">
+              <Field label="Deal Date">
                 <input
                   type="date"
                   className="ad-input app-input"
@@ -418,6 +439,86 @@ const AddDeal = () => {
                   onChange={handleChange}
                 />
               </Field>
+            </div>
+          </div>
+
+          {/* ── Section 6: Additional Expenses ── */}
+          <div className="ad-section app-card">
+            <div className="ad-section-header app-section-header">
+              <h2 className="ad-section-title">Additional Expenses</h2>
+            </div>
+            <div className="ad-expenses-grid">
+              <div className="ad-calc-card ad-calc-card--total ad-expense-card">
+                <span className="ad-expense-title">Buy</span>
+                <span className="ad-expense-subtitle">Brokering expenses</span>
+                <Field label="Input (%)">
+                  <input
+                    type="number"
+                    className="ad-input app-input"
+                    name="buyBrokeringPercent"
+                    placeholder="0.00"
+                    value={formData.buyBrokeringPercent}
+                    onChange={handleChange}
+                    min="0"
+                    step="0.01"
+                  />
+                </Field>
+                <div className="ad-expense-total">Total Value: {formatINR(buyBrokeringTotal)}</div>
+              </div>
+
+              <div className="ad-calc-card ad-calc-card--banakhat ad-expense-card">
+                <span className="ad-expense-title">Sell</span>
+                <span className="ad-expense-subtitle">C. P. Incentive expenses</span>
+                <Field label="Rate (per sq.yds)">
+                  <input
+                    type="number"
+                    className="ad-input app-input"
+                    name="sellCpIncentiveRate"
+                    placeholder="0.00"
+                    value={formData.sellCpIncentiveRate}
+                    onChange={handleChange}
+                    min="0"
+                    step="0.01"
+                  />
+                </Field>
+                <div className="ad-expense-total">Total Value: {formatINR(sellCpIncentiveTotal)}</div>
+              </div>
+
+              <div className="ad-calc-card ad-calc-card--white ad-expense-card">
+                <span className="ad-expense-title">Planpass Expenses</span>
+                <span className="ad-expense-subtitle">Rate (per sq. mtr)</span>
+                <Field label="Rate (per sq. mtr)">
+                  <input
+                    type="number"
+                    className="ad-input app-input"
+                    name="planpassRatePerSqMtr"
+                    placeholder="0.00"
+                    value={formData.planpassRatePerSqMtr}
+                    onChange={handleChange}
+                    min="0"
+                    step="0.01"
+                  />
+                </Field>
+                <div className="ad-expense-total">Total Value: {formatINR(planpassTotal)}</div>
+              </div>
+
+              <div className="ad-calc-card ad-calc-card--total ad-expense-card">
+                <span className="ad-expense-title">NA expenses</span>
+                <span className="ad-expense-subtitle">Rate (per sq. mtr)</span>
+                <Field label="Rate (per sq. mtr)">
+                  <input
+                    type="number"
+                    className="ad-input app-input"
+                    name="naRatePerSqMtr"
+                    placeholder="0.00"
+                    value={formData.naRatePerSqMtr}
+                    onChange={handleChange}
+                    min="0"
+                    step="0.01"
+                  />
+                </Field>
+                <div className="ad-expense-total">Total Value: {formatINR(naTotal)}</div>
+              </div>
             </div>
           </div>
 

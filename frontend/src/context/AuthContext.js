@@ -144,8 +144,7 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     refreshUser,
-    isAdmin: user?.role === 'admin' || user?.role === 'manager' || user?.role === 'superadmin',
-    isSuperAdmin: user?.role === 'superadmin'
+    isAdmin: user?.role === 'admin' || user?.role === 'manager'
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

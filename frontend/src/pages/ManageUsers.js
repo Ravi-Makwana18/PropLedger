@@ -68,7 +68,7 @@ const ManageUsers = () => {
       .split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
   };
 
-  if (user?.role !== 'admin' && user?.role !== 'superadmin') {
+  if (user?.role !== 'admin') {
     return (
       <div className="mu-page">
         <div className="mu-hero">
@@ -122,18 +122,6 @@ const ManageUsers = () => {
               <span className="mu-stat-number">{managedUsers.length}</span>
               <span className="mu-stat-label">Total Users</span>
             </div>
-            {/* <div className="mu-stat-card mu-stat-card--active">
-              <span className="mu-stat-number">
-                {managedUsers.filter(u => u.subscriptionStatus === 'active').length}
-              </span>
-              <span className="mu-stat-label">Active</span>
-            </div>
-            <div className="mu-stat-card mu-stat-card--inactive">
-              <span className="mu-stat-number">
-                {managedUsers.filter(u => u.subscriptionStatus !== 'active').length}
-              </span>
-              <span className="mu-stat-label">Inactive</span>
-            </div> */}
           </div>
         </div>
       </div>
@@ -209,10 +197,9 @@ const ManageUsers = () => {
                   <h3 className="mu-user-name">{u.contactPersonName || u.name || '—'}</h3>
                   <p className="mu-user-email">{u.email || u.mobileNumber || '—'}</p>
                   <div className="mu-user-meta">
-                    <span className={`mu-user-status mu-user-status--${u.subscriptionStatus || 'active'}`}>
-                      {u.subscriptionStatus === 'active' ? 'Active' : 'Inactive'}
+                    <span className="mu-user-role">
+                      {u.role === 'manager' ? 'Staff' : u.role === 'admin' ? 'Admin' : u.role || 'User'}
                     </span>
-                    <span className="mu-user-role">{u.role}</span>
                   </div>
                 </div>
                 <AppButton

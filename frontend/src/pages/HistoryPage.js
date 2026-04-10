@@ -12,10 +12,26 @@ const MODE_COLORS = {
 
 const MODES = ['ALL', 'Bank', 'Other'];
 
-const formatCurrency = (amount) =>
-    new Intl.NumberFormat('en-IN', {
-        style: 'currency', currency: 'INR', maximumFractionDigits: 0
-    }).format(amount);
+const formatCurrency = (amount) => {
+    if (!amount && amount !== 0) return '₹0';
+    return `₹${Math.round(amount).toLocaleString('en-IN')}`;
+};
+
+// Short, human-friendly currency (Indian units): shows Crore / Lakh / K as appropriate
+const formatCurrencyShort = (amount) => {
+    if (!amount && amount !== 0) return '₹0';
+    const abs = Math.abs(amount || 0);
+    if (abs >= 10000000) { // 1 Crore
+        return `₹${(amount / 10000000).toFixed(2)} Cr`;
+    }
+    if (abs >= 100000) { // 1 Lakh
+        return `₹${(amount / 100000).toFixed(2)} Lakhs`;
+    }
+    if (abs >= 1000) {
+        return `₹${(amount / 1000).toFixed(2)}K`;
+    }
+    return `₹${Math.round(amount || 0).toLocaleString('en-IN')}`;
+};
 
 const formatTime = (date) =>
     new Date(date).toLocaleString('en-IN', {
@@ -56,8 +72,8 @@ const TransactionCard = ({ payment, onClick }) => {
             <div className="hp-card-body">
                 <div className="hp-card-title">
                     {deal.villageName || '—'}
-                    {deal.surveyNumber && (
-                        <span className="hp-card-survey">#{deal.surveyNumber}</span>
+                    {(deal.newSurveyNo || deal.surveyNumber) && (
+                        <span className="hp-card-survey">#{deal.newSurveyNo || deal.surveyNumber}</span>
                     )}
                     {deal.dealType && (
                         <span
@@ -71,7 +87,9 @@ const TransactionCard = ({ payment, onClick }) => {
                         </span>
                     )}
                     {/* amount shown on mobile inside body */}
-                    <span className="hp-card-amount-mobile">{formatCurrency(payment.amount)}</span>
+                    <span className="hp-card-amount-mobile" title={formatCurrency(payment.amount)} aria-label={`Amount ${formatCurrency(payment.amount)}`}>
+                        {formatCurrencyShort(payment.amount)}
+                    </span>
                 </div>
 
                 <div className="hp-card-meta">
@@ -96,7 +114,9 @@ const TransactionCard = ({ payment, onClick }) => {
 
             {/* Right: amount + arrow */}
             <div className="hp-card-right">
-                <span className="hp-card-amount">{formatCurrency(payment.amount)}</span>
+                <span className="hp-card-amount" title={formatCurrency(payment.amount)} aria-label={`Amount ${formatCurrency(payment.amount)}`}>
+                    {formatCurrencyShort(payment.amount)}
+                </span>
                 <span className="hp-card-arrow">
                     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"
                         strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
@@ -225,18 +245,58 @@ const HistoryPage = () => {
                     </div>
 
                     {/* Summary chips */}
-                    <div className="hp-summary-row">
-                        <div className="hp-chip">
-                            <span className="hp-chip-label">Total Records</span>
-                            <span className="hp-chip-value">{total.toLocaleString('en-IN')}</span>
+                    <div className="hp-kpi-row">
+                        <div className="hp-kpi-card">
+                            <div className="hp-kpi-icon hp-kpi-icon--records">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                    <line x1="16" y1="13" x2="8" y2="13" />
+                                    <line x1="16" y1="17" x2="8" y2="17" />
+                                    <polyline points="10 9 9 9 8 9" />
+                                </svg>
+                            </div>
+                            <div className="hp-kpi-info">
+                                <span className="hp-kpi-label">Total Records</span>
+                                <span className="hp-kpi-value">{total.toLocaleString('en-IN')}</span>
+                            </div>
                         </div>
-                        <div className="hp-chip">
-                            <span className="hp-chip-label">Shown on Page</span>
-                            <span className="hp-chip-value">{payments.length}</span>
+                        <div className="hp-kpi-card">
+                            <div className="hp-kpi-icon hp-kpi-icon--page">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="3" y="3" width="7" height="7" />
+                                    <rect x="14" y="3" width="7" height="7" />
+                                    <rect x="14" y="14" width="7" height="7" />
+                                    <rect x="3" y="14" width="7" height="7" />
+                                </svg>
+                            </div>
+                            <div className="hp-kpi-info">
+                                <span className="hp-kpi-label">Shown on Page</span>
+                                <span className="hp-kpi-value">{payments.length}</span>
+                            </div>
                         </div>
-                        <div className="hp-chip">
-                            <span className="hp-chip-label">Page Amount</span>
-                            <span className="hp-chip-value">{formatCurrency(totalAmount)}</span>
+                        <div className="hp-kpi-card">
+                            <div className="dashboard-kpi-icon dashboard-kpi-icon--portfolio">
+                                <svg
+                                    width="22"
+                                    height="22"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    {/* Rupee Symbol */}
+                                    <path d="M6 4h12M6 8h12M10 8c2.5 0 4 1.5 4 3s-1.5 3-4 3H6l8 6" />
+                                </svg>
+                            </div>
+                            <div className="hp-kpi-info">
+                                <span className="hp-kpi-label">Page Amount</span>
+                                <span className="hp-kpi-value" title={formatCurrency(totalAmount)}>
+                                    {formatCurrencyShort(totalAmount)}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -2,9 +2,9 @@
  * ============================================
  * PropLedger - Deal Model
  * ============================================
- * Defines the land deal schema with automatic calculations
- * Tracks property details, pricing, and payment deadlines
- * 
+ * Defines the land deal schema with automatic calculations.
+ * Tracks property details, pricing, and payment deadlines.
+ *
  * @author Ravi Makwana
  * @version 1.0.0
  */
@@ -13,144 +13,179 @@ const mongoose = require('mongoose');
 
 /**
  * Deal Schema Definition
- * Stores land deal information with automatic amount calculations
+ * Stores land deal information with automatic amount calculations.
  */
 const dealSchema = new mongoose.Schema({
-    dealDate: {
-      type: Date,
-      required: false
-    },
+  dealDate: {
+    type: Date,
+  },
   district: {
     type: String,
     required: [true, 'Please provide district name'],
     trim: true,
-    index: true
+    index: true,
   },
   subDistrict: {
     type: String,
     required: [true, 'Please provide sub-district name'],
     trim: true,
-    index: true
+    index: true,
   },
   villageName: {
     type: String,
     required: [true, 'Please provide village name'],
     trim: true,
-    index: true  // Indexed for faster search queries
+    index: true,
   },
   oldSurveyNo: {
     type: String,
-    trim: true
+    trim: true,
   },
   newSurveyNo: {
     type: String,
     required: [true, 'Please provide new survey number'],
     trim: true,
-    index: true
+    index: true,
   },
   surveyNumber: {
     type: String,
     trim: true,
-    index: true  // Keep for backward compatibility
+    index: true,
   },
   dealType: {
     type: String,
     enum: ['Buy', 'Sell', 'Other'],
     required: [true, 'Please specify deal type (Buy, Sell or Other)'],
-    default: 'Buy'
+    default: 'Buy',
   },
   brokerName: {
     type: String,
     trim: true,
-    default: ''
+    default: '',
   },
   naType: {
     type: String,
     enum: ['Residential', 'Industrial', 'Multi-purpose', ''],
-    default: ''
+    default: '',
   },
   pricePerSqYard: {
     type: Number,
     required: [true, 'Please provide price per sq. yard'],
-    min: [0, 'Price cannot be negative']
+    min: [0, 'Price cannot be negative'],
   },
   totalSqYard: {
     type: Number,
     required: [true, 'Please provide total sq. yard'],
-    min: [0, 'Area cannot be negative']
+    min: [0, 'Area cannot be negative'],
   },
   totalAmount: {
-    type: Number
+    type: Number,
     // Calculated automatically in pre-save hook
   },
   banakhatAmount: {
-    type: Number
-    // Calculated as 25% of total amount in pre-save hook
+    type: Number,
+    // Calculated as 25% of totalAmount in pre-save hook
   },
   totalSqMeter: {
     type: Number,
-    min: [0, 'Area cannot be negative']
+    min: [0, 'Area cannot be negative'],
   },
   jantri: {
     type: Number,
-    min: [0, 'Jantri cannot be negative']
+    min: [0, 'Jantri cannot be negative'],
   },
   whitePayment: {
-    type: Number
-    // Calculated from totalSqMeter * jantri in pre-save hook (after TDS if applicable)
+    type: Number,
+    // Calculated from totalSqMeter × jantri in pre-save hook (after TDS if applicable)
   },
   whitePaymentBeforeTDS: {
-    type: Number
+    type: Number,
     // Original white payment before TDS deduction
   },
   tdsAmount: {
     type: Number,
-    default: 0
-    // 1% TDS if white payment exceeds 50,00,000
+    default: 0,
+    // 1% TDS if white payment >= 50,00,000
   },
   notes: {
     type: String,
     trim: true,
-    default: ''
+    default: '',
   },
+  additionalExpenses: {
+    buyBrokeringPercent: {
+      type: Number,
+      min: [0, 'Buy brokering % cannot be negative'],
+      default: 0,
+    },
+    sellCpIncentiveRate: {
+      type: Number,
+      min: [0, 'Sell C.P. incentive rate cannot be negative'],
+      default: 0,
+    },
+    planpassRatePerSqMtr: {
+      type: Number,
+      min: [0, 'Planpass rate cannot be negative'],
+      default: 0,
+    },
+    naRatePerSqMtr: {
+      type: Number,
+      min: [0, 'NA rate cannot be negative'],
+      default: 0,
+    },
+  },
+  addMoreEntries: [{
+    percentage: {
+      type: Number,
+      min: [0, 'Percentage cannot be negative'],
+      max: [100, 'Percentage cannot be more than 100'],
+    },
+    date: {
+      type: Date,
+    },
+    amount: {
+      type: Number,
+      min: [0, 'Amount cannot be negative'],
+    },
+  }],
   deadlineStartDate: {
     type: Date,
-    required: false
   },
   deadlineEndDate: {
     type: Date,
-    required: false
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
-    index: true  // Index for faster user-specific queries
-  }
+    index: true,
+  },
 }, {
-  timestamps: true,  // Automatically add createdAt and updatedAt
+  timestamps: true,
   toJSON: { virtuals: true },
-  toObject: { virtuals: true }
+  toObject: { virtuals: true },
 });
 
 /**
  * Pre-save middleware
- * Automatically calculates derived amounts before saving
- * - totalAmount = pricePerSqYard * totalSqYard
- * - banakhatAmount = 25% of totalAmount
- * - whitePaymentBeforeTDS = totalSqMeter * jantri
- * - If whitePaymentBeforeTDS >= 50,00,000 then deduct 1% TDS
- * - whitePayment = whitePaymentBeforeTDS - tdsAmount
- * - surveyNumber = newSurveyNo (for backward compatibility)
+ * Synchronously calculates all derived amounts before saving.
+ *
+ * Calculations:
+ *   totalAmount          = pricePerSqYard × totalSqYard
+ *   banakhatAmount       = 25% of totalAmount
+ *   whitePaymentBeforeTDS = totalSqMeter × jantri
+ *   tdsAmount            = 1% of whitePaymentBeforeTDS if >= 50,00,000 else 0
+ *   whitePayment         = whitePaymentBeforeTDS − tdsAmount
+ *   surveyNumber         = newSurveyNo (kept in sync)
  */
-dealSchema.pre('save', async function () {
+dealSchema.pre('save', function () {
   this.totalAmount = this.pricePerSqYard * this.totalSqYard;
-  this.banakhatAmount = this.totalAmount * 0.25; // 25% of total
-  
+  this.banakhatAmount = this.totalAmount * 0.25;
+
   const calculatedWhitePayment = (this.totalSqMeter || 0) * (this.jantri || 0);
   this.whitePaymentBeforeTDS = calculatedWhitePayment;
-  
-  // Apply 1% TDS if white payment exceeds or equals 50,00,000
+
+  // Apply 1% TDS if white payment equals or exceeds ₹50,00,000
   if (calculatedWhitePayment >= 5000000) {
     this.tdsAmount = calculatedWhitePayment * 0.01;
     this.whitePayment = calculatedWhitePayment - this.tdsAmount;
@@ -158,8 +193,8 @@ dealSchema.pre('save', async function () {
     this.tdsAmount = 0;
     this.whitePayment = calculatedWhitePayment;
   }
-  
-  // Set surveyNumber from newSurveyNo for backward compatibility
+
+  // Keep surveyNumber aligned with newSurveyNo
   if (this.newSurveyNo) {
     this.surveyNumber = String(this.newSurveyNo);
   }
@@ -170,6 +205,6 @@ dealSchema.pre('save', async function () {
  */
 dealSchema.index({ villageName: 1, newSurveyNo: 1 });
 dealSchema.index({ district: 1, subDistrict: 1 });
-dealSchema.index({ createdBy: 1, createdAt: -1 });  // For sorted user queries
+dealSchema.index({ createdBy: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Deal', dealSchema);

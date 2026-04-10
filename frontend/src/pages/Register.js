@@ -19,8 +19,7 @@ const Register = () => {
     email: '',
     phone: '',
     password: '',
-    confirmPassword: '',
-    subscriptionPlan: '7-day-trial'
+    confirmPassword: ''
   });
   const [availableStates, setAvailableStates] = useState([]);
   const [availableCities, setAvailableCities] = useState([]);
@@ -148,8 +147,8 @@ const Register = () => {
             <div className="auth-feature">
               <div className="auth-feature-icon">🎯</div>
               <div className="auth-feature-content">
-                <h3>Flexible Plans</h3>
-                <p>Choose the subscription that fits your business needs</p>
+                <h3>Stay Organized</h3>
+                <p>Track deals, documents, and history in one place</p>
               </div>
             </div>
           </div>
@@ -173,7 +172,7 @@ const Register = () => {
           <div className="auth-form-header">
             <div className="auth-welcome-badge">Get Started</div>
             <h2 className="auth-form-title">Create your account</h2>
-            <p className="auth-form-subtitle">Join thousands of professionals managing land deals efficiently</p>
+            <p className="auth-form-subtitle">Set up your organization account to start managing land deals</p>
           </div>
 
           {error && (
@@ -468,77 +467,6 @@ const Register = () => {
                     </button>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Subscription Plan */}
-            <div className="auth-section">
-              <div className="auth-section-header">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
-                </svg>
-                <h3>Choose Your Plan</h3>
-              </div>
-              
-              <div className="auth-plans-grid">
-                <label className={`auth-plan-card ${formData.subscriptionPlan === '7-day-trial' ? 'auth-plan-card--active' : ''}`}>
-                  <input
-                    type="radio"
-                    name="subscriptionPlan"
-                    value="7-day-trial"
-                    checked={formData.subscriptionPlan === '7-day-trial'}
-                    onChange={handleChange}
-                    className="auth-plan-radio"
-                  />
-                  <div className="auth-plan-content">
-                    <div className="auth-plan-icon">🎁</div>
-                    <div className="auth-plan-details">
-                      <div className="auth-plan-name">7 Day Trial</div>
-                      <div className="auth-plan-price">FREE</div>
-                      <div className="auth-plan-desc">Perfect to get started</div>
-                    </div>
-                  </div>
-                </label>
-
-                <label className={`auth-plan-card ${formData.subscriptionPlan === 'monthly' ? 'auth-plan-card--active' : ''}`}>
-                  <input
-                    type="radio"
-                    name="subscriptionPlan"
-                    value="monthly"
-                    checked={formData.subscriptionPlan === 'monthly'}
-                    onChange={handleChange}
-                    className="auth-plan-radio"
-                  />
-                  <div className="auth-plan-content">
-                    <div className="auth-plan-icon">📅</div>
-                    <div className="auth-plan-details">
-                      <div className="auth-plan-name">Monthly</div>
-                      <div className="auth-plan-price">$12<span>/month</span></div>
-                      <div className="auth-plan-desc">Flexible billing</div>
-                    </div>
-                  </div>
-                </label>
-
-                <label className={`auth-plan-card auth-plan-card--popular ${formData.subscriptionPlan === 'yearly' ? 'auth-plan-card--active' : ''}`}>
-                  <div className="auth-plan-badge">Best Value</div>
-                  <input
-                    type="radio"
-                    name="subscriptionPlan"
-                    value="yearly"
-                    checked={formData.subscriptionPlan === 'yearly'}
-                    onChange={handleChange}
-                    className="auth-plan-radio"
-                  />
-                  <div className="auth-plan-content">
-                    <div className="auth-plan-icon">⭐</div>
-                    <div className="auth-plan-details">
-                      <div className="auth-plan-name">Yearly</div>
-                      <div className="auth-plan-price">$100<span>/year</span></div>
-                      <div className="auth-plan-desc">Save $44 annually</div>
-                    </div>
-                  </div>
-                </label>
               </div>
             </div>
 
