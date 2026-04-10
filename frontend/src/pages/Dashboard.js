@@ -7,6 +7,25 @@ import AppButton from '../components/ui/AppButton';
 import AppSelect from '../components/ui/AppSelect';
 import './Dashboard.css';
 
+/* ── Icon components defined OUTSIDE the component so they never recreate ── */
+const EditIconSvg = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+);
+
+const DeleteIconSvg = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    <line x1="10" y1="11" x2="10" y2="17" />
+    <line x1="14" y1="11" x2="14" y2="17" />
+  </svg>
+);
+
 const Dashboard = () => {
   const { isAdmin } = useAuth();
   const location = useLocation();
@@ -19,6 +38,11 @@ const Dashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [toast, setToast] = useState({ message: '', type: '' }); // type: 'success' | 'error'
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast({ message: '', type: '' }), 3500);
+  };
   const [editingId, setEditingId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -123,8 +147,9 @@ const Dashboard = () => {
         await API.delete(`/api/deals/${dealId}`);
         setDeals(deals.filter(deal => deal._id !== dealId));
         setConfirmDeleteId(null);
+        showToast('Deal deleted successfully');
       } catch (err) {
-        alert(err.response?.data?.message || 'Failed to delete deal');
+        showToast(err.response?.data?.message || 'Failed to delete deal', 'error');
       } finally {
         setIsDeleting(false);
       }
@@ -191,36 +216,39 @@ const Dashboard = () => {
       setDeals(deals.map(deal => deal._id === dealId ? data : deal));
       setEditingId(null);
       setEditFormData({ district: '', subDistrict: '', villageName: '', oldSurveyNo: '', newSurveyNo: '', dealType: 'Buy', pricePerSqYard: '', totalSqYard: '', totalSqMeter: '', jantri: '', totalAmount: '', paymentDeadlineMonth: '' });
-      alert('Deal updated successfully');
+      showToast('Deal updated successfully');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update deal');
+      showToast(err.response?.data?.message || 'Failed to update deal', 'error');
     } finally {
       setIsSavingEdit(false);
     }
   };
 
   // ── Formatters (currency + date) ─────────────────────────────────────────
-  const formatCurrency = (amount) =>
-    new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
+  const formatCurrency = (amount) => {
+    if (!amount && amount !== 0) return '₹0';
+    return `₹${Math.round(amount).toLocaleString('en-IN')}`;
+  };
+
+  // Short, human-friendly currency (Indian units): shows Crore / Lakh / K as appropriate
+  const formatCurrencyShort = (amount) => {
+    if (!amount && amount !== 0) return '₹0';
+    const abs = Math.abs(amount || 0);
+    if (abs >= 10000000) { // 1 Crore = 1e7
+      return `₹${(amount / 10000000).toFixed(2)} Cr`;
+    }
+    if (abs >= 100000) { // 1 Lakh = 1e5
+      return `₹${(amount / 100000).toFixed(2)} Lakhs`;
+    }
+    if (abs >= 1000) {
+      return `₹${(amount / 1000).toFixed(2)}K`;
+    }
+    return `₹${Math.round(amount || 0).toLocaleString('en-IN')}`;
+  };
 
 
 
-  // ── Inline SVG icon components ──────────────────────────────────────────
-  const EditIconSvg = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-    </svg>
-  );
-
-  const DeleteIconSvg = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="3 6 5 6 21 6"></polyline>
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-      <line x1="10" y1="11" x2="10" y2="17"></line>
-      <line x1="14" y1="11" x2="14" y2="17"></line>
-    </svg>
-  );
+  // ── Inline SVG icon components are now defined at module level ──────────
 
   // ── Loading state: shimmer skeleton ──────────────────────────────────────
   if (loading) {
@@ -255,12 +283,12 @@ const Dashboard = () => {
         const subDistrict = deal.subDistrict?.trim().toLowerCase() || '';
         const newSurvey = String(deal.newSurveyNo || deal.surveyNumber || '').trim().toLowerCase();
         const oldSurvey = String(deal.oldSurveyNo || '').trim().toLowerCase();
-        
-        return village.includes(term) || 
-               district.includes(term) || 
-               subDistrict.includes(term) || 
-               newSurvey.includes(term) || 
-               oldSurvey.includes(term);
+
+        return village.includes(term) ||
+          district.includes(term) ||
+          subDistrict.includes(term) ||
+          newSurvey.includes(term) ||
+          oldSurvey.includes(term);
       });
     }
     return filtered;
@@ -305,9 +333,92 @@ const Dashboard = () => {
   const filteredDeals = getFilteredDeals();
   const sortedDeals = getSortedDeals(filteredDeals);
 
-  const totalDeals = deals.length;
+  const totalDeals = dealTypeFilter === 'All' ? deals.length : deals.filter(d => (d.dealType || 'Buy') === dealTypeFilter).length;
   const filteredCount = sortedDeals.length;
-  const totalValue = sortedDeals.reduce((sum, deal) => sum + (deal.totalAmount || 0), 0);
+  
+  const dealsForKPI = dealTypeFilter === 'All' ? deals : deals.filter(d => (d.dealType || 'Buy') === dealTypeFilter);
+  const totalValue = dealsForKPI.reduce((sum, deal) => sum + (deal.totalAmount || 0), 0);
+
+  // ── KPI Computations (filtered by deal type) ─────────────────────────────
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const dealsThisMonth = dealsForKPI.filter(d => {
+    const created = d.createdAt ? new Date(d.createdAt) : null;
+    return created && created >= startOfMonth;
+  }).length;
+
+  const totalPaid = dealsForKPI.reduce((sum, deal) => {
+    return sum + (deal.totalPaid || 0);
+  }, 0);
+
+  const totalPending = Math.max(0, totalValue - totalPaid);
+
+  const clearedCount = dealsForKPI.filter(deal => {
+    const paid = deal.totalPaid || 0;
+    return paid >= (deal.totalAmount || 0) && deal.totalAmount > 0;
+  }).length;
+
+  // ── Deadline Alert Computation ────────────────────────────────────────────
+  // Warn when any payment milestone deadline is within ALERT_DAYS or overdue
+  const ALERT_DAYS = 7;
+  const deadlineAlerts = deals.flatMap(deal => {
+    const alerts = [];
+    const paid = deal.totalPaid || 0;
+    const total = deal.totalAmount || 0;
+    if (!total) return [];
+    const paidPct = total > 0 ? (paid / total) * 100 : 0;
+    // Check each milestone (25 / 50 / 75 / 100 %)
+    const milestones = deal.paymentMilestones || [];
+    milestones.forEach(ms => {
+      if (!ms.dueDate || paidPct >= ms.percentage) return;
+      const due = new Date(ms.dueDate);
+      const daysLeft = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+      if (daysLeft <= ALERT_DAYS) {
+        alerts.push({
+          dealId: deal._id,
+          dealName: deal.villageName,
+          surveyNo: deal.newSurveyNo || deal.surveyNumber,
+          percentage: ms.percentage,
+          daysLeft,
+          overdue: daysLeft < 0
+        });
+      }
+    });
+    // Fallback: use deadlineEndDate if no milestones
+    if (milestones.length === 0 && paidPct < 100) {
+      const deadline = deal.deadlineEndDate || deal.paymentDeadlineMonth;
+      if (deadline) {
+        const due = new Date(deadline);
+        const daysLeft = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+        if (daysLeft <= ALERT_DAYS) {
+          alerts.push({
+            dealId: deal._id,
+            dealName: deal.villageName,
+            surveyNo: deal.newSurveyNo || deal.surveyNumber,
+            percentage: 100,
+            daysLeft,
+            overdue: daysLeft < 0
+          });
+        }
+      }
+    }
+    return alerts;
+  });
+
+  // ── Deal Status Tag Helper ────────────────────────────────────────────────
+  const getDealStatus = (deal) => {
+    const paid = deal.totalPaid || 0;
+    const total = deal.totalAmount || 0;
+    if (!total) return null;
+    if (paid >= total) return { label: 'Cleared', cls: 'status-tag--cleared' };
+    const deadline = deal.deadlineEndDate || deal.paymentDeadlineMonth;
+    if (deadline && new Date(deadline) < now && paid < total) {
+      return { label: 'Overdue', cls: 'status-tag--overdue' };
+    }
+    if (paid > 0) return { label: 'In Progress', cls: 'status-tag--progress' };
+    return { label: 'Not Started', cls: 'status-tag--pending' };
+  };
 
   return (
     <div className="dashboard-page">
@@ -315,37 +426,130 @@ const Dashboard = () => {
       <div className="dashboard-hero">
         <div className="dashboard-hero-inner">
           <div className="dashboard-hero-top">
-            {/* <div className="dashboard-hero-icon">
-              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
-            </div> */}
             <div>
-              <h1 className="dashboard-hero-title">Dashboard</h1>
+              <h1 className="dashboard-hero-title">
+                {dealTypeFilter === 'Buy' ? 'Purchase Deals'
+                  : dealTypeFilter === 'Sell' ? 'Sell Deals'
+                    : dealTypeFilter === 'Other' ? 'Other Deals'
+                      : 'Dashboard'}
+              </h1>
               <p className="dashboard-hero-subtitle">Manage and track all your property transactions</p>
             </div>
           </div>
 
-          {/* Summary chips */}
-          <div className="dashboard-summary-row">
-            <div className="dashboard-chip">
-              <span className="dashboard-chip-label">Total Deals</span>
-              <span className="dashboard-chip-value">{totalDeals}</span>
+          {/* ── KPI Stat Cards ── */}
+          <div className="dashboard-kpi-row">
+            <div className="dashboard-kpi-card">
+              <div className="dashboard-kpi-icon dashboard-kpi-icon--portfolio">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {/* Rupee Symbol */}
+                  <path d="M6 4h12M6 8h12M10 8c2.5 0 4 1.5 4 3s-1.5 3-4 3H6l8 6" />
+                </svg>
+              </div>
+              <div className="dashboard-kpi-info">
+                <span className="dashboard-kpi-label">Portfolio Value</span>
+                <span className="dashboard-kpi-value" title={formatCurrency(totalValue)}>
+                  {formatCurrencyShort(totalValue)}
+                </span>
+              </div>
             </div>
-            <div className="dashboard-chip">
-              <span className="dashboard-chip-label">Showing</span>
-              <span className="dashboard-chip-value">{filteredCount}</span>
+
+            <div className="dashboard-kpi-card">
+              <div className="dashboard-kpi-icon dashboard-kpi-icon--month">
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+              </div>
+              <div className="dashboard-kpi-info">
+                <span className="dashboard-kpi-label">Added This Month</span>
+                <span className="dashboard-kpi-value">{dealsThisMonth}</span>
+              </div>
             </div>
-            <div className="dashboard-chip">
-              <span className="dashboard-chip-label">Total Value</span>
-              <span className="dashboard-chip-value">{formatCurrency(totalValue)}</span>
+
+            <div className="dashboard-kpi-card">
+              <div className="dashboard-kpi-icon dashboard-kpi-icon--pending">
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              </div>
+              <div className="dashboard-kpi-info">
+                <span className="dashboard-kpi-label">Pending Payments</span>
+                <span className="dashboard-kpi-value dashboard-kpi-value--warn" title={formatCurrency(totalPending)}>
+                  {formatCurrencyShort(totalPending)}
+                </span>
+              </div>
+            </div>
+
+            <div className="dashboard-kpi-card">
+              <div className="dashboard-kpi-icon dashboard-kpi-icon--cleared">
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </div>
+              <div className="dashboard-kpi-info">
+                <span className="dashboard-kpi-label">Deals Cleared</span>
+                <span className="dashboard-kpi-value dashboard-kpi-value--success">{clearedCount} / {totalDeals}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* ── Deadline Alerts Banner ── */}
+      {deadlineAlerts.length > 0 && (
+        <div className="deadline-alerts-wrap">
+          {deadlineAlerts.map((alert, i) => (
+            <div key={`${alert.dealId}-${i}`} className={`deadline-alert ${alert.overdue ? 'deadline-alert--overdue' : 'deadline-alert--warning'}`}>
+              <div className="deadline-alert-icon">
+                {alert.overdue ? (
+                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                )}
+              </div>
+              <div className="deadline-alert-body">
+                <strong>{alert.dealName}</strong>
+                {alert.surveyNo && <span className="deadline-alert-survey"> (#{alert.surveyNo})</span>}
+                {' — '}
+                {alert.overdue
+                  ? `Payment deadline overdue by ${Math.abs(alert.daysLeft)} day${Math.abs(alert.daysLeft) !== 1 ? 's' : ''}!`
+                  : alert.daysLeft === 0
+                    ? `Payment deadline is TODAY!`
+                    : `Payment deadline in ${alert.daysLeft} day${alert.daysLeft !== 1 ? 's' : ''}.`
+                }
+              </div>
+              <a href={`/deals/${alert.dealId}`} className="deadline-alert-link">View Deal →</a>
+            </div>
+          ))}
+        </div>
+      )}
+
       {error && <div className="hp-error-banner pl-alert pl-alert--error">⚠️ {error}</div>}
+      {toast.message && (
+        <div className={`hp-error-banner pl-alert pl-alert--${toast.type === 'error' ? 'error' : 'success'}`}>
+          {toast.type === 'error' ? '⚠️' : '✅'} {toast.message}
+        </div>
+      )}
 
       {/* ── Filters Bar ── */}
       <div className="dashboard-filters-wrap">
@@ -429,16 +633,24 @@ const Dashboard = () => {
         <div className="dashboard-deals-grid">
           {sortedDeals.map((deal) => (
             <div key={deal._id} className={`dashboard-deal-card ${expandedDeals.includes(deal._id) ? 'dashboard-deal-card--expanded' : ''}`}>
-                <div className="dashboard-deal-header app-section-header" onClick={() => toggleDeal(deal._id)}>
+              <div className="dashboard-deal-header app-section-header" onClick={() => toggleDeal(deal._id)}>
                 <div className="dashboard-deal-header-left">
                   <h3 className="dashboard-deal-title">{deal.villageName}</h3>
                   <div className="dashboard-deal-survey">
                     <span className="dashboard-deal-survey-text">New Survey #</span>{deal.newSurveyNo || deal.surveyNumber}
                   </div>
                 </div>
-                <span className={`dashboard-deal-type-badge dashboard-deal-type-badge--${(deal.dealType || 'Buy').toLowerCase()}`}>
-                  <span className="dashboard-deal-type-badge-text">{deal.dealType === 'Buy' ? 'Purchase' : deal.dealType || 'Buy'}</span>
-                </span>
+                <div className="dashboard-deal-header-right">
+                  <span className={`dashboard-deal-type-badge dashboard-deal-type-badge--${(deal.dealType || 'Buy').toLowerCase()}`}>
+                    <span className="dashboard-deal-type-badge-text">{deal.dealType === 'Buy' ? 'Purchase' : deal.dealType || 'Buy'}</span>
+                  </span>
+                  {(() => {
+                    const status = getDealStatus(deal);
+                    return status ? (
+                      <span className={`status-tag ${status.cls}`}>{status.label}</span>
+                    ) : null;
+                  })()}
+                </div>
               </div>
 
               <div className="dashboard-deal-content">
@@ -458,7 +670,7 @@ const Dashboard = () => {
                   </div>
                   <div className="dashboard-deal-detail">
                     <span className="dashboard-deal-detail-label">Total Area</span>
-                    <span className="dashboard-deal-detail-value">{deal.totalSqYard.toLocaleString('en-IN')} sq.yd</span>
+                    <span className="dashboard-deal-detail-value">{deal.totalSqYard.toLocaleString('en-IN')} sq.yds</span>
                   </div>
                   <div className="dashboard-deal-detail">
                     <span className="dashboard-deal-detail-label">Sq. Meter</span>
