@@ -641,9 +641,6 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="dashboard-deal-header-right">
-                  <span className={`dashboard-deal-type-badge dashboard-deal-type-badge--${(deal.dealType || 'Buy').toLowerCase()}`}>
-                    <span className="dashboard-deal-type-badge-text">{deal.dealType === 'Buy' ? 'Purchase' : deal.dealType || 'Buy'}</span>
-                  </span>
                   {(() => {
                     const status = getDealStatus(deal);
                     return status ? (

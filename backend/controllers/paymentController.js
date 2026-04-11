@@ -35,7 +35,7 @@ const addPayment = async (req, res) => {
   try {
     const { dealId, date, modeOfPayment, amount, remarks } = req.body;
 
-    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const accessibleUserIds = await getAccessibleUserIds(req.user, req);
 
     const deal = await Deal.findOne({
       _id: dealId,
@@ -75,7 +75,7 @@ const addPayment = async (req, res) => {
  */
 const getPaymentsByDeal = async (req, res) => {
   try {
-    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const accessibleUserIds = await getAccessibleUserIds(req.user, req);
 
     const deal = await Deal.findOne({
       _id: req.params.dealId,
@@ -108,7 +108,7 @@ const getPaymentsByDeal = async (req, res) => {
  */
 const getAllPayments = async (req, res) => {
   try {
-    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const accessibleUserIds = await getAccessibleUserIds(req.user, req);
 
     const accessibleDeals = await Deal.find({ createdBy: { $in: accessibleUserIds } })
       .select('_id')
@@ -139,7 +139,7 @@ const getPaymentHistory = async (req, res) => {
     const rawSearch = (req.query.search || '').trim();
     const mode = req.query.mode || '';
 
-    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const accessibleUserIds = await getAccessibleUserIds(req.user, req);
 
     const dealFilter = { createdBy: { $in: accessibleUserIds } };
     if (rawSearch) {
@@ -197,7 +197,7 @@ const getPaymentHistory = async (req, res) => {
  */
 const updatePayment = async (req, res) => {
   try {
-    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const accessibleUserIds = await getAccessibleUserIds(req.user, req);
 
     // Whitelist only safe, user-editable fields to prevent mass-assignment
     const safeUpdate = {};
@@ -233,7 +233,7 @@ const deletePayment = async (req, res) => {
   session.startTransaction();
 
   try {
-    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const accessibleUserIds = await getAccessibleUserIds(req.user, req);
 
     const payment = await Payment.findOne({
       _id: req.params.id,

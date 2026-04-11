@@ -37,36 +37,54 @@ export const useAuth = () => {
  * @param {React.ReactNode} props.children - Child components
  */
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Initialise user state immediately from localStorage — no round-trip required.
+  // We store minimal user info in localStorage on login so pages can render at once.
+  // The background verify call will correct stale info or clear an expired token.
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem('pl_user');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+  // loading is always false — PrivateRoute no longer blocks rendering
+  const loading = false;
 
   /**
- * Verify authentication on mount
-   * Checks if stored token is still valid
+   * Warm up the backend server as early as possible.
+   * Render's free tier spins down after inactivity — this fires immediately
+   * when the app loads so the server is hot before the user submits the form.
    */
   useEffect(() => {
-    const verifyAuth = async () => {
-      const storedToken = localStorage.getItem('token');
-      
-      // No token stored - user is not logged in
-      if (!storedToken) {
-        setLoading(false);
-        return;
-      }
-      
-      try {
-        // Verify token with backend
-        const { data } = await API.get('/api/auth/verify', { withCredentials: true });
+    API.get('/api/health').catch(() => { /* ignore — best effort warm-up */ });
+  }, []);
+
+  /**
+   * Background token verification.
+   * Runs silently — does NOT block page rendering.
+   * Clears state only if the token is actually invalid/expired.
+   */
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (!storedToken) {
+      // No token → make sure we're logged out
+      setUser(null);
+      localStorage.removeItem('pl_user');
+      return;
+    }
+    // Verify in background — pages are already rendering
+    API.get('/api/auth/verify', { withCredentials: true })
+      .then(({ data }) => {
         setUser(data);
-      } catch (error) {
-        // Token is invalid or expired - clear it
+        localStorage.setItem('pl_user', JSON.stringify(data));
+      })
+      .catch(() => {
+        // Token expired / invalid — force logout
         localStorage.removeItem('token');
+        localStorage.removeItem('pl_user');
         setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    verifyAuth();
+      });
   }, []);
 
   /**
@@ -85,6 +103,8 @@ export const AuthProvider = ({ children }) => {
       if (data.token) {
         localStorage.setItem('token', data.token);
       }
+      // Persist user data so next load is instant (optimistic auth)
+      localStorage.setItem('pl_user', JSON.stringify(data));
       setUser(data);
       return { success: true };
     } catch (error) {
@@ -107,6 +127,8 @@ export const AuthProvider = ({ children }) => {
       if (data.token) {
         localStorage.setItem('token', data.token);
       }
+      // Persist user data so next load is instant
+      localStorage.setItem('pl_user', JSON.stringify(data));
       setUser(data);
       return { success: true };
     } catch (error) {
@@ -121,6 +143,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     // Always clear local state immediately
     localStorage.removeItem('token');
+    localStorage.removeItem('pl_user');
     sessionStorage.clear();
     setUser(null);
     
@@ -132,6 +155,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await API.get('/api/auth/verify', { withCredentials: true });
       setUser(data);
+      localStorage.setItem('pl_user', JSON.stringify(data));
     } catch {
       // silently fail
     }

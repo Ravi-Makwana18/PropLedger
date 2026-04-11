@@ -178,11 +178,8 @@ const login = async (req, res) => {
  * @access  Private
  */
 const getProfile = async (req, res) => {
-  const user = await User.findById(req.user._id);
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-  res.json(user);
+  // req.user is already populated by protect middleware — no extra DB call needed
+  res.json(req.user);
 };
 
 /**
@@ -191,10 +188,8 @@ const getProfile = async (req, res) => {
  * @access  Private
  */
 const verifyToken = async (req, res) => {
-  const user = await User.findById(req.user._id);
-  if (!user) {
-    return res.status(401).json({ message: 'User not found' });
-  }
+  // req.user is already attached by protect middleware — reuse it, no extra DB round-trip
+  const user = req.user;
 
   res.json({
     _id: user._id,

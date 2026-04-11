@@ -61,5 +61,9 @@ const paymentSchema = new mongoose.Schema({
 
 // Compound index for efficient queries by deal and user
 paymentSchema.index({ dealId: 1, createdBy: 1 });
+// Index for payment history sorted by date (most common query pattern)
+paymentSchema.index({ createdAt: -1 });
+// Compound index covering payment history filter + sort in one pass
+paymentSchema.index({ dealId: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Payment', paymentSchema);

@@ -125,7 +125,7 @@ const createDeal = async (req, res) => {
  */
 const getDeals = async (req, res) => {
   try {
-    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const accessibleUserIds = await getAccessibleUserIds(req.user, req);
     const deals = await Deal.find({ createdBy: { $in: accessibleUserIds } })
       .select('brokerName naType district subDistrict villageName oldSurveyNo newSurveyNo surveyNumber dealType pricePerSqYard totalSqYard totalSqMeter jantri totalAmount notes dealDate deadlineEndDate createdAt')
       .sort({ createdAt: -1 })
@@ -161,7 +161,7 @@ const getDeals = async (req, res) => {
  */
 const getDealById = async (req, res) => {
   try {
-    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const accessibleUserIds = await getAccessibleUserIds(req.user, req);
     const deal = await Deal.findOne({ _id: req.params.id, createdBy: { $in: accessibleUserIds } })
       .populate('createdBy', 'name mobileNumber')
       .lean();
@@ -251,7 +251,7 @@ const searchDeals = async (req, res) => {
     // Escape user input to prevent ReDoS attacks
     const searchTerm = escapeRegex(rawTerm);
 
-    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const accessibleUserIds = await getAccessibleUserIds(req.user, req);
     const deals = await Deal.find({
       createdBy: { $in: accessibleUserIds },
       $or: [
@@ -281,7 +281,7 @@ const updateDeal = async (req, res) => {
   session.startTransaction();
 
   try {
-    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const accessibleUserIds = await getAccessibleUserIds(req.user, req);
     const deal = await Deal.findOne({
       _id: req.params.id,
       createdBy: { $in: accessibleUserIds },
@@ -343,7 +343,7 @@ const deleteDeal = async (req, res) => {
   session.startTransaction();
 
   try {
-    const accessibleUserIds = await getAccessibleUserIds(req.user);
+    const accessibleUserIds = await getAccessibleUserIds(req.user, req);
     const deal = await Deal.findOne({
       _id: req.params.id,
       createdBy: { $in: accessibleUserIds },
