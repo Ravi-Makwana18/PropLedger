@@ -33,8 +33,8 @@ function AppContent() {
   return (
     <Suspense
       fallback={
-        <div className="flex-center" style={{ minHeight: '80vh' }}>
-          <div className="spinner"></div>
+        <div className="flex-center" style={{ minHeight: '100vh', background: '#f8fafc' }}>
+          <div className="spinner" style={{ width: 40, height: 40, borderWidth: 3 }}></div>
         </div>
       }
     >

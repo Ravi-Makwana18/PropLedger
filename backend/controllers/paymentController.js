@@ -102,12 +102,15 @@ const getPaymentsByDeal = async (req, res) => {
 };
 
 /**
- * @desc    Get all payments accessible to the current user
- * @route   GET /api/payments
+ * @desc    Get all payments accessible to the current user (paginated)
+ * @route   GET /api/payments?page=1&limit=50
  * @access  Private
  */
 const getAllPayments = async (req, res) => {
   try {
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, parseInt(req.query.limit, 10) || 50);
+
     const accessibleUserIds = await getAccessibleUserIds(req.user, req);
 
     const accessibleDeals = await Deal.find({ createdBy: { $in: accessibleUserIds } })
@@ -115,13 +118,26 @@ const getAllPayments = async (req, res) => {
       .lean();
     const dealIds = accessibleDeals.map((d) => d._id);
 
-    const payments = await Payment.find({ dealId: { $in: dealIds } })
-      .sort({ date: -1 })
-      .populate('dealId', 'villageName surveyNumber')
-      .populate('createdBy', 'name')
-      .lean();
+    const filter = { dealId: { $in: dealIds } };
 
-    res.json(payments);
+    const [payments, total] = await Promise.all([
+      Payment.find(filter)
+        .sort({ date: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .populate('dealId', 'villageName surveyNumber')
+        .populate('createdBy', 'name')
+        .lean(),
+      Payment.countDocuments(filter),
+    ]);
+
+    res.json({
+      payments,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      limit,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

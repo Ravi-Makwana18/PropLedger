@@ -449,54 +449,8 @@ const DealDetails = () => {
   if (loading) {
     return (
       <div className="dd-page">
-        <div className="dd-wrapper">
-          {/* Header skeleton */}
-          <div className="dd-page-header app-card" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div>
-              <div className="dd-sk-line" style={{ width: 220, height: 24, marginBottom: 10 }} />
-              <div className="dd-sk-line" style={{ width: 160, height: 14 }} />
-            </div>
-          </div>
-
-          {/* Deal Info section skeleton */}
-          <div className="dd-section" style={{ background: 'white', borderRadius: 14, padding: '1.25rem' }}>
-            <div className="dd-sk-line" style={{ width: 160, height: 16, marginBottom: '1.25rem' }} />
-            <div className="dd-info-grid">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="dd-sk-pill">
-                  <div className="dd-sk-line" style={{ width: '55%', height: 11, marginBottom: 10 }} />
-                  <div className="dd-sk-line" style={{ width: '80%', height: 18 }} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Payment Summary skeleton */}
-          <div className="dd-section" style={{ background: 'white', borderRadius: 14, padding: '1.25rem' }}>
-            <div className="dd-sk-line" style={{ width: 180, height: 16, marginBottom: '1.25rem' }} />
-            <div className="dd-stat-grid">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="dd-sk-stat">
-                  <div className="dd-sk-line" style={{ width: '55%', height: 12, marginBottom: 12 }} />
-                  <div className="dd-sk-line" style={{ width: '80%', height: 26 }} />
-                </div>
-              ))}
-            </div>
-            <div className="dd-sk-line" style={{ width: '100%', height: 9, borderRadius: 99, marginTop: '1.5rem' }} />
-          </div>
-
-          {/* Payment History skeleton */}
-          <div className="dd-section" style={{ background: 'white', borderRadius: 14, padding: '1.25rem' }}>
-            <div className="dd-sk-line" style={{ width: 170, height: 16, marginBottom: '1.25rem' }} />
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="dd-sk-row" style={{ animationDelay: `${i * 0.1}s` }}>
-                <div className="dd-sk-line" style={{ width: 100, height: 13 }} />
-                <div className="dd-sk-line" style={{ width: 65, height: 13 }} />
-                <div className="dd-sk-line" style={{ width: 110, height: 13 }} />
-                <div className="dd-sk-line" style={{ width: 130, height: 13 }} />
-              </div>
-            ))}
-          </div>
+        <div className="dd-wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+          <div className="spinner" style={{ width: 48, height: 48 }}></div>
         </div>
       </div>
     );

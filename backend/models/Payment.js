@@ -65,5 +65,11 @@ paymentSchema.index({ dealId: 1, createdBy: 1 });
 paymentSchema.index({ createdAt: -1 });
 // Compound index covering payment history filter + sort in one pass
 paymentSchema.index({ dealId: 1, createdAt: -1 });
+// Index for sorted queries on a single deal (getPaymentsByDeal)
+paymentSchema.index({ dealId: 1, date: -1 });
+// Index for filtering payments by creator (admin/manager scoped queries)
+paymentSchema.index({ createdBy: 1 });
+// Covers getPaymentHistory when modeOfPayment filter is active (Bank / Other)
+paymentSchema.index({ dealId: 1, modeOfPayment: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Payment', paymentSchema);

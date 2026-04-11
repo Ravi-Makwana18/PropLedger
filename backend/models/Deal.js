@@ -205,6 +205,7 @@ dealSchema.pre('save', function () {
  */
 dealSchema.index({ villageName: 1, newSurveyNo: 1 });
 dealSchema.index({ district: 1, subDistrict: 1 });
-dealSchema.index({ createdBy: 1, createdAt: -1 });
+dealSchema.index({ createdBy: 1, createdAt: -1 }); // Covers aggregation $match + $sort
+dealSchema.index({ createdBy: 1, dealType: 1, createdAt: -1 }); // Covers deal-type filtered dashboard
 
 module.exports = mongoose.model('Deal', dealSchema);

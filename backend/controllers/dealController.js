@@ -126,29 +126,41 @@ const createDeal = async (req, res) => {
 const getDeals = async (req, res) => {
   try {
     const accessibleUserIds = await getAccessibleUserIds(req.user, req);
-    const deals = await Deal.find({ createdBy: { $in: accessibleUserIds } })
-      .select('brokerName naType district subDistrict villageName oldSurveyNo newSurveyNo surveyNumber dealType pricePerSqYard totalSqYard totalSqMeter jantri totalAmount notes dealDate deadlineEndDate createdAt')
-      .sort({ createdAt: -1 })
-      .lean();
 
-    // Get all payment data for these deals
-    const dealIds = deals.map(d => d._id);
-    const payments = await Payment.find({ dealId: { $in: dealIds } }).lean();
-    
-    // Calculate totalPaid per deal
-    const paymentMap = payments.reduce((acc, p) => {
-      const dealIdStr = p.dealId.toString();
-      acc[dealIdStr] = (acc[dealIdStr] || 0) + p.amount;
-      return acc;
-    }, {});
+    // Single aggregation: fetch deals + compute totalPaid per deal in MongoDB.
+    // Avoids loading ALL payments into Node.js memory and doing JS-side grouping.
+    const deals = await Deal.aggregate([
+      { $match: { createdBy: { $in: accessibleUserIds } } },
+      { $sort: { createdAt: -1 } },
+      {
+        $lookup: {
+          from: 'payments',
+          localField: '_id',
+          foreignField: 'dealId',
+          pipeline: [
+            { $group: { _id: null, total: { $sum: '$amount' } } },
+          ],
+          as: '_paymentAgg',
+        },
+      },
+      {
+        $addFields: {
+          totalPaid: { $ifNull: [{ $arrayElemAt: ['$_paymentAgg.total', 0] }, 0] },
+        },
+      },
+      { $unset: '_paymentAgg' },
+      {
+        $project: {
+          brokerName: 1, naType: 1, district: 1, subDistrict: 1,
+          villageName: 1, oldSurveyNo: 1, newSurveyNo: 1, surveyNumber: 1,
+          dealType: 1, pricePerSqYard: 1, totalSqYard: 1, totalSqMeter: 1,
+          jantri: 1, totalAmount: 1, notes: 1, dealDate: 1,
+          deadlineEndDate: 1, createdAt: 1, totalPaid: 1,
+        },
+      },
+    ]);
 
-    // Add totalPaid to each deal
-    const dealsWithPayments = deals.map(deal => ({
-      ...deal,
-      totalPaid: paymentMap[deal._id.toString()] || 0
-    }));
-
-    res.json(dealsWithPayments);
+    res.json(deals);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

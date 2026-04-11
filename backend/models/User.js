@@ -131,6 +131,7 @@ userSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-
+// Index for resolving manager lookup on every authenticated admin request
+userSchema.index({ createdByAdmin: 1 });
 
 module.exports = mongoose.model('User', userSchema);
