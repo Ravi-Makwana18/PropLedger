@@ -11,7 +11,7 @@
 
 /* ── Hero Header ── */
 .hp-hero {
-    background: linear-gradient(135deg, #1a5490 0%, #0a3a6a 100%);
+    background: linear-gradient(135deg, #2562EA 0%, #1748c8 100%);
     border-radius: 20px;
     padding: 2.5rem 2rem 3rem;
     margin-bottom: 2rem;
@@ -292,8 +292,8 @@
 }
 
 .hp-search-input:focus {
-    border-color: #1a5490;
-    box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+    border-color: #2562EA;
+    box-shadow: 0 0 0 3px rgba(37, 98, 234, 0.1);
     background: #fff;
 }
 
@@ -312,8 +312,8 @@
 }
 
 .hp-select:focus {
-    border-color: #1a5490;
-    box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+    border-color: #2562EA;
+    box-shadow: 0 0 0 3px rgba(37, 98, 234, 0.1);
 }
 
 .hp-filter-count {
@@ -354,7 +354,7 @@
 .hp-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    border-color: #1a5490;
+    border-color: #2562EA;
 }
 
 .hp-card:active {
@@ -421,7 +421,7 @@
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #1a5490, #134070);
+    background: linear-gradient(135deg, #2562EA, #1a4fd4);
     color: #fff;
     font-size: 0.625rem;
     font-weight: 700;
@@ -468,7 +468,7 @@
 }
 
 .hp-card:hover .hp-card-arrow {
-    color: #1a5490;
+    color: #2562EA;
     transform: translateX(3px);
 }
 
@@ -498,8 +498,8 @@
 }
 
 .hp-page-btn:hover:not(:disabled) {
-    border-color: #1a5490;
-    color: #1a5490;
+    border-color: #2562EA;
+    color: #2562EA;
     background: #f3f4f6;
 }
 
@@ -509,7 +509,7 @@
 }
 
 .hp-page-btn--active {
-    background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
+    background: linear-gradient(135deg, #2562EA 0%, #1a4fd4 100%);
     border-color: transparent;
     color: #fff;
 }
@@ -536,7 +536,7 @@
     width: 40px;
     height: 40px;
     border: 3.5px solid #e5e7eb;
-    border-top-color: #1a5490;
+    border-top-color: #2562EA;
     border-radius: 50%;
     animation: hp-spin 0.75s linear infinite;
 }

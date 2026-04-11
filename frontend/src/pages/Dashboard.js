@@ -36,7 +36,7 @@ const Dashboard = () => {
     const t = params.get('type');
     return (t === 'Buy' || t === 'Sell' || t === 'Other') ? t : 'All';
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [toast, setToast] = useState({ message: '', type: '' }); // type: 'success' | 'error'
   const showToast = (message, type = 'success') => {
@@ -250,20 +250,6 @@ const Dashboard = () => {
 
   // ── Inline SVG icon components are now defined at module level ──────────
 
-  // ── Loading state: shimmer skeleton ──────────────────────────────────────
-  if (loading) {
-    return (
-      <div className="dashboard-page">
-        <div className="dashboard-skeleton-card dashboard-skeleton-card--hero" />
-        <div className="dashboard-skeleton-card dashboard-skeleton-card--filters" />
-        <div className="dashboard-deals-grid">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="dashboard-skeleton-card" />
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   // Filter and sort deals for rendering
   // Filter by search term

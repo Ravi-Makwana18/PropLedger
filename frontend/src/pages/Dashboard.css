@@ -11,7 +11,7 @@
 
 /* ── Hero Header ── */
 .dashboard-hero {
-  background: linear-gradient(135deg, #1a5490 0%, #0a3a6a 100%);
+  background: linear-gradient(135deg, #2562EA 0%, #1748c8 100%);
   border-radius: 20px;
   padding: 2.5rem 2rem 3rem;
   margin-bottom: 2rem;
@@ -358,15 +358,15 @@
 }
 
 .dashboard-search-input:focus {
-  border-color: #1a5490;
-  box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+  border-color: #2562EA;
+  box-shadow: 0 0 0 3px rgba(37, 98, 234, 0.1);
   background: #fff;
 }
 
 .dashboard-search-btn {
   min-height: 46px;
   padding: 0.75rem 1.25rem;
-  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
+  background: linear-gradient(135deg, #2562EA 0%, #1a4fd4 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -393,7 +393,7 @@
 
 .dashboard-search-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(26, 84, 144, 0.4);
+  box-shadow: 0 6px 20px rgba(37, 98, 234, 0.4);
 }
 
 .dashboard-sort-btn {
@@ -419,7 +419,7 @@
 }
 
 .dashboard-sort-btn:hover {
-  border-color: #1a5490;
+  border-color: #2562EA;
   background: #fff;
 }
 
@@ -453,12 +453,12 @@
 
 .dashboard-sort-option:hover {
   background: #f8fafc;
-  color: #1a5490;
+  color: #2562EA;
 }
 
 .dashboard-sort-option--active {
-  background: #e3f0fa;
-  color: #1a5490;
+  background: #dbeafe;
+  color: #2562EA;
   font-weight: 600;
 }
 
@@ -489,12 +489,12 @@
 }
 
 .dashboard-type-pill:hover {
-  border-color: #1a5490;
-  background: #e3f0fa;
+  border-color: #2562EA;
+  background: #dbeafe;
 }
 
 .dashboard-type-pill--active {
-  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
+  background: linear-gradient(135deg, #2562EA 0%, #1a4fd4 100%);
   border-color: transparent;
   color: white;
 }
@@ -541,7 +541,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
+  background: linear-gradient(135deg, #2562EA 0%, #1a4fd4 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -554,7 +554,7 @@
 
 .dashboard-add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3);
+  box-shadow: 0 10px 20px rgba(37, 98, 234, 0.3);
 }
 
 /* ── Deals Grid ── */
@@ -576,7 +576,7 @@
 .dashboard-deal-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  border-color: #1a5490;
+  border-color: #2562EA;
 }
 
 .dashboard-deal-header {
@@ -715,7 +715,7 @@
 .dashboard-deal-amount {
   font-size: 1.25rem;
   font-weight: 800;
-  color: #1a5490;
+  color: #2562EA;
 }
 
 .dashboard-deal-actions {
@@ -747,14 +747,14 @@
 }
 
 .dashboard-action-btn--view {
-  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
+  background: linear-gradient(135deg, #2562EA 0%, #1a4fd4 100%);
   color: white;
   border: none;
 }
 
 .dashboard-action-btn--view:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(26, 84, 144, 0.4);
+  box-shadow: 0 6px 20px rgba(37, 98, 234, 0.4);
 }
 
 .dashboard-action-btn--edit {
@@ -764,9 +764,9 @@
 }
 
 .dashboard-action-btn--edit:hover {
-  background: #e3f0fa;
-  color: #1a5490;
-  border-color: #1a5490;
+  background: #dbeafe;
+  color: #2562EA;
+  border-color: #2562EA;
 }
 
 .dashboard-action-btn--delete {
@@ -1118,7 +1118,7 @@
     height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    border-top: 6px solid #1a5490;
+    border-top: 6px solid #2562EA;
     transition: transform 0.3s ease;
   }
 
@@ -1664,8 +1664,8 @@
 }
 
 .dashboard-form-input:focus {
-  border-color: #1a5490;
-  box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+  border-color: #2562EA;
+  box-shadow: 0 0 0 3px rgba(37, 98, 234, 0.1);
 }
 
 .dashboard-form-input--readonly {
@@ -1685,11 +1685,11 @@
 }
 
 .dashboard-modal--large .dashboard-modal-btn--confirm {
-  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
+  background: linear-gradient(135deg, #2562EA 0%, #1a4fd4 100%);
 }
 
 .dashboard-modal--large .dashboard-modal-btn--confirm:hover {
-  box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3);
+  box-shadow: 0 10px 20px rgba(37, 98, 234, 0.3);
 }
 
 @media (max-width: 768px) {

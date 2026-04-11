@@ -49,15 +49,6 @@ const DEAL_TYPE_STYLES = {
     Other: { bg: '#f0fdf4', color: '#15803d' },
 };
 
-/* ── Skeleton ── */
-const SkeletonList = () => (
-    <div className="hp-skeleton-list">
-        {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="hp-skeleton-card" style={{ animationDelay: `${i * 0.08}s` }} />
-        ))}
-    </div>
-);
-
 /* ── Single transaction card ── */
 const TransactionCard = ({ payment, onClick }) => {
     const deal = payment.dealId || {};
@@ -139,7 +130,7 @@ const HistoryPage = () => {
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
     const [mode, setMode] = useState('ALL');
@@ -347,9 +338,7 @@ const HistoryPage = () => {
             <div className="hp-content">
                 {error && <div className="hp-error-banner pl-state pl-state--error">⚠️ {error}</div>}
 
-                {loading ? (
-                    <SkeletonList />
-                ) : payments.length === 0 ? (
+                {payments.length === 0 ? (
                     <div className="hp-empty pl-state pl-state--empty">
                         <span className="hp-empty-icon pl-empty-icon">📭</span>
                         <h3 className="pl-empty-title">No transactions found</h3>

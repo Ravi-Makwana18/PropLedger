@@ -19,9 +19,9 @@
   --radius-md: 12px;
   --radius-lg: 20px;
 
-  --blue-primary: #1a5490;
-  --blue-dark:    #0a3a6a;
-  --blue-mid:     #134070;
+  --blue-primary: #2562EA;
+  --blue-dark:    #1748c8;
+  --blue-mid:     #1a4fd4;
 }
 
 /* ── Page Layout ── */
@@ -337,7 +337,7 @@
 }
 
 .dd-stat-card--total .dd-stat-value {
-  color: #134070;
+  color: #1a4fd4;
 }
 
 .dd-stat-card--paid-purple .dd-stat-value {
@@ -441,7 +441,7 @@
 
 .dd-input:focus {
   border-color: var(--blue-primary);
-  box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 98, 234, 0.1);
 }
 
 .dd-textarea {
@@ -603,7 +603,7 @@
 .dd-btn--ghost:hover    { background: #e5e7eb; }
 
 .dd-btn--submit         { background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-mid) 100%); color: white; }
-.dd-btn--submit:hover   { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26, 84, 144, 0.4); }
+.dd-btn--submit:hover   { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 98, 234, 0.4); }
 
 .dd-btn--add-payment       { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
 .dd-btn--add-payment:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
@@ -611,7 +611,7 @@
 .dd-btn--add-more:hover    { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35); }
 
 .dd-btn--pdf {
-  background: #1a5490;
+  background: #2562EA;
   color: white;
   padding: clamp(0.625rem, 2vw, 1rem) clamp(1rem, 4vw, 2rem);
   font-size: var(--fs-md);
@@ -626,8 +626,8 @@
   transition: all 0.2s ease;
 }
 .dd-btn--pdf:hover  { 
-  background: #134070;
-  box-shadow: 0 4px 12px rgba(26, 84, 144, 0.25); 
+  background: #1a4fd4;
+  box-shadow: 0 4px 12px rgba(37, 98, 234, 0.25); 
 }
 .dd-btn--pdf:active {
   transform: scale(0.98);
@@ -866,16 +866,23 @@
 
 /* ── Skeleton Loading ── */
 .dd-sk-line {
-  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-  background-size: 200% 100%;
-  animation: dd-shimmer 1.4s infinite;
+  background: linear-gradient(
+    90deg,
+    #eef2ff 0%,
+    #e0e7ff 30%,
+    #c7d2fe 50%,
+    #e0e7ff 70%,
+    #eef2ff 100%
+  );
+  background-size: 300% 100%;
+  animation: dd-shimmer 1.6s ease-in-out infinite;
   border-radius: 6px;
 }
 
 .dd-sk-pill,
 .dd-sk-stat {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);
+  border: 1px solid #e0e7ff;
   border-radius: var(--radius-md);
 }
 .dd-sk-pill { padding: 1rem 1.25rem; }
@@ -885,7 +892,7 @@
   display: flex;
   justify-content: space-between;
   padding: 1rem;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #eef2ff;
 }
 
 @keyframes dd-shimmer {
@@ -978,7 +985,7 @@
 }
 .dd-notes-input:focus {
   border-color: var(--blue-primary);
-  box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 98, 234, 0.1);
 }
 
 .dd-notes-edit-actions {
@@ -1377,7 +1384,7 @@
 }
 .dashboard-form-input:focus {
   border-color: var(--blue-primary);
-  box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 98, 234, 0.1);
 }
 
 .dashboard-modal--large .dashboard-modal-actions {
@@ -1407,7 +1414,7 @@
 .dashboard-modal-btn--cancel:hover { background: #e5e7eb; }
 
 .dashboard-modal-btn--confirm       { background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-mid) 100%); color: white; }
-.dashboard-modal-btn--confirm:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3); }
+.dashboard-modal-btn--confirm:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 98, 234, 0.3); }
 
 /* ── Delete Confirm Modal ── */
 .dashboard-modal {

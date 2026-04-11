@@ -9,7 +9,7 @@ import './ManageUsers.css';
 const ManageUsers = () => {
   const { user } = useAuth();
   const [managedUsers, setManagedUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [userToDelete, setUserToDelete] = useState(null);
@@ -164,13 +164,7 @@ const ManageUsers = () => {
           </div>
         )}
 
-        {/* Loading State */}
-        {isLoading ? (
-          <div className="mu-loading pl-state pl-state--loading">
-            <div className="mu-spinner"></div>
-            <span>Loading users...</span>
-          </div>
-        ) : filteredUsers.length === 0 ? (
+        {filteredUsers.length === 0 ? (
           <div className="mu-empty pl-state pl-state--empty">
             <svg className="pl-empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />

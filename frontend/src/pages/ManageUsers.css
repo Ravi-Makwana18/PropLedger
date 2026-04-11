@@ -11,7 +11,7 @@
 
 /* ── Hero Header ── */
 .mu-hero {
-  background: linear-gradient(135deg, #1a5490 0%, #0a3a6a 100%);
+  background: linear-gradient(135deg, #2562EA 0%, #1748c8 100%);
   border-radius: 20px;
   padding: 2.5rem 2rem;
   margin-bottom: 2rem;
@@ -160,8 +160,8 @@
 }
 
 .mu-search-input:focus {
-  border-color: #1a5490;
-  box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+  border-color: #2562EA;
+  box-shadow: 0 0 0 3px rgba(37, 98, 234, 0.1);
   background: #fff;
 }
 
@@ -237,7 +237,7 @@
   width: 32px;
   height: 32px;
   border: 3px solid #e2e8f0;
-  border-top-color: #1a5490;
+  border-top-color: #2562EA;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -293,7 +293,7 @@
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #1a5490 0%, #2d6cb5 100%);
+  background: linear-gradient(135deg, #2562EA 0%, #3b75ee 100%);
   display: flex;
   align-items: center;
   justify-content: center;

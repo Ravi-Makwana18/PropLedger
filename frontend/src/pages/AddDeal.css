@@ -17,7 +17,7 @@
 
 /* ── Page Header ── */
 .ad-page-header {
-  background: linear-gradient(135deg, #1a5490 0%, #0a3a6a 100%);
+  background: linear-gradient(135deg, #2562EA 0%, #1748c8 100%);
   border-radius: 20px;
   padding: 2.5rem 2rem;
   position: relative;
@@ -207,8 +207,8 @@
 }
 
 .ad-input:focus {
-  border-color: #1a5490;
-  box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+  border-color: #2562EA;
+  box-shadow: 0 0 0 3px rgba(37, 98, 234, 0.1);
   background: #fff;
 }
 
@@ -456,13 +456,13 @@
 }
 
 .ad-btn--submit {
-  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
+  background: linear-gradient(135deg, #2562EA 0%, #1a4fd4 100%);
   color: white;
 }
 
 .ad-btn--submit:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3);
+  box-shadow: 0 10px 20px rgba(37, 98, 234, 0.3);
 }
 
 .ad-btn--submit:disabled {

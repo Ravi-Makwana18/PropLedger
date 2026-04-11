@@ -4,9 +4,9 @@
    ============================================ */
 
 :root {
-  --primary-gradient: linear-gradient(135deg, #1a5490 0%, #134070 100%);
-  --primary-color: #1a5490;
-  --primary-dark: #134070;
+  --primary-gradient: linear-gradient(135deg, #2562EA 0%, #1a4fd4 100%);
+  --primary-color: #2562EA;
+  --primary-dark: #1a4fd4;
   --success-color: #10b981;
   --warning-color: #f59e0b;
   --danger-color: #ef4444;
@@ -186,7 +186,7 @@
 
 .modern-btn--primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(26, 84, 144, 0.3);
+  box-shadow: 0 10px 20px rgba(37, 98, 234, 0.3);
 }
 
 .modern-btn--full {
@@ -589,7 +589,7 @@ body {
 
 .crop-slider::-webkit-slider-thumb,
 .crop-slider::-moz-range-thumb {
-  background: linear-gradient(135deg, #1a5490 0%, #134070 100%);
+  background: linear-gradient(135deg, #2562EA 0%, #1a4fd4 100%);
 }
 
 .app-btn {
