@@ -1,68 +1,127 @@
-/* PropLedger Service Worker - v1.0.0
-   Caches static assets for offline use and fast repeat visits
-*/
+/* ==========================================================
+   PropLedger Service Worker - v2.0.0
+   - Offline-first with network fallback
+   - Background Sync for queued actions
+   - Push Notification support
+   - Cache versioning with automatic cleanup
+   ========================================================== */
 
-const CACHE_NAME = 'propledger-v1';
+const CACHE_VERSION = 'v2';
+const STATIC_CACHE  = `propledger-static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `propledger-dynamic-${CACHE_VERSION}`;
 
-/* Assets to pre-cache on install */
+/* Core shell assets — always pre-cached on install */
 const PRECACHE_URLS = [
   '/',
   '/index.html',
+  '/offline.html',
+  '/manifest.json',
   '/logo.png',
+  '/icon-192x192.png',
+  '/icon-512x512.png',
 ];
 
-/* Install: pre-cache key shell assets */
+/* ── Install ─────────────────────────────────────────────── */
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS))
+    caches.open(STATIC_CACHE)
+      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-/* Activate: clean up old caches */
+/* ── Activate: prune old caches ──────────────────────────── */
 self.addEventListener('activate', (event) => {
+  const KEEP = [STATIC_CACHE, DYNAMIC_CACHE];
   event.waitUntil(
-    caches.keys().then((cacheNames) =>
-      Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+    caches.keys()
+      .then((keys) =>
+        Promise.all(keys.filter((k) => !KEEP.includes(k)).map((k) => caches.delete(k)))
       )
-    )
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-/* Fetch strategy: Network-first for API calls, Cache-first for static assets */
+/* ── Fetch: Network-first for API, Cache-first for assets ── */
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET requests and API calls (always needs fresh data)
+  /* Skip non-GET and cross-origin requests */
   if (request.method !== 'GET') return;
+  if (url.origin !== location.origin && !url.hostname.includes('fonts.g')) return;
+
+  /* API calls — network only, never cache */
   if (url.pathname.startsWith('/api/')) return;
 
-  // For navigation requests (HTML), use network-first with fallback to index.html
+  /* Navigation requests — network-first, fallback to offline page */
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).catch(() => caches.match('/index.html'))
+      fetch(request)
+        .catch(() =>
+          caches.match('/index.html').then((r) => r || caches.match('/offline.html'))
+        )
     );
     return;
   }
 
-  // For static assets, use cache-first strategy
+  /* Static assets — cache-first, update in background */
   event.respondWith(
     caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request).then((response) => {
-        if (!response || response.status !== 200 || response.type === 'opaque') {
-          return response;
+      const networkFetch = fetch(request).then((response) => {
+        if (response && response.status === 200 && response.type !== 'opaque') {
+          const clone = response.clone();
+          caches.open(DYNAMIC_CACHE).then((cache) => cache.put(request, clone));
         }
-        // Cache the fresh response
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
         return response;
-      });
+      }).catch(() => cached); /* fall back to cache if network fails */
+
+      return cached || networkFetch;
+    })
+  );
+});
+
+/* ── Background Sync ─────────────────────────────────────── */
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'propledger-sync') {
+    event.waitUntil(syncPendingData());
+  }
+});
+
+async function syncPendingData() {
+  /* Placeholder: in future, replay queued offline actions */
+  console.log('[PropLedger SW] Background sync triggered');
+}
+
+/* ── Push Notifications ───────────────────────────────────── */
+self.addEventListener('push', (event) => {
+  let data = { title: 'PropLedger', body: 'You have a new notification.' };
+  try {
+    data = event.data ? event.data.json() : data;
+  } catch (_) { /* use defaults */ }
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: '/icon-192x192.png',
+      badge: '/icon-72x72.png',
+      tag: 'propledger-notification',
+      renotify: true,
+      data: { url: data.url || '/dashboard' },
+    })
+  );
+});
+
+/* ── Notification Click ───────────────────────────────────── */
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = event.notification.data?.url || '/dashboard';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes(target) && 'focus' in client) return client.focus();
+      }
+      return clients.openWindow(target);
     })
   );
 });

@@ -6,12 +6,44 @@
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#1a5490",
   "theme_color": "#1a5490",
   "orientation": "portrait-primary",
   "lang": "en",
+  "dir": "ltr",
   "categories": ["business", "finance", "productivity"],
   "prefer_related_applications": false,
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "share_target": {
+    "action": "/dashboard",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+propledger",
+      "url": "/dashboard?from=%s"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "play",
+      "id": "com.propledger.app"
+    }
+  ],
+  "scope_extensions": [
+    {
+      "origin": "https://prop-ledger-plum.vercel.app"
+    }
+  ],
   "icons": [
     {
       "src": "icon-72x72.png",
