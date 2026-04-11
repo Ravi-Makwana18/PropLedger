@@ -9,7 +9,7 @@ import './ManageUsers.css';
 const ManageUsers = () => {
   const { user } = useAuth();
   const [managedUsers, setManagedUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [userToDelete, setUserToDelete] = useState(null);

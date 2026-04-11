@@ -36,7 +36,7 @@ const Dashboard = () => {
     const t = params.get('type');
     return (t === 'Buy' || t === 'Sell' || t === 'Other') ? t : 'All';
   });
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [toast, setToast] = useState({ message: '', type: '' }); // type: 'success' | 'error'
   const showToast = (message, type = 'success') => {
