@@ -19,6 +19,8 @@ node_modules/
 dist/
 build/
 *.tgz
+twa-build/
+*.keystore
 
 # ── System Files ──────────────────────────────────────────────────────────────
 .DS_Store
