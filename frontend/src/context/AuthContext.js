@@ -37,6 +37,7 @@ export const useAuth = () => {
  * @param {React.ReactNode} props.children - Child components
  */
 export const AuthProvider = ({ children }) => {
+  const hasStoredToken = typeof window !== 'undefined' && Boolean(localStorage.getItem('token'));
   // Initialise user state immediately from localStorage — no round-trip required.
   // We store minimal user info in localStorage on login so pages can render at once.
   // The background verify call will correct stale info or clear an expired token.
@@ -48,17 +49,7 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
   });
-  // loading is always false — PrivateRoute no longer blocks rendering
-  const loading = false;
-
-  /**
-   * Warm up the backend server as early as possible.
-   * Render's free tier spins down after inactivity — this fires immediately
-   * when the app loads so the server is hot before the user submits the form.
-   */
-  useEffect(() => {
-    API.get('/api/health').catch(() => { /* ignore — best effort warm-up */ });
-  }, []);
+  const [loading, setLoading] = useState(hasStoredToken);
 
   /**
    * Background token verification.
@@ -71,6 +62,7 @@ export const AuthProvider = ({ children }) => {
       // No token → make sure we're logged out
       setUser(null);
       localStorage.removeItem('pl_user');
+      setLoading(false);
       return;
     }
     // Verify in background — pages are already rendering
@@ -84,6 +76,9 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
         localStorage.removeItem('pl_user');
         setUser(null);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
@@ -106,8 +101,10 @@ export const AuthProvider = ({ children }) => {
       // Persist user data so next load is instant (optimistic auth)
       localStorage.setItem('pl_user', JSON.stringify(data));
       setUser(data);
+      setLoading(false);
       return { success: true };
     } catch (error) {
+      setLoading(false);
       throw error.response?.data?.message || 'Login failed';
     }
   };
@@ -130,8 +127,10 @@ export const AuthProvider = ({ children }) => {
       // Persist user data so next load is instant
       localStorage.setItem('pl_user', JSON.stringify(data));
       setUser(data);
+      setLoading(false);
       return { success: true };
     } catch (error) {
+      setLoading(false);
       throw error.response?.data?.message || 'Registration failed';
     }
   };
@@ -146,6 +145,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('pl_user');
     sessionStorage.clear();
     setUser(null);
+    setLoading(false);
     
     // Best-effort: tell backend to clear cookie (ignore errors)
     API.post('/api/auth/logout', {}, { withCredentials: true }).catch(() => { });

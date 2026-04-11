@@ -5,7 +5,19 @@ import { useAuth } from '../context/AuthContext';
 import AppInput from '../components/ui/AppInput';
 import AppButton from '../components/ui/AppButton';
 import AppSelect from '../components/ui/AppSelect';
+import { preloadRoute } from '../utils/preloadRoutes';
 import './Dashboard.css';
+
+const DASHBOARD_CACHE_KEY = 'pl_dashboard_deals';
+
+const readCachedDeals = () => {
+  try {
+    const cached = sessionStorage.getItem(DASHBOARD_CACHE_KEY);
+    return cached ? JSON.parse(cached) : [];
+  } catch {
+    return [];
+  }
+};
 
 /* ── Icon components defined OUTSIDE the component so they never recreate ── */
 const EditIconSvg = () => (
@@ -29,14 +41,14 @@ const DeleteIconSvg = () => (
 const Dashboard = () => {
   const { isAdmin } = useAuth();
   const location = useLocation();
-  const [deals, setDeals] = useState([]);
+  const [deals, setDeals] = useState(() => readCachedDeals());
   const [searchTerm, setSearchTerm] = useState('');
   const [dealTypeFilter, setDealTypeFilter] = useState(() => {
     const params = new URLSearchParams(location.search);
     const t = params.get('type');
     return (t === 'Buy' || t === 'Sell' || t === 'Other') ? t : 'All';
   });
-  const [, setLoading] = useState(false);
+  const [loading, setLoading] = useState(() => readCachedDeals().length === 0);
   const [error, setError] = useState('');
   const [toast, setToast] = useState({ message: '', type: '' }); // type: 'success' | 'error'
   const showToast = (message, type = 'success') => {
@@ -117,6 +129,7 @@ const Dashboard = () => {
     try {
       const { data } = await API.get('/api/deals');
       setDeals(data);
+      sessionStorage.setItem(DASHBOARD_CACHE_KEY, JSON.stringify(data));
       setError('');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch deals');
@@ -130,8 +143,9 @@ const Dashboard = () => {
     if (!searchTerm.trim()) { fetchDeals(); return; }
     setLoading(true);
     try {
-      const { data } = await API.get(`/api/deals/search?q=${searchTerm}`);
+      const { data } = await API.get(`/api/deals/search?q=${encodeURIComponent(searchTerm.trim())}`);
       setDeals(data);
+      setError('');
     } catch (err) {
       setError(err.response?.data?.message || 'Search failed');
     } finally {
@@ -609,7 +623,13 @@ const Dashboard = () => {
         </div>
       )}
 
-      {sortedDeals.length === 0 ? (
+      {loading ? (
+        <div className="dashboard-empty pl-state pl-state--loading">
+          <div className="spinner" style={{ width: 42, height: 42 }}></div>
+          <h3 className="pl-empty-title">Loading deals...</h3>
+          <p className="pl-empty-desc">Fetching your latest dashboard data.</p>
+        </div>
+      ) : sortedDeals.length === 0 ? (
         <div className="dashboard-empty pl-state pl-state--empty">
           <span className="dashboard-empty-icon pl-empty-icon">📁</span>
           <h3 className="pl-empty-title">No deals found</h3>
@@ -670,7 +690,13 @@ const Dashboard = () => {
                 </div>
 
                 <div className="dashboard-deal-actions app-actions-row">
-                  <Link to={`/deals/${deal._id}`} className="dashboard-action-btn app-btn dashboard-action-btn--view">
+                  <Link
+                    to={`/deals/${deal._id}`}
+                    className="dashboard-action-btn app-btn dashboard-action-btn--view"
+                    onMouseEnter={() => preloadRoute('dealDetails')}
+                    onFocus={() => preloadRoute('dealDetails')}
+                    onTouchStart={() => preloadRoute('dealDetails')}
+                  >
                     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />

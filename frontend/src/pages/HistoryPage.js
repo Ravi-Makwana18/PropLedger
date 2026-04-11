@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
 import AppSelect from '../components/ui/AppSelect';
+import { preloadRoute } from '../utils/preloadRoutes';
 import './HistoryPage.css';
 
 /* ── Mode badge colours (matching DealDetails) ── */
@@ -56,7 +57,13 @@ const TransactionCard = ({ payment, onClick }) => {
     const byName = payment.createdBy?.contactPersonName || payment.createdBy?.name || payment.createdBy?.companyName || 'Unknown';
 
     return (
-        <div className="hp-card app-card" onClick={() => onClick(deal._id)} role="button" tabIndex={0}
+        <div
+            className="hp-card app-card"
+            onClick={() => onClick(deal._id)}
+            onMouseEnter={() => preloadRoute('dealDetails')}
+            onTouchStart={() => preloadRoute('dealDetails')}
+            role="button"
+            tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && onClick(deal._id)}>
 
             {/* Middle: deal info */}
@@ -338,7 +345,13 @@ const HistoryPage = () => {
             <div className="hp-content">
                 {error && <div className="hp-error-banner pl-state pl-state--error">⚠️ {error}</div>}
 
-                {payments.length === 0 ? (
+                {loading ? (
+                    <div className="hp-empty pl-state pl-state--loading">
+                        <div className="spinner hp-spinner" style={{ width: 42, height: 42 }}></div>
+                        <h3 className="pl-empty-title">Loading transactions...</h3>
+                        <p className="pl-empty-desc">Fetching the latest payment history.</p>
+                    </div>
+                ) : payments.length === 0 ? (
                     <div className="hp-empty pl-state pl-state--empty">
                         <span className="hp-empty-icon pl-empty-icon">📭</span>
                         <h3 className="pl-empty-title">No transactions found</h3>

@@ -23,6 +23,26 @@ const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 /** Fields a user is allowed to update on an existing payment */
 const PAYMENT_UPDATABLE_FIELDS = ['date', 'modeOfPayment', 'amount', 'remarks'];
 
+const recalculateDealTotals = async (dealId, session) => {
+  const totals = await Payment.aggregate([
+    { $match: { dealId } },
+    {
+      $group: {
+        _id: '$dealId',
+        totalPaid: { $sum: '$amount' },
+      },
+    },
+  ]).session(session);
+
+  const totalPaid = totals[0]?.totalPaid || 0;
+
+  await Deal.updateOne(
+    { _id: dealId },
+    { $set: { totalPaid } },
+    { session }
+  );
+};
+
 /**
  * @desc    Add a new payment to a deal
  * @route   POST /api/payments
@@ -57,6 +77,7 @@ const addPayment = async (req, res) => {
     }], { session });
 
     await payment.populate('createdBy', 'name');
+    await recalculateDealTotals(deal._id, session);
 
     await session.commitTransaction();
     res.status(201).json(payment);
@@ -212,6 +233,9 @@ const getPaymentHistory = async (req, res) => {
  * @access  Private / Admin or Manager
  */
 const updatePayment = async (req, res) => {
+  const session = await Payment.startSession();
+  session.startTransaction();
+
   try {
     const accessibleUserIds = await getAccessibleUserIds(req.user, req);
 
@@ -223,19 +247,31 @@ const updatePayment = async (req, res) => {
       }
     }
 
-    const updatedPayment = await Payment.findOneAndUpdate(
-      { _id: req.params.id, createdBy: { $in: accessibleUserIds } },
-      { $set: safeUpdate },
-      { new: true, runValidators: true }
-    ).populate('createdBy', 'name');
+    const existingPayment = await Payment.findOne({
+      _id: req.params.id,
+      createdBy: { $in: accessibleUserIds },
+    }).session(session);
 
-    if (!updatedPayment) {
+    if (!existingPayment) {
+      await session.abortTransaction();
       return res.status(404).json({ message: 'Payment not found' });
     }
 
-    res.json(updatedPayment);
+    for (const [key, value] of Object.entries(safeUpdate)) {
+      existingPayment[key] = value;
+    }
+
+    await existingPayment.save({ session });
+    await recalculateDealTotals(existingPayment.dealId, session);
+    await existingPayment.populate('createdBy', 'name');
+
+    await session.commitTransaction();
+    res.json(existingPayment);
   } catch (error) {
+    await session.abortTransaction();
     res.status(500).json({ message: error.message });
+  } finally {
+    session.endSession();
   }
 };
 
@@ -262,6 +298,7 @@ const deletePayment = async (req, res) => {
     }
 
     await Payment.findByIdAndDelete(payment._id).session(session);
+    await recalculateDealTotals(payment.dealId, session);
 
     await session.commitTransaction();
     res.json({ message: 'Payment deleted' });

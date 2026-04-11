@@ -82,6 +82,11 @@ const dealSchema = new mongoose.Schema({
     type: Number,
     // Calculated automatically in pre-save hook
   },
+  totalPaid: {
+    type: Number,
+    default: 0,
+    min: [0, 'Total paid cannot be negative'],
+  },
   banakhatAmount: {
     type: Number,
     // Calculated as 25% of totalAmount in pre-save hook

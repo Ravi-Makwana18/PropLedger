@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import AppCard from '../components/ui/AppCard';
 import AppInput from '../components/ui/AppInput';
 import AppButton from '../components/ui/AppButton';
+import { preloadRoute } from '../utils/preloadRoutes';
 import './Login.css';
 
 const Login = () => {
@@ -25,7 +26,10 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
+      await Promise.all([
+        login(email, password),
+        preloadRoute('dashboard'),
+      ]);
       navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err);

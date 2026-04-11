@@ -13,6 +13,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
 import AppButton from './ui/AppButton';
+import { preloadRouteForPath, preloadRoute } from '../utils/preloadRoutes';
 
 /**
  * Main navigation links (visible to all authenticated users)
@@ -183,6 +184,12 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
     }, 700);
   };
 
+  const navPreloadProps = (to) => ({
+    onMouseEnter: () => preloadRouteForPath(to),
+    onFocus: () => preloadRouteForPath(to),
+    onTouchStart: () => preloadRouteForPath(to),
+  });
+
   return (
     <>
       {/* Mobile overlay */}
@@ -223,6 +230,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
                 className={({ isActive }) => `sidebar-nav-item${isActive ? ' sidebar-nav-item--active' : ''}`}
                 onClick={() => onClose && onClose()}
                 title={collapsed ? item.label : undefined}
+                {...navPreloadProps(item.to)}
               >
                 <span className="sidebar-nav-icon">{item.icon}</span>
                 {!collapsed && <span className="sidebar-nav-text">{item.label}</span>}
@@ -247,6 +255,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
                     className={() => `sidebar-nav-item${isActive ? ' sidebar-nav-item--active' : ''}`}
                     onClick={() => onClose && onClose()}
                     title={collapsed ? item.label : undefined}
+                    {...navPreloadProps(item.to)}
                   >
                     <span className="sidebar-nav-icon">{item.icon}</span>
                     {!collapsed && <span className="sidebar-nav-text">{item.label}</span>}
@@ -267,6 +276,7 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
                   className={({ isActive }) => `sidebar-nav-item${isActive ? ' sidebar-nav-item--active' : ''}`}
                   onClick={() => onClose && onClose()}
                   title={collapsed ? item.label : undefined}
+                  {...navPreloadProps(item.to)}
                 >
                   <span className="sidebar-nav-icon">{item.icon}</span>
                   {!collapsed && <span className="sidebar-nav-text">{item.label}</span>}
@@ -279,7 +289,13 @@ const Sidebar = ({ collapsed, mobileOpen, onClose }) => {
         {/* Footer: user info + sign-out button */}
         <div className="sidebar-footer">
           {!collapsed && (
-            <div className="sidebar-user" onClick={() => navigate('/profile')} title="View Profile">
+            <div
+              className="sidebar-user"
+              onClick={() => navigate('/profile')}
+              onMouseEnter={() => preloadRoute('profile')}
+              onTouchStart={() => preloadRoute('profile')}
+              title="View Profile"
+            >
               <div className="sidebar-user-avatar">
                 {user?.profilePicture ? (
                   <img src={user.profilePicture} alt="Profile" />

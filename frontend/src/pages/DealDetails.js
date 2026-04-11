@@ -449,8 +449,15 @@ const DealDetails = () => {
   if (loading) {
     return (
       <div className="dd-page">
-        <div className="dd-wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-          <div className="spinner" style={{ width: 48, height: 48 }}></div>
+        <div className="dd-wrapper">
+          <div
+            className="pl-state pl-state--loading"
+            style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
+          >
+            <div className="spinner" style={{ width: 42, height: 42 }}></div>
+            <h3 className="pl-empty-title">Loading deal details...</h3>
+            <p className="pl-empty-desc">Fetching the latest deal information and payments.</p>
+          </div>
         </div>
       </div>
     );
