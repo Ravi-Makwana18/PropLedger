@@ -36,7 +36,7 @@ const parseExpireToMs = (expireStr) => {
 const getCookieOptions = () => ({
   httpOnly: true,
   secure: true,
-  sameSite: 'None',
+  sameSite: 'Lax',
   path: '/',
   maxAge: parseExpireToMs(process.env.JWT_EXPIRE || '7d'),
 });
@@ -255,7 +255,7 @@ const logout = async (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
     secure: true,
-    sameSite: 'None',
+    sameSite: 'Lax',
     path: '/',
   });
   res.status(200).json({ message: 'Logged out successfully' });

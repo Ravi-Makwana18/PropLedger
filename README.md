@@ -139,28 +139,20 @@ DELETE /api/enquiry/all          # Delete all enquiries
 
 ## 🚢 Deployment
 
-You can deploy the app either split across Vercel and Render, or entirely on Render.
+PropLedger is configured for Render-only deployment as a single web service.
 
-### Option A: Split Deployment (Recommended)
+Since `backend/server.js` serves the React build in production, deploy the whole monorepo from the repo root:
 
-**1. Frontend (Vercel)**
-We have a `vercel.json` file beautifully configured at the root of our project, Vercel will automatically detect our project as a Monorepo Frontend!
-- **Root Directory**: Leave as default (root)
-- **Settings**: Vercel automatically reads our `installCommand`, `buildCommand`, and `rewrites` from `vercel.json`. We don't need to touch anything!
-- **Environment Variable**: Set `REACT_APP_API_URL=https://your-backend-url.onrender.com` in Vercel.
-
-**2. Backend (Render / Railway)**
-- **Root Directory**: Leave blank (root)
-- **Build Command**: `npm install` (Frontend build is skipped here)
+- **Build Command**: `npm install && npm run build`
 - **Start Command**: `npm start`
-- **Environment Variables**: Set `MONGO_URI`, `JWT_SECRET`, and `FRONTEND_URL` (pointing to Vercel).
+- **Environment Variables**:
+  - `NODE_ENV=production`
+  - `MONGO_URI=...`
+  - `JWT_SECRET=...`
+  - `JWT_EXPIRE=30d`
+  - `FRONTEND_URL=https://your-app.onrender.com`
 
-### Option B: Monolithic Deployment (Everything on Render)
-
-Since `server.js` is built to serve the frontend statically in production, you can deploy the whole monorepo as a single Render Web Service:
-- **Build Command**: `npm install && npm run build` (This utilizes the new root build script)
-- **Start Command**: `npm start`
-- **Environment Variables**: Set `NODE_ENV=production`, `MONGO_URI`, and `JWT_SECRET`.
+For production on Render-only deployment, leave `REACT_APP_API_URL` unset so the frontend uses same-origin `/api` requests.
 
 ## 🧪 Testing
 
@@ -176,7 +168,7 @@ npm run dev
 ## 🙏 Acknowledgments
 
 - MongoDB Atlas for database hosting
-- Vercel/Render for deployment platforms
+- Render for application hosting
 - React community for excellent documentation
 - Express.js team for the robust framework
 
