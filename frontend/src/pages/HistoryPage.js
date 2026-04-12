@@ -346,10 +346,22 @@ const HistoryPage = () => {
                 {error && <div className="hp-error-banner pl-state pl-state--error">⚠️ {error}</div>}
 
                 {loading ? (
-                    <div className="hp-empty pl-state pl-state--loading">
-                        <div className="spinner hp-spinner" style={{ width: 42, height: 42 }}></div>
-                        <h3 className="pl-empty-title">Loading transactions...</h3>
-                        <p className="pl-empty-desc">Fetching the latest payment history.</p>
+                    <div className="history-skeleton-container">
+                        <div className="history-skeleton-header">
+                            <div className="skeleton-base history-skeleton-title"></div>
+                        </div>
+                        <div className="history-skeleton-filters">
+                            <div className="skeleton-base history-skeleton-filter"></div>
+                            <div className="skeleton-base history-skeleton-filter"></div>
+                            <div className="skeleton-base history-skeleton-filter"></div>
+                            <div className="skeleton-base history-skeleton-filter"></div>
+                            <div className="skeleton-base history-skeleton-filter"></div>
+                        </div>
+                        <div className="history-skeleton-list">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="skeleton-base history-skeleton-item"></div>
+                            ))}
+                        </div>
                     </div>
                 ) : payments.length === 0 ? (
                     <div className="hp-empty pl-state pl-state--empty">

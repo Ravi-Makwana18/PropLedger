@@ -29,9 +29,91 @@ const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const DEAL_UPDATABLE_FIELDS = [
   'brokerName', 'naType', 'district', 'subDistrict', 'villageName',
   'oldSurveyNo', 'newSurveyNo', 'dealType', 'pricePerSqYard', 'totalSqYard',
-  'totalSqMeter', 'jantri', 'notes', 'additionalExpenses', 'addMoreEntries',
+  'totalSqMeter', 'jantri', 'notes',
   'dealDate', 'deadlineStartDate', 'deadlineEndDate',
 ];
+
+const normalizeAdditionalExpenses = (expenses = {}) => ({
+  buyBrokeringPercent: Number(expenses.buyBrokeringPercent) || 0,
+  sellCpIncentiveRate: Number(expenses.sellCpIncentiveRate) || 0,
+  planpassRatePerSqMtr: Number(expenses.planpassRatePerSqMtr) || 0,
+  naRatePerSqMtr: Number(expenses.naRatePerSqMtr) || 0,
+});
+
+const normalizeScheduleEntries = (entries = []) =>
+  entries.map((entry, index) => ({
+    dealId: entry.dealId,
+    percentage: Number(entry.percentage) || 0,
+    date: entry.date,
+    amount: Number(entry.amount) || 0,
+    sortOrder: entry.sortOrder ?? index,
+  }));
+
+const syncAdditionalExpenses = async (dealId, expenses, session) => {
+  if (expenses === undefined) {
+    return null;
+  }
+
+  if (expenses === null) {
+    await DealAdditionalExpenses.deleteOne({ dealId }).session(session);
+    return normalizeAdditionalExpenses();
+  }
+
+  const normalizedExpenses = normalizeAdditionalExpenses(expenses);
+  await DealAdditionalExpenses.updateOne(
+    { dealId },
+    { $set: { dealId, ...normalizedExpenses } },
+    { upsert: true, session }
+  );
+
+  return normalizedExpenses;
+};
+
+const syncScheduleEntries = async (dealId, entries, session) => {
+  if (entries === undefined) {
+    return null;
+  }
+
+  await DealScheduleEntry.deleteMany({ dealId }).session(session);
+
+  if (!Array.isArray(entries) || entries.length === 0) {
+    return [];
+  }
+
+  const normalizedEntries = normalizeScheduleEntries(
+    entries.map((entry, index) => ({
+      ...entry,
+      dealId,
+      sortOrder: index,
+    }))
+  );
+
+  await DealScheduleEntry.insertMany(normalizedEntries, { session });
+
+  return normalizedEntries.map(({ percentage, date, amount }) => ({
+    percentage,
+    date,
+    amount,
+  }));
+};
+
+const hydrateDealRelations = async (deal) => {
+  const plainDeal = typeof deal.toObject === 'function' ? deal.toObject() : { ...deal };
+
+  const [normalizedExpenses, normalizedSchedule] = await Promise.all([
+    DealAdditionalExpenses.findOne({ dealId: plainDeal._id }).lean(),
+    DealScheduleEntry.find({ dealId: plainDeal._id }).sort({ sortOrder: 1, date: 1 }).lean(),
+  ]);
+
+  plainDeal.additionalExpenses = normalizeAdditionalExpenses(normalizedExpenses || {});
+  plainDeal.addMoreEntries = normalizeScheduleEntries(normalizedSchedule).map(({ percentage, date, amount }) => ({
+    percentage,
+    date,
+    amount,
+  }));
+
+  return plainDeal;
+};
 
 /**
  * @desc    Create new land deal
@@ -78,38 +160,17 @@ const createDeal = async (req, res) => {
       ...(totalSqMeter !== undefined && { totalSqMeter }),
       ...(jantri !== undefined && { jantri }),
       ...(notes !== undefined && { notes }),
-      ...(additionalExpenses !== undefined && { additionalExpenses }),
-      ...(addMoreEntries !== undefined && { addMoreEntries }),
       dealDate,
       deadlineStartDate,
       deadlineEndDate,
       createdBy: req.user._id,
     }], { session });
 
-    // Normalize additional expenses to separate collection (dual-write)
-    if (additionalExpenses && typeof additionalExpenses === 'object') {
-      await DealAdditionalExpenses.updateOne(
-        { dealId: deal._id },
-        { $set: { dealId: deal._id, ...additionalExpenses } },
-        { upsert: true, session }
-      );
-    }
-
-    // Normalize schedule entries to separate collection (dual-write)
-    if (Array.isArray(addMoreEntries) && addMoreEntries.length > 0) {
-      await DealScheduleEntry.deleteMany({ dealId: deal._id }).session(session);
-      const docs = addMoreEntries.map((e, idx) => ({
-        dealId: deal._id,
-        percentage: e.percentage,
-        date: e.date,
-        amount: e.amount,
-        sortOrder: idx,
-      }));
-      await DealScheduleEntry.insertMany(docs, { session });
-    }
+    await syncAdditionalExpenses(deal._id, additionalExpenses, session);
+    await syncScheduleEntries(deal._id, addMoreEntries, session);
 
     await session.commitTransaction();
-    res.status(201).json(deal);
+    res.status(201).json(await hydrateDealRelations(deal));
   } catch (error) {
     await session.abortTransaction();
     res.status(500).json({ message: error.message });
@@ -158,37 +219,16 @@ const getDealById = async (req, res) => {
       return res.status(404).json({ message: 'Deal not found' });
     }
 
-    // Dual-read normalized children (fallback to legacy embedded fields)
-    const [normalizedExpenses, normalizedSchedule] = await Promise.all([
-      DealAdditionalExpenses.findOne({ dealId: deal._id }).lean(),
-      DealScheduleEntry.find({ dealId: deal._id }).sort({ sortOrder: 1, date: 1 }).lean(),
-    ]);
-
-    if (normalizedExpenses) {
-      deal.additionalExpenses = {
-        buyBrokeringPercent: normalizedExpenses.buyBrokeringPercent ?? 0,
-        sellCpIncentiveRate: normalizedExpenses.sellCpIncentiveRate ?? 0,
-        planpassRatePerSqMtr: normalizedExpenses.planpassRatePerSqMtr ?? 0,
-        naRatePerSqMtr: normalizedExpenses.naRatePerSqMtr ?? 0,
-      };
-    }
-
-    if (normalizedSchedule && normalizedSchedule.length > 0) {
-      deal.addMoreEntries = normalizedSchedule.map((e) => ({
-        percentage: e.percentage,
-        date: e.date,
-        amount: e.amount,
-      }));
-    }
+    const hydratedDeal = await hydrateDealRelations(deal);
 
     // Fetch all payments for this deal
-    const payments = await Payment.find({ dealId: deal._id })
+    const payments = await Payment.find({ dealId: hydratedDeal._id })
       .sort({ date: -1 })
       .populate('createdBy', 'name')
       .lean();
 
     const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
-    const remainingAmount = deal.totalAmount - totalPaid;
+    const remainingAmount = hydratedDeal.totalAmount - totalPaid;
 
     const bankPaid = payments
       .filter((p) => p.modeOfPayment === 'Bank')
@@ -197,13 +237,13 @@ const getDealById = async (req, res) => {
       .filter((p) => p.modeOfPayment === 'Other')
       .reduce((sum, p) => sum + p.amount, 0);
 
-    const jantriAmount = (deal.jantri || 0) * (deal.totalSqMeter || 0);
-    const otherAmount = deal.totalAmount - jantriAmount;
+    const jantriAmount = (hydratedDeal.jantri || 0) * (hydratedDeal.totalSqMeter || 0);
+    const otherAmount = hydratedDeal.totalAmount - jantriAmount;
     const jantriRemaining = jantriAmount - bankPaid;
     const otherRemaining = otherAmount - otherPaid;
 
     res.json({
-      deal,
+      deal: hydratedDeal,
       payments,
       totalPaid,
       remainingAmount,
@@ -288,31 +328,11 @@ const updateDeal = async (req, res) => {
     }
     const updatedDeal = await deal.save({ session });
 
-    // Sync normalized children
-    if (req.body.additionalExpenses && typeof req.body.additionalExpenses === 'object') {
-      await DealAdditionalExpenses.updateOne(
-        { dealId: updatedDeal._id },
-        { $set: { dealId: updatedDeal._id, ...req.body.additionalExpenses } },
-        { upsert: true, session }
-      );
-    }
-
-    if (Array.isArray(req.body.addMoreEntries)) {
-      await DealScheduleEntry.deleteMany({ dealId: updatedDeal._id }).session(session);
-      if (req.body.addMoreEntries.length > 0) {
-        const docs = req.body.addMoreEntries.map((e, idx) => ({
-          dealId: updatedDeal._id,
-          percentage: e.percentage,
-          date: e.date,
-          amount: e.amount,
-          sortOrder: idx,
-        }));
-        await DealScheduleEntry.insertMany(docs, { session });
-      }
-    }
+    await syncAdditionalExpenses(updatedDeal._id, req.body.additionalExpenses, session);
+    await syncScheduleEntries(updatedDeal._id, req.body.addMoreEntries, session);
 
     await session.commitTransaction();
-    res.json(updatedDeal);
+    res.json(await hydrateDealRelations(updatedDeal));
   } catch (error) {
     await session.abortTransaction();
     res.status(500).json({ message: error.message });

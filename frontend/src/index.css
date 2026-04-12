@@ -5463,24 +5463,422 @@ code {
 }
 
 /* ═══════════════════════════════════════════════
-   Shimmer Skeleton — Dashboard & Notifications
+   Professional Shimmer Skeleton Loader
+   (matches structure of each page)
 ═══════════════════════════════════════════════ */
 
 @keyframes shimmer {
-  0% {
-    background-position: -700px 0;
-  }
+  0% { background-position: -700px 0; }
+  100% { background-position: 700px 0; }
+}
 
-  100% {
-    background-position: 700px 0;
+.skeleton-base {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 700px 100%;
+  animation: shimmer 1s infinite linear;
+  border-radius: 8px;
+}
+
+/* Dashboard Skeleton */
+.dashboard-skeleton-container {
+  padding: 1.5rem;
+}
+
+.dashboard-skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-skeleton-title {
+  width: 180px;
+  height: 28px;
+}
+
+.dashboard-skeleton-btn {
+  width: 140px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+.dashboard-skeleton-search {
+  height: 52px;
+  border-radius: 14px;
+  margin-bottom: 1rem;
+}
+
+.dashboard-skeleton-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-skeleton-filter {
+  width: 80px;
+  height: 36px;
+  border-radius: 20px;
+}
+
+.dashboard-skeleton-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-skeleton-stat {
+  height: 100px;
+  border-radius: 16px;
+}
+
+.dashboard-skeleton-cards {
+  display: grid;
+  gap: 1rem;
+}
+
+.dashboard-skeleton-card {
+  height: 280px;
+  border-radius: 16px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-skeleton-stats {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.db-skeleton-line {
-  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
-  background-size: 700px 100%;
-  animation: shimmer 1.4s infinite linear;
-  border-radius: 6px;
+@media (max-width: 480px) {
+  .dashboard-skeleton-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* History Page Skeleton */
+.history-skeleton-container {
+  padding: 1.5rem;
+}
+
+.history-skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.history-skeleton-title {
+  width: 200px;
+  height: 32px;
+}
+
+.history-skeleton-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.history-skeleton-filter {
+  width: 90px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.history-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.history-skeleton-item {
+  height: 80px;
+  border-radius: 12px;
+}
+
+/* Deal Details Skeleton */
+.deal-details-skeleton {
+  padding: 1.5rem;
+}
+
+.deal-details-skeleton-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.deal-details-skeleton-back {
+  width: 100px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.deal-details-skeleton-title {
+  width: 220px;
+  height: 28px;
+}
+
+.deal-details-skeleton-subtitle {
+  width: 160px;
+  height: 16px;
+  margin-top: 8px;
+}
+
+.deal-details-skeleton-section {
+  background: white;
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.deal-details-skeleton-section-title {
+  width: 160px;
+  height: 20px;
+  margin-bottom: 1rem;
+}
+
+.deal-details-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.deal-details-skeleton-pill {
+  height: 80px;
+  border-radius: 12px;
+}
+
+.deal-details-skeleton-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.deal-details-skeleton-stat {
+  height: 90px;
+  border-radius: 12px;
+}
+
+.deal-details-skeleton-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.deal-details-skeleton-row-item {
+  width: 120px;
+  height: 16px;
+}
+
+@media (max-width: 768px) {
+  .deal-details-skeleton-grid,
+  .deal-details-skeleton-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .deal-details-skeleton-grid,
+  .deal-details-skeleton-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Manage Users Skeleton */
+.manage-users-skeleton-container {
+  padding: 1.5rem;
+}
+
+.manage-users-skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.manage-users-skeleton-title {
+  width: 180px;
+  height: 28px;
+}
+
+.manage-users-skeleton-btn {
+  width: 140px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+.manage-users-skeleton-search {
+  height: 48px;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.manage-users-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.manage-users-skeleton-item {
+  height: 72px;
+  border-radius: 12px;
+}
+
+/* Admin Profile Skeleton */
+.admin-profile-skeleton {
+  padding: 2rem;
+}
+
+.admin-profile-skeleton-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.admin-profile-skeleton-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.admin-profile-skeleton-info {
+  flex: 1;
+}
+
+.admin-profile-skeleton-name {
+  width: 200px;
+  height: 28px;
+  margin-bottom: 8px;
+}
+
+.admin-profile-skeleton-email {
+  width: 160px;
+  height: 18px;
+}
+
+.admin-profile-skeleton-sections {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.admin-profile-skeleton-section {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.admin-profile-skeleton-section-title {
+  width: 140px;
+  height: 20px;
+  margin-bottom: 1rem;
+}
+
+.admin-profile-skeleton-field {
+  width: 100%;
+  height: 48px;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+}
+
+/* Create User Skeleton */
+.create-user-skeleton {
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.create-user-skeleton-title {
+  width: 180px;
+  height: 32px;
+  margin-bottom: 2rem;
+}
+
+.create-user-skeleton-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.create-user-skeleton-field {
+  height: 52px;
+  border-radius: 10px;
+}
+
+.create-user-skeleton-btn {
+  width: 160px;
+  height: 48px;
+  border-radius: 12px;
+  margin-top: 1rem;
+}
+
+/* Auth Pages Skeleton (Login/Register) */
+.auth-skeleton-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.auth-skeleton-left {
+  display: none;
+  width: 50%;
+  background: linear-gradient(135deg, #2562EA 0%, #1a4fd4 100%);
+}
+
+@media (min-width: 900px) {
+  .auth-skeleton-left {
+    display: block;
+  }
+}
+
+.auth-skeleton-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.auth-skeleton-form {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-skeleton-badge {
+  width: 120px;
+  height: 28px;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+}
+
+.auth-skeleton-form-title {
+  width: 240px;
+  height: 36px;
+  margin-bottom: 0.5rem;
+}
+
+.auth-skeleton-form-subtitle {
+  width: 300px;
+  height: 18px;
+  margin-bottom: 2rem;
+}
+
+.auth-skeleton-field {
+  height: 52px;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.auth-skeleton-field-sm {
+  height: 52px;
+  border-radius: 10px;
+}
+
+.auth-skeleton-btn {
+  width: 100%;
+  height: 52px;
+  border-radius: 12px;
+  margin-top: 1rem;
 }
 
 /* Search bar skeleton */

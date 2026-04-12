@@ -165,10 +165,17 @@ const ManageUsers = () => {
         )}
 
         {isLoading ? (
-          <div className="mu-empty pl-state pl-state--loading">
-            <div className="spinner" style={{ width: 42, height: 42 }}></div>
-            <h3 className="pl-empty-title">Loading users...</h3>
-            <p className="pl-empty-desc">Fetching your staff accounts.</p>
+          <div className="manage-users-skeleton-container">
+            <div className="manage-users-skeleton-header">
+              <div className="skeleton-base manage-users-skeleton-title"></div>
+              <div className="skeleton-base manage-users-skeleton-btn"></div>
+            </div>
+            <div className="skeleton-base manage-users-skeleton-search"></div>
+            <div className="manage-users-skeleton-list">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="skeleton-base manage-users-skeleton-item"></div>
+              ))}
+            </div>
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="mu-empty pl-state pl-state--empty">

@@ -117,42 +117,6 @@ const dealSchema = new mongoose.Schema({
     trim: true,
     default: '',
   },
-  additionalExpenses: {
-    buyBrokeringPercent: {
-      type: Number,
-      min: [0, 'Buy brokering % cannot be negative'],
-      default: 0,
-    },
-    sellCpIncentiveRate: {
-      type: Number,
-      min: [0, 'Sell C.P. incentive rate cannot be negative'],
-      default: 0,
-    },
-    planpassRatePerSqMtr: {
-      type: Number,
-      min: [0, 'Planpass rate cannot be negative'],
-      default: 0,
-    },
-    naRatePerSqMtr: {
-      type: Number,
-      min: [0, 'NA rate cannot be negative'],
-      default: 0,
-    },
-  },
-  addMoreEntries: [{
-    percentage: {
-      type: Number,
-      min: [0, 'Percentage cannot be negative'],
-      max: [100, 'Percentage cannot be more than 100'],
-    },
-    date: {
-      type: Date,
-    },
-    amount: {
-      type: Number,
-      min: [0, 'Amount cannot be negative'],
-    },
-  }],
   deadlineStartDate: {
     type: Date,
   },

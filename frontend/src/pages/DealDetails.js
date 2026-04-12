@@ -448,16 +448,42 @@ const DealDetails = () => {
 
   if (loading) {
     return (
-      <div className="dd-page">
-        <div className="dd-wrapper">
-          <div
-            className="pl-state pl-state--loading"
-            style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
-          >
-            <div className="spinner" style={{ width: 42, height: 42 }}></div>
-            <h3 className="pl-empty-title">Loading deal details...</h3>
-            <p className="pl-empty-desc">Fetching the latest deal information and payments.</p>
+      <div className="deal-details-skeleton">
+        <div className="deal-details-skeleton-header">
+          <div className="skeleton-base deal-details-skeleton-back"></div>
+          <div>
+            <div className="skeleton-base deal-details-skeleton-title"></div>
+            <div className="skeleton-base deal-details-skeleton-subtitle"></div>
           </div>
+        </div>
+        
+        <div className="deal-details-skeleton-section">
+          <div className="skeleton-base deal-details-skeleton-section-title"></div>
+          <div className="deal-details-skeleton-grid">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="skeleton-base deal-details-skeleton-pill"></div>
+            ))}
+          </div>
+        </div>
+
+        <div className="deal-details-skeleton-section">
+          <div className="skeleton-base deal-details-skeleton-section-title"></div>
+          <div className="deal-details-skeleton-stats">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="skeleton-base deal-details-skeleton-stat"></div>
+            ))}
+          </div>
+        </div>
+
+        <div className="deal-details-skeleton-section">
+          <div className="skeleton-base deal-details-skeleton-section-title"></div>
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="deal-details-skeleton-row">
+              <div className="skeleton-base deal-details-skeleton-row-item"></div>
+              <div className="skeleton-base deal-details-skeleton-row-item"></div>
+              <div className="skeleton-base deal-details-skeleton-row-item"></div>
+            </div>
+          ))}
         </div>
       </div>
     );

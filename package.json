@@ -11,7 +11,8 @@
     "build": "npm run install:all && npm run build --prefix frontend",
     "install:all": "npm install --prefix backend && npm install --prefix frontend",
     "seed:admin": "node backend/seedAdmin.js",
-    "db:indexes": "node backend/scripts/buildIndexes.js"
+    "db:indexes": "node backend/scripts/buildIndexes.js",
+    "db:migrate-deal-relations": "node backend/scripts/migrateDealRelations.js"
   },
   "keywords": [
     "land-management",

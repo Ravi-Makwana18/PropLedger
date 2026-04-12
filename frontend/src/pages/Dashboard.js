@@ -624,10 +624,28 @@ const Dashboard = () => {
       )}
 
       {loading ? (
-        <div className="dashboard-empty pl-state pl-state--loading">
-          <div className="spinner" style={{ width: 42, height: 42 }}></div>
-          <h3 className="pl-empty-title">Loading deals...</h3>
-          <p className="pl-empty-desc">Fetching your latest dashboard data.</p>
+        <div className="dashboard-skeleton-container">
+          <div className="dashboard-skeleton-header">
+            <div className="skeleton-base dashboard-skeleton-title"></div>
+            <div className="skeleton-base dashboard-skeleton-btn"></div>
+          </div>
+          <div className="skeleton-base dashboard-skeleton-search"></div>
+          <div className="dashboard-skeleton-filters">
+            <div className="skeleton-base dashboard-skeleton-filter"></div>
+            <div className="skeleton-base dashboard-skeleton-filter"></div>
+            <div className="skeleton-base dashboard-skeleton-filter"></div>
+            <div className="skeleton-base dashboard-skeleton-filter"></div>
+          </div>
+          <div className="dashboard-skeleton-stats">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="skeleton-base dashboard-skeleton-stat"></div>
+            ))}
+          </div>
+          <div className="dashboard-skeleton-cards">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="skeleton-base dashboard-skeleton-card"></div>
+            ))}
+          </div>
         </div>
       ) : sortedDeals.length === 0 ? (
         <div className="dashboard-empty pl-state pl-state--empty">
