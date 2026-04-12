@@ -129,7 +129,9 @@ DELETE /api/enquiry/all          # Delete all enquiries
 - ✅ Password hashing with bcryptjs (10 salt rounds)
 - ✅ JWT-based authentication with 1-hour expiry
 - ✅ HTTP-only cookies for token storage
+- ✅ Cookie-first auth flow by default (token fallback only when explicitly enabled)
 - ✅ CORS configuration for cross-origin requests
+- ✅ Rate limiting on auth and write-heavy API routes
 - ✅ Input validation and sanitization
 - ✅ Protected routes with role-based access
 - ✅ Environment variable protection
@@ -159,6 +161,18 @@ For production on Render-only deployment, leave `REACT_APP_API_URL` unset so the
 ```bash
 # Test backend connection
 curl http://localhost:5001/api/health
+
+# Readiness check
+curl http://localhost:5001/api/ready
+
+# Run backend smoke tests
+npm run test:backend
+
+# Run Mongo-backed integration tests
+npm run test:backend:integration
+
+# Run the full backend suite
+npm run test:backend:all
 
 # Test MongoDB connection
 npm run dev

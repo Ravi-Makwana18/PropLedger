@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import API from '../api/axios';
 import AppCard from '../components/ui/AppCard';
@@ -16,6 +16,7 @@ const ManageUsers = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const didInitialFetchRef = useRef(false);
 
   const fetchUsers = async () => {
     setIsLoading(true);
@@ -31,6 +32,8 @@ const ManageUsers = () => {
   };
 
   useEffect(() => {
+    if (didInitialFetchRef.current) return;
+    didInitialFetchRef.current = true;
     fetchUsers();
   }, []);
 

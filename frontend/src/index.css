@@ -5512,6 +5512,7 @@ code {
   display: flex;
   gap: 10px;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .dashboard-skeleton-filter {
@@ -5542,15 +5543,47 @@ code {
   border-radius: 16px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .dashboard-skeleton-stats {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-skeleton-container {
+    padding: 1rem;
+  }
+  .dashboard-skeleton-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .dashboard-skeleton-btn {
+    width: 100%;
+    max-width: 160px;
+  }
+  .dashboard-skeleton-title {
+    width: 140px;
+    height: 24px;
   }
 }
 
 @media (max-width: 480px) {
   .dashboard-skeleton-stats {
     grid-template-columns: 1fr;
+  }
+  .dashboard-skeleton-stat {
+    height: 80px;
+  }
+  .dashboard-skeleton-card {
+    height: 200px;
+  }
+  .dashboard-skeleton-filters {
+    gap: 8px;
+  }
+  .dashboard-skeleton-filter {
+    width: 70px;
+    height: 32px;
   }
 }
 
@@ -5592,6 +5625,46 @@ code {
 .history-skeleton-item {
   height: 80px;
   border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  .history-skeleton-container {
+    padding: 1rem;
+  }
+  .history-skeleton-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .history-skeleton-title {
+    width: 160px;
+    height: 28px;
+  }
+  .history-skeleton-filters {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .history-skeleton-filter {
+    width: 70px;
+    height: 36px;
+  }
+  .history-skeleton-item {
+    height: 64px;
+  }
+}
+
+@media (max-width: 480px) {
+  .history-skeleton-title {
+    width: 140px;
+    height: 24px;
+  }
+  .history-skeleton-filters {
+    gap: 6px;
+  }
+  .history-skeleton-filter {
+    width: 60px;
+    height: 32px;
+  }
 }
 
 /* Deal Details Skeleton */
@@ -5672,16 +5745,60 @@ code {
 }
 
 @media (max-width: 768px) {
+  .deal-details-skeleton {
+    padding: 1rem;
+  }
+  .deal-details-skeleton-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .deal-details-skeleton-back {
+    width: 80px;
+    height: 32px;
+  }
+  .deal-details-skeleton-title {
+    width: 180px;
+    height: 24px;
+  }
+  .deal-details-skeleton-subtitle {
+    width: 140px;
+  }
   .deal-details-skeleton-grid,
   .deal-details-skeleton-stats {
     grid-template-columns: repeat(2, 1fr);
   }
+  .deal-details-skeleton-pill {
+    height: 70px;
+  }
+  .deal-details-skeleton-stat {
+    height: 80px;
+  }
 }
 
 @media (max-width: 480px) {
+  .deal-details-skeleton-title {
+    width: 160px;
+    height: 22px;
+  }
+  .deal-details-skeleton-subtitle {
+    width: 120px;
+  }
+  .deal-details-skeleton-section {
+    padding: 1rem;
+    border-radius: 12px;
+  }
   .deal-details-skeleton-grid,
   .deal-details-skeleton-stats {
     grid-template-columns: 1fr;
+  }
+  .deal-details-skeleton-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .deal-details-skeleton-row-item {
+    width: 100%;
+    height: 14px;
   }
 }
 
@@ -5723,6 +5840,35 @@ code {
 .manage-users-skeleton-item {
   height: 72px;
   border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  .manage-users-skeleton-container {
+    padding: 1rem;
+  }
+  .manage-users-skeleton-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .manage-users-skeleton-title {
+    width: 140px;
+    height: 24px;
+  }
+  .manage-users-skeleton-btn {
+    width: 100%;
+    max-width: 160px;
+  }
+  .manage-users-skeleton-item {
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .manage-users-skeleton-title {
+    width: 120px;
+    height: 22px;
+  }
 }
 
 /* Admin Profile Skeleton */
@@ -5782,6 +5928,47 @@ code {
   margin-bottom: 0.75rem;
 }
 
+@media (max-width: 768px) {
+  .admin-profile-skeleton {
+    padding: 1rem;
+  }
+  .admin-profile-skeleton-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .admin-profile-skeleton-avatar {
+    width: 80px;
+    height: 80px;
+  }
+  .admin-profile-skeleton-name {
+    width: 160px;
+    height: 24px;
+  }
+  .admin-profile-skeleton-email {
+    width: 140px;
+  }
+  .admin-profile-skeleton-section {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-profile-skeleton-avatar {
+    width: 64px;
+    height: 64px;
+  }
+  .admin-profile-skeleton-name {
+    width: 140px;
+    height: 22px;
+  }
+  .admin-profile-skeleton-section-title {
+    width: 120px;
+    height: 18px;
+  }
+}
+
 /* Create User Skeleton */
 .create-user-skeleton {
   padding: 2rem;
@@ -5811,6 +5998,27 @@ code {
   height: 48px;
   border-radius: 12px;
   margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .create-user-skeleton {
+    padding: 1rem;
+  }
+  .create-user-skeleton-title {
+    width: 140px;
+    height: 28px;
+  }
+  .create-user-skeleton-btn {
+    width: 100%;
+    max-width: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-user-skeleton-title {
+    width: 120px;
+    height: 24px;
+  }
 }
 
 /* Auth Pages Skeleton (Login/Register) */
@@ -5879,6 +6087,47 @@ code {
   height: 52px;
   border-radius: 12px;
   margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .auth-skeleton-right {
+    padding: 1.5rem;
+  }
+  .auth-skeleton-form {
+    max-width: 100%;
+  }
+  .auth-skeleton-form-title {
+    width: 180px;
+    height: 28px;
+  }
+  .auth-skeleton-form-subtitle {
+    width: 220px;
+    height: 16px;
+  }
+  .auth-skeleton-badge {
+    width: 100px;
+    height: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-skeleton-right {
+    padding: 1rem;
+  }
+  .auth-skeleton-form-title {
+    width: 160px;
+    height: 24px;
+  }
+  .auth-skeleton-form-subtitle {
+    width: 200px;
+    height: 14px;
+  }
+  .auth-skeleton-field {
+    height: 48px;
+  }
+  .auth-skeleton-btn {
+    height: 48px;
+  }
 }
 
 /* Search bar skeleton */

@@ -10,6 +10,37 @@
  */
 
 const mongoose = require('mongoose');
+const User = require('../models/User');
+const Deal = require('../models/Deal');
+const Payment = require('../models/Payment');
+const DealAdditionalExpenses = require('../models/DealAdditionalExpenses');
+const DealScheduleEntry = require('../models/DealScheduleEntry');
+
+mongoose.set('strictQuery', true);
+
+const transactionalModels = [
+  User,
+  Deal,
+  Payment,
+  DealAdditionalExpenses,
+  DealScheduleEntry,
+];
+
+const ensureCollectionsExist = async () => {
+  await Promise.all(
+    transactionalModels.map(async (model) => {
+      try {
+        await model.createCollection();
+      } catch (error) {
+        if (error.codeName !== 'NamespaceExists') {
+          throw error;
+        }
+      }
+
+      await model.init();
+    })
+  );
+};
 
 /**
  * Establishes connection to MongoDB database
@@ -27,6 +58,8 @@ const connectDB = async () => {
       connectTimeoutMS: 10000,      // Connection timeout: 10 seconds
     });
 
+    await ensureCollectionsExist();
+
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
@@ -35,3 +68,4 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+module.exports.ensureCollectionsExist = ensureCollectionsExist;

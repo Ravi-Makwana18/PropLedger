@@ -11,6 +11,8 @@
 
 import axios from 'axios';
 
+const shouldUseTokenFallback = process.env.REACT_APP_ENABLE_TOKEN_FALLBACK === 'true';
+
 /**
  * Create Axios instance with default configuration
  * Base URL is set from environment variable or defaults to localhost
@@ -25,13 +27,12 @@ const API = axios.create({
 
 /**
  * Request Interceptor
- * Automatically injects JWT token from localStorage as Authorization header
- * Required for iOS Safari which blocks cross-site cookies (SameSite=None)
- * due to Intelligent Tracking Prevention (ITP)
+ * Automatically injects JWT token only when the explicit token fallback
+ * is enabled. The default production path is httpOnly cookie auth.
  */
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = shouldUseTokenFallback ? localStorage.getItem('token') : null;
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }

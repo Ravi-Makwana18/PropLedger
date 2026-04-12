@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
@@ -77,6 +77,7 @@ const Dashboard = () => {
   const [sortOpen, setSortOpen] = useState(false);
   const [sortOption, setSortOption] = useState('latest');
   const [expandedDeals, setExpandedDeals] = useState([]); // For mobile accordion - all closed by default
+  const didInitialFetchRef = useRef(false);
   const sortOptions = [
     { value: 'latest', label: 'Latest Added' },
     { value: 'village', label: 'Village Name (A-Z)' },
@@ -98,6 +99,8 @@ const Dashboard = () => {
 
   // ── On mount: load all deals ────────────────────────────────────────────
   useEffect(() => {
+    if (didInitialFetchRef.current) return;
+    didInitialFetchRef.current = true;
     fetchDeals();
   }, []);
 

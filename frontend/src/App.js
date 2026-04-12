@@ -33,8 +33,18 @@ function AppContent() {
   return (
     <Suspense
       fallback={
-        <div className="flex-center" style={{ minHeight: '100vh', background: '#f8fafc' }}>
-          <div className="spinner" style={{ width: 40, height: 40, borderWidth: 3 }}></div>
+        <div className="auth-skeleton-container">
+          <div className="auth-skeleton-left"></div>
+          <div className="auth-skeleton-right">
+            <div className="auth-skeleton-form">
+              <div className="skeleton-base auth-skeleton-badge"></div>
+              <div className="skeleton-base auth-skeleton-form-title"></div>
+              <div className="skeleton-base auth-skeleton-form-subtitle"></div>
+              <div className="skeleton-base auth-skeleton-field"></div>
+              <div className="skeleton-base auth-skeleton-field"></div>
+              <div className="skeleton-base auth-skeleton-btn"></div>
+            </div>
+          </div>
         </div>
       }
     >
@@ -160,7 +170,7 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AppContent />
       </Router>
     </AuthProvider>

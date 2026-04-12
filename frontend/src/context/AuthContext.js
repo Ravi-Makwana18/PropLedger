@@ -13,6 +13,44 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import API from '../api/axios';
 
 const AuthContext = createContext();
+const shouldUseTokenFallback = process.env.REACT_APP_ENABLE_TOKEN_FALLBACK === 'true';
+let verifySessionPromise = null;
+
+const getStoredUser = () => {
+  try {
+    const stored = localStorage.getItem('pl_user');
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+};
+
+const clearStoredAuth = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('pl_user');
+};
+
+const persistSession = (data) => {
+  if (shouldUseTokenFallback && data.token) {
+    localStorage.setItem('token', data.token);
+  } else {
+    localStorage.removeItem('token');
+  }
+
+  localStorage.setItem('pl_user', JSON.stringify(data));
+};
+
+const verifySession = async () => {
+  if (!verifySessionPromise) {
+    verifySessionPromise = API.get('/api/auth/verify', { withCredentials: true })
+      .then(({ data }) => data)
+      .finally(() => {
+        verifySessionPromise = null;
+      });
+  }
+
+  return verifySessionPromise;
+};
 
 /**
  * Custom hook to access authentication context
@@ -37,19 +75,10 @@ export const useAuth = () => {
  * @param {React.ReactNode} props.children - Child components
  */
 export const AuthProvider = ({ children }) => {
-  const hasStoredToken = typeof window !== 'undefined' && Boolean(localStorage.getItem('token'));
-  // Initialise user state immediately from localStorage — no round-trip required.
-  // We store minimal user info in localStorage on login so pages can render at once.
-  // The background verify call will correct stale info or clear an expired token.
-  const [user, setUser] = useState(() => {
-    try {
-      const stored = localStorage.getItem('pl_user');
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
-  const [loading, setLoading] = useState(hasStoredToken);
+  const storedUser = typeof window !== 'undefined' ? getStoredUser() : null;
+  const hasStoredToken = typeof window !== 'undefined' && shouldUseTokenFallback && Boolean(localStorage.getItem('token'));
+  const [user, setUser] = useState(storedUser);
+  const [loading, setLoading] = useState(() => !storedUser && (shouldUseTokenFallback ? hasStoredToken : true));
 
   /**
    * Background token verification.
@@ -57,28 +86,35 @@ export const AuthProvider = ({ children }) => {
    * Clears state only if the token is actually invalid/expired.
    */
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    if (!storedToken) {
-      // No token → make sure we're logged out
+    const storedToken = shouldUseTokenFallback ? localStorage.getItem('token') : null;
+    const shouldVerifySession = !shouldUseTokenFallback || Boolean(storedToken);
+    const cachedUser = getStoredUser();
+
+    if (!shouldVerifySession) {
       setUser(null);
-      localStorage.removeItem('pl_user');
+      clearStoredAuth();
       setLoading(false);
       return;
     }
-    // Verify in background — pages are already rendering
-    API.get('/api/auth/verify', { withCredentials: true })
-      .then(({ data }) => {
+
+    if (cachedUser) {
+      // Render immediately from cached user and refresh in the background.
+      setLoading(false);
+    }
+
+    verifySession()
+      .then((data) => {
         setUser(data);
-        localStorage.setItem('pl_user', JSON.stringify(data));
+        persistSession(data);
       })
       .catch(() => {
-        // Token expired / invalid — force logout
-        localStorage.removeItem('token');
-        localStorage.removeItem('pl_user');
+        clearStoredAuth();
         setUser(null);
       })
       .finally(() => {
-        setLoading(false);
+        if (!cachedUser) {
+          setLoading(false);
+        }
       });
   }, []);
 
@@ -93,13 +129,8 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const { data } = await API.post('/api/auth/login', { email, password }, { withCredentials: true });
-      
-      // Save token to localStorage (required for iOS Safari)
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-      }
-      // Persist user data so next load is instant (optimistic auth)
-      localStorage.setItem('pl_user', JSON.stringify(data));
+
+      persistSession(data);
       setUser(data);
       setLoading(false);
       return { success: true };
@@ -119,13 +150,8 @@ export const AuthProvider = ({ children }) => {
   const register = async (formData) => {
     try {
       const { data } = await API.post('/api/auth/register', formData, { withCredentials: true });
-      
-      // Save token to localStorage
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-      }
-      // Persist user data so next load is instant
-      localStorage.setItem('pl_user', JSON.stringify(data));
+
+      persistSession(data);
       setUser(data);
       setLoading(false);
       return { success: true };
@@ -141,8 +167,7 @@ export const AuthProvider = ({ children }) => {
    */
   const logout = () => {
     // Always clear local state immediately
-    localStorage.removeItem('token');
-    localStorage.removeItem('pl_user');
+    clearStoredAuth();
     sessionStorage.clear();
     setUser(null);
     setLoading(false);
@@ -155,7 +180,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await API.get('/api/auth/verify', { withCredentials: true });
       setUser(data);
-      localStorage.setItem('pl_user', JSON.stringify(data));
+      persistSession(data);
     } catch {
       // silently fail
     }

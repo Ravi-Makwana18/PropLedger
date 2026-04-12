@@ -58,7 +58,6 @@ const AdminLayout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
   const [isRouteLoading, setIsRouteLoading] = useState(false);
-  const [routeAnimKey, setRouteAnimKey] = useState(0);
   const location = useLocation();
   const previousRouteRef = useRef(`${location.pathname}${location.search}`);
 
@@ -88,7 +87,6 @@ const AdminLayout = ({ children }) => {
 
     previousRouteRef.current = currentRoute;
     setIsRouteLoading(true);
-    setRouteAnimKey((prev) => prev + 1);
     const timer = setTimeout(() => setIsRouteLoading(false), 420);
 
     return () => clearTimeout(timer);
@@ -128,7 +126,7 @@ const AdminLayout = ({ children }) => {
           </div>
         )}
         <Topbar onMenuClick={handleMenuClick} pageTitle={pageTitle} />
-        <main key={routeAnimKey} className="admin-content admin-content--route-enter">
+        <main className="admin-content admin-content--route-enter">
           {children}
         </main>
       </div>

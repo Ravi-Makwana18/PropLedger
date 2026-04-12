@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
@@ -84,6 +84,7 @@ const DealDetails = () => {
   });
   const [isSavingAddMore, setIsSavingAddMore] = useState(false);
   const [confirmDeleteAddMoreIndex, setConfirmDeleteAddMoreIndex] = useState(null);
+  const lastFetchedDealIdRef = useRef(null);
 
   // Toggle section expansion for mobile
   const toggleSection = (sectionId) => {
@@ -97,6 +98,8 @@ const DealDetails = () => {
   // ── On mount / deal-id change: load deal + payments ──────────────────────
 
   useEffect(() => {
+    if (lastFetchedDealIdRef.current === id) return;
+    lastFetchedDealIdRef.current = id;
     fetchDealDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);

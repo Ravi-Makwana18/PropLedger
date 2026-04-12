@@ -10,6 +10,9 @@
     "dev:client": "npm start --prefix frontend",
     "build": "npm run install:all && npm run build --prefix frontend",
     "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "test:backend": "npm test --prefix backend",
+    "test:backend:all": "npm run test:all --prefix backend",
+    "test:backend:integration": "npm run test:integration --prefix backend",
     "seed:admin": "node backend/seedAdmin.js",
     "db:indexes": "node backend/scripts/buildIndexes.js",
     "db:migrate-deal-relations": "node backend/scripts/migrateDealRelations.js"

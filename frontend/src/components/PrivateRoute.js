@@ -24,26 +24,32 @@ import { useAuth } from '../context/AuthContext';
 const PrivateRoute = ({ children, adminOnly = false }) => {
   const { user, loading } = useAuth();
 
-  // Show loading spinner while checking authentication
   if (loading) {
     return (
-      <div className="flex-center min-h-80vh">
-        <div className="spinner"></div>
+      <div className="auth-skeleton-container">
+        <div className="auth-skeleton-left"></div>
+        <div className="auth-skeleton-right">
+          <div className="auth-skeleton-form">
+            <div className="skeleton-base auth-skeleton-badge"></div>
+            <div className="skeleton-base auth-skeleton-form-title"></div>
+            <div className="skeleton-base auth-skeleton-form-subtitle"></div>
+            <div className="skeleton-base auth-skeleton-field"></div>
+            <div className="skeleton-base auth-skeleton-field"></div>
+            <div className="skeleton-base auth-skeleton-btn"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  // Redirect to login if not authenticated
   if (!user) {
     return <Navigate to="/login" />;
   }
 
-  // Check admin access
   if (adminOnly && user.role !== 'admin') {
     return <Navigate to="/dashboard" />;
   }
 
-  // User has required permissions - render children
   return children;
 };
 

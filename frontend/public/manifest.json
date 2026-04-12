@@ -21,6 +21,7 @@
   "share_target": {
     "action": "/dashboard",
     "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
     "params": {
       "title": "title",
       "text": "text",
@@ -39,78 +40,37 @@
       "id": "com.propledger.app"
     }
   ],
-  "scope_extensions": [
-    {
-      "origin": "https://propledger-slrn.onrender.com"
-    }
-  ],
   "icons": [
     {
-      "src": "icon-72x72.png",
-      "sizes": "72x72",
+      "src": "logo.png",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-96x96.png",
-      "sizes": "96x96",
+      "src": "logo.png",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512x512.png",
-      "sizes": "512x512",
+      "src": "logo.png",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
   "screenshots": [
     {
-      "src": "icon-512x512.png",
-      "sizes": "512x512",
+      "src": "logo.png",
+      "sizes": "1024x1024",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "PropLedger Dashboard"
     },
     {
-      "src": "icon-512x512.png",
-      "sizes": "512x512",
+      "src": "logo.png",
+      "sizes": "1024x1024",
       "type": "image/png",
       "form_factor": "wide",
       "label": "PropLedger Deal Management"
@@ -122,14 +82,14 @@
       "short_name": "Dashboard",
       "description": "View all deals",
       "url": "/dashboard",
-      "icons": [{ "src": "icon-192x192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "logo.png", "sizes": "1024x1024", "type": "image/png" }]
     },
     {
       "name": "Add New Deal",
       "short_name": "Add Deal",
       "description": "Create a new land deal",
       "url": "/add-deal",
-      "icons": [{ "src": "icon-192x192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "logo.png", "sizes": "1024x1024", "type": "image/png" }]
     }
   ]
 }

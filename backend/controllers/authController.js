@@ -29,13 +29,15 @@ const parseExpireToMs = (expireStr) => {
   return value * (multipliers[unit] || multipliers.d);
 };
 
+const shouldUseSecureCookies = () => process.env.NODE_ENV === 'production';
+
 /**
  * Builds the cookie options object, aligned with the JWT_EXPIRE setting.
  * Cookie max-age is derived from JWT_EXPIRE so they never get out of sync.
  */
 const getCookieOptions = () => ({
   httpOnly: true,
-  secure: true,
+  secure: shouldUseSecureCookies(),
   sameSite: 'Lax',
   path: '/',
   maxAge: parseExpireToMs(process.env.JWT_EXPIRE || '7d'),
@@ -254,7 +256,7 @@ const updateProfilePicture = async (req, res) => {
 const logout = async (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
-    secure: true,
+    secure: shouldUseSecureCookies(),
     sameSite: 'Lax',
     path: '/',
   });

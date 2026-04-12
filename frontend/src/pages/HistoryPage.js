@@ -142,6 +142,7 @@ const HistoryPage = () => {
     const [search, setSearch] = useState('');
     const [mode, setMode] = useState('ALL');
     const [totalAmount, setTotalAmount] = useState(0);
+    const didInitialFetchRef = useRef(false);
 
     // Debounce ref for search
     const debounceRef = useRef(null);
@@ -172,6 +173,8 @@ const HistoryPage = () => {
 
     // Initial load
     useEffect(() => {
+        if (didInitialFetchRef.current) return;
+        didInitialFetchRef.current = true;
         fetchHistory(1, search, mode);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
