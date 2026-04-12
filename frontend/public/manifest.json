@@ -42,19 +42,19 @@
   ],
   "icons": [
     {
-      "src": "logo.png",
+      "src": "logo.png?v=20260412",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "logo.png",
+      "src": "logo.png?v=20260412",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "logo.png",
+      "src": "logo.png?v=20260412",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "maskable"
@@ -62,14 +62,14 @@
   ],
   "screenshots": [
     {
-      "src": "logo.png",
+      "src": "logo.png?v=20260412",
       "sizes": "1024x1024",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "PropLedger Dashboard"
     },
     {
-      "src": "logo.png",
+      "src": "logo.png?v=20260412",
       "sizes": "1024x1024",
       "type": "image/png",
       "form_factor": "wide",
@@ -82,14 +82,14 @@
       "short_name": "Dashboard",
       "description": "View all deals",
       "url": "/dashboard",
-      "icons": [{ "src": "logo.png", "sizes": "1024x1024", "type": "image/png" }]
+      "icons": [{ "src": "logo.png?v=20260412", "sizes": "1024x1024", "type": "image/png" }]
     },
     {
       "name": "Add New Deal",
       "short_name": "Add Deal",
       "description": "Create a new land deal",
       "url": "/add-deal",
-      "icons": [{ "src": "logo.png", "sizes": "1024x1024", "type": "image/png" }]
+      "icons": [{ "src": "logo.png?v=20260412", "sizes": "1024x1024", "type": "image/png" }]
     }
   ]
 }

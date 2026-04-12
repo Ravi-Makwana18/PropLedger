@@ -6,6 +6,7 @@ import AppCard from '../components/ui/AppCard';
 import AppInput from '../components/ui/AppInput';
 import AppButton from '../components/ui/AppButton';
 import AppSelect from '../components/ui/AppSelect';
+import logo from '../assets/logo.png';
 import './Login.css';
 
 const Register = () => {
@@ -124,7 +125,7 @@ const Register = () => {
       <div className="auth-left-panel">
         <div className="auth-left-content">
           <div className="auth-brand-section">
-            <img src="/logo.png" alt="PropLedger" className="auth-brand-logo" />
+            <img src={logo} alt="PropLedger" className="auth-brand-logo" />
             <h1 className="auth-brand-title">PropLedger</h1>
             <p className="auth-brand-tagline">Professional Land Deal Management</p>
           </div>
@@ -164,7 +165,7 @@ const Register = () => {
       {/* Right Form Panel */}
       <div className="auth-right-panel auth-right-panel--register">
         <div className="auth-mobile-header">
-          <img src="/logo.png" alt="PropLedger" className="auth-mobile-logo" />
+          <img src={logo} alt="PropLedger" className="auth-mobile-logo" />
           <span className="auth-mobile-brand">PropLedger</span>
         </div>
 
