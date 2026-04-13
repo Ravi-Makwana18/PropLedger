@@ -11,7 +11,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo-compact.jpg';
 import AppButton from './ui/AppButton';
 import { preloadRouteForPath, preloadRoute } from '../utils/preloadRoutes';
 
