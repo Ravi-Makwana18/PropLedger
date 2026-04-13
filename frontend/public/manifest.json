@@ -44,19 +44,19 @@
     {
       "src": "logo.png?v=20260412",
       "sizes": "1024x1024",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any"
     },
     {
       "src": "logo.png?v=20260412",
       "sizes": "1024x1024",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any"
     },
     {
       "src": "logo.png?v=20260412",
       "sizes": "1024x1024",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "maskable"
     }
   ],
@@ -64,14 +64,14 @@
     {
       "src": "logo.png?v=20260412",
       "sizes": "1024x1024",
-      "type": "image/png",
+      "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "PropLedger Dashboard"
     },
     {
       "src": "logo.png?v=20260412",
       "sizes": "1024x1024",
-      "type": "image/png",
+      "type": "image/jpeg",
       "form_factor": "wide",
       "label": "PropLedger Deal Management"
     }
