@@ -1,12 +1,12 @@
 /* ==========================================================
-   PropLedger Service Worker - v3.0.0
+   PropLedger Service Worker - v4.0.0
    - Offline-first with network fallback
    - Background Sync for queued actions
    - Push Notification support
    - Cache versioning with automatic cleanup
    ========================================================== */
 
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const STATIC_CACHE  = `propledger-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `propledger-dynamic-${CACHE_VERSION}`;
 
@@ -16,7 +16,13 @@ const PRECACHE_URLS = [
   '/index.html',
   '/offline.html',
   '/manifest.json',
-  '/logo.png?v=20260412',
+  '/pwa/icon-96.png',
+  '/pwa/icon-192.png',
+  '/pwa/icon-512.png',
+  '/pwa/icon-maskable-512.png',
+  '/pwa/apple-touch-icon.png',
+  '/pwa/screenshot-wide.png',
+  '/pwa/screenshot-mobile.png',
   '/favicon.svg',
 ];
 
@@ -102,8 +108,8 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: '/logo.png?v=20260412',
-      badge: '/logo.png?v=20260412',
+      icon: '/pwa/icon-192.png',
+      badge: '/pwa/icon-96.png',
       tag: 'propledger-notification',
       renotify: true,
       data: { url: data.url || '/dashboard' },

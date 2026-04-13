@@ -19,25 +19,24 @@ const isLocalhost = Boolean(
  */
 export function register(config) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-    const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
+    const publicPath = process.env.PUBLIC_URL || '';
+    const publicUrl = new URL(process.env.PUBLIC_URL || '/', window.location.href);
     if (publicUrl.origin !== window.location.origin) {
       // Service worker won't work if PUBLIC_URL is on a different origin
       return;
     }
 
-    window.addEventListener('load', () => {
-      const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+    const swUrl = `${publicPath}/service-worker.js`;
 
-      if (isLocalhost) {
-        // Localhost: check if a service worker still exists
-        checkValidServiceWorker(swUrl, config);
-        navigator.serviceWorker.ready.then(() => {
-          console.log('[PropLedger] App is being served cache-first by a service worker.');
-        });
-      } else {
-        registerValidSW(swUrl, config);
-      }
-    });
+    if (isLocalhost) {
+      // Localhost: check if a service worker still exists
+      checkValidServiceWorker(swUrl, config);
+      navigator.serviceWorker.ready.then(() => {
+        console.log('[PropLedger] App is being served cache-first by a service worker.');
+      });
+    } else {
+      registerValidSW(swUrl, config);
+    }
   }
 }
 
@@ -69,7 +68,10 @@ function registerValidSW(swUrl, config) {
 }
 
 function checkValidServiceWorker(swUrl, config) {
-  fetch(swUrl, { headers: { 'Service-Worker': 'script' } })
+  fetch(swUrl, {
+    headers: { 'Service-Worker': 'script' },
+    cache: 'no-store',
+  })
     .then((response) => {
       const contentType = response.headers.get('content-type');
       if (response.status === 404 || (contentType && !contentType.includes('javascript'))) {
