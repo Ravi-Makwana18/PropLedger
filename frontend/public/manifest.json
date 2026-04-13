@@ -6,7 +6,6 @@
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#f8fafc",
   "theme_color": "#2562EA",
   "orientation": "portrait-primary",
@@ -14,66 +13,24 @@
   "dir": "ltr",
   "categories": ["business", "finance", "productivity"],
   "prefer_related_applications": false,
-  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  },
-  "share_target": {
-    "action": "/dashboard",
-    "method": "GET",
-    "enctype": "application/x-www-form-urlencoded",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
-    }
-  },
-  "protocol_handlers": [
-    {
-      "protocol": "web+propledger",
-      "url": "/dashboard?from=%s"
-    }
-  ],
-  "related_applications": [
-    {
-      "platform": "play",
-      "id": "com.propledger.app"
-    }
-  ],
   "icons": [
     {
-      "src": "logo.png?v=20260412",
-      "sizes": "1024x1024",
+      "src": "logo.png?v=20260413",
+      "sizes": "192x192",
       "type": "image/jpeg",
       "purpose": "any"
     },
     {
-      "src": "logo.png?v=20260412",
-      "sizes": "1024x1024",
+      "src": "logo.png?v=20260413",
+      "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any"
     },
     {
-      "src": "logo.png?v=20260412",
-      "sizes": "1024x1024",
+      "src": "logo.png?v=20260413",
+      "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "logo.png?v=20260412",
-      "sizes": "1024x1024",
-      "type": "image/jpeg",
-      "form_factor": "narrow",
-      "label": "PropLedger Dashboard"
-    },
-    {
-      "src": "logo.png?v=20260412",
-      "sizes": "1024x1024",
-      "type": "image/jpeg",
-      "form_factor": "wide",
-      "label": "PropLedger Deal Management"
     }
   ],
   "shortcuts": [
@@ -82,14 +39,14 @@
       "short_name": "Dashboard",
       "description": "View all deals",
       "url": "/dashboard",
-      "icons": [{ "src": "logo.png?v=20260412", "sizes": "1024x1024", "type": "image/png" }]
+      "icons": [{ "src": "logo.png?v=20260413", "sizes": "96x96", "type": "image/jpeg" }]
     },
     {
       "name": "Add New Deal",
       "short_name": "Add Deal",
       "description": "Create a new land deal",
       "url": "/add-deal",
-      "icons": [{ "src": "logo.png?v=20260412", "sizes": "1024x1024", "type": "image/png" }]
+      "icons": [{ "src": "logo.png?v=20260413", "sizes": "96x96", "type": "image/jpeg" }]
     }
   ]
 }
