@@ -95,31 +95,22 @@ const createApp = () => {
     });
   });
 
-  if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../frontend/build')));
+  // In split deployment (frontend on Vercel, backend on Render),
+  // the backend only serves API routes — never static files.
+  app.get('/', (req, res) => {
+    res.json({
+      message: 'PropLedger API - Land Deal Management System',
+      version: '1.0.0',
+      endpoints: {
+        health: '/api/health',
+        ready: '/api/ready',
+        auth: '/api/auth',
+        deals: '/api/deals',
+        payments: '/api/payments',
+      },
+    });
+  });
 
-    app.get('/', (req, res) => {
-      res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
-    });
-
-    app.get(/.*/, (req, res) => {
-      res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
-    });
-  } else {
-    app.get('/', (req, res) => {
-      res.json({
-        message: 'PropLedger API - Land Deal Management System',
-        version: '1.0.0',
-        endpoints: {
-          health: '/api/health',
-          ready: '/api/ready',
-          auth: '/api/auth',
-          deals: '/api/deals',
-          payments: '/api/payments',
-        },
-      });
-    });
-  }
 
   app.use('/api', (req, res) => {
     res.status(404).json({ message: 'API route not found' });

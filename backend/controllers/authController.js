@@ -29,16 +29,20 @@ const parseExpireToMs = (expireStr) => {
   return value * (multipliers[unit] || multipliers.d);
 };
 
-const shouldUseSecureCookies = () => process.env.NODE_ENV === 'production';
+const isProduction = () => process.env.NODE_ENV === 'production';
 
 /**
  * Builds the cookie options object, aligned with the JWT_EXPIRE setting.
  * Cookie max-age is derived from JWT_EXPIRE so they never get out of sync.
+ *
+ * IMPORTANT: In production (Vercel frontend → Render backend = cross-origin),
+ * cookies require SameSite=None + Secure=true to be sent cross-origin.
+ * In development (same-origin via proxy), SameSite=Lax is fine.
  */
 const getCookieOptions = () => ({
   httpOnly: true,
-  secure: shouldUseSecureCookies(),
-  sameSite: 'Lax',
+  secure: isProduction(),
+  sameSite: isProduction() ? 'None' : 'Lax',
   path: '/',
   maxAge: parseExpireToMs(process.env.JWT_EXPIRE || '7d'),
 });
@@ -256,8 +260,8 @@ const updateProfilePicture = async (req, res) => {
 const logout = async (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
-    secure: shouldUseSecureCookies(),
-    sameSite: 'Lax',
+    secure: isProduction(),
+    sameSite: isProduction() ? 'None' : 'Lax',
     path: '/',
   });
   res.status(200).json({ message: 'Logged out successfully' });

@@ -14,8 +14,10 @@ const path = require('path');
 const connectDB = require('./config/db');
 const createApp = require('./app');
 
-// Load environment variables from root directory (must be first)
-dotenv.config({ path: path.join(__dirname, '../.env') });
+// Load environment variables.
+// In production (Render), env vars are injected natively.
+// In development, reads from backend/.env (or project root .env if proxied).
+dotenv.config();
 
 const REQUIRED_ENV_VARS = ['MONGO_URI', 'JWT_SECRET'];
 const missingEnvVars = REQUIRED_ENV_VARS.filter((key) => !process.env[key]);
